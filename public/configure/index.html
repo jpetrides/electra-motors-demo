@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="dc-bundle-id" content="__DC_BUNDLE_ID__">
+  <meta name="dc-tenant-id"  content="__DC_TENANT_ID__">
+  <title>Configure Your Elektra — Elektra Motors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+
+<nav class="nav" role="navigation">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo"><img src="/images/logo-consumer.png" alt="Elektra Motors"></a>
+    <ul class="nav__links">
+      <li><a href="/models/">Models</a></li>
+      <li><a href="/configure/">Configure</a></li>
+      <li><a href="/test-drive/">Test Drive</a></li>
+      <li><a href="/get-a-quote/">Get a Quote</a></li>
+    </ul>
+    <div class="nav__cta">
+      <a href="/test-drive/" class="btn btn-outline">Book a Test Drive</a>
+      <a href="/get-a-quote/" class="btn btn-primary">Get a Quote</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <p class="eyebrow" id="config-family">Configure</p>
+    <h1 id="config-title">Build your Elektra.</h1>
+    <p id="config-subtitle">Choose your trim, color, and options — then request your personalized quote.</p>
+  </div>
+</div>
+
+<section class="section--sm">
+  <div class="container">
+
+    <!-- Model picker (shown when no ?model= param) -->
+    <div id="model-picker" style="display: none; margin-bottom: 48px;">
+      <h3 style="margin-bottom: 24px;">Which model?</h3>
+      <div class="grid-3" id="model-picker-grid"></div>
+    </div>
+
+    <!-- Vehicle image strip -->
+    <div id="vehicle-image-strip" style="margin-bottom: 40px; border-radius: 16px; overflow: hidden; max-height: 360px; display: none;">
+      <img id="vehicle-hero-img" src="" alt="" style="width: 100%; object-fit: cover; height: 360px; filter: brightness(0.85);">
+    </div>
+
+    <div class="config-layout">
+      <!-- Left: selectors -->
+      <div id="configurator-panel">
+
+        <!-- Trim -->
+        <div class="form-group" style="margin-bottom: 32px;">
+          <h3 style="margin-bottom: 4px;">Trim</h3>
+          <p style="color: var(--text-2); font-size: 0.9rem; margin-bottom: 16px;">Select your configuration level.</p>
+          <div class="trim-selector" id="trim-selector"></div>
+        </div>
+
+        <!-- Color -->
+        <div class="form-group" style="margin-bottom: 32px;">
+          <h3 style="margin-bottom: 4px;">Exterior Color</h3>
+          <p style="color: var(--text-2); font-size: 0.9rem; margin-bottom: 16px;" id="selected-color-label">Select a color</p>
+          <div class="color-swatches" id="color-swatches"></div>
+        </div>
+
+        <!-- Options -->
+        <div style="margin-bottom: 40px;">
+          <h3 style="margin-bottom: 16px;">Popular Add-ons</h3>
+          <div id="options-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
+
+        <!-- Build Mine CTA -->
+        <button id="btn-build-mine" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
+          Build Mine — Get a Quote
+        </button>
+        <p style="text-align: center; color: var(--text-3); font-size: 0.82rem; margin-top: 12px;">
+          No obligation. A specialist will contact you within 24 hours.
+        </p>
+
+      </div>
+
+      <!-- Right: summary panel -->
+      <div class="config-summary">
+        <div class="config-summary__title">Your Configuration</div>
+        <div class="config-summary__model" id="summary-model">—</div>
+        <div class="config-summary__trim" id="summary-trim">Select a trim to start</div>
+
+        <div class="config-summary__line">
+          <span class="key">Color</span>
+          <span class="val" id="summary-color">—</span>
+        </div>
+        <div class="config-summary__line">
+          <span class="key">Base Price</span>
+          <span class="val" id="summary-base-price">—</span>
+        </div>
+        <div class="config-summary__line">
+          <span class="key">Options</span>
+          <span class="val" id="summary-options-price">$0</span>
+        </div>
+        <div class="config-summary__line">
+          <span class="key">Est. Delivery</span>
+          <span class="val">8–12 weeks</span>
+        </div>
+
+        <div class="config-summary__total">
+          <span class="label">Est. Total</span>
+          <span class="price" id="summary-total">—</span>
+        </div>
+
+        <div style="margin-top: 24px; padding: 16px; background: rgba(0,180,216,0.05); border: 1px solid rgba(0,180,216,0.15); border-radius: 8px;">
+          <p style="font-size: 0.8rem; color: var(--text-2); line-height: 1.5;">
+            Estimated pricing. Final price confirmed by your dealer. Does not include taxes, registration, or destination fees.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer"><div class="footer__inner"><div class="footer__top"><div class="footer__brand"><img src="/images/logo-consumer.png" alt="Elektra Motors"><p>Building the future of mobility.</p></div><div class="footer__col"><h5>Vehicles</h5><a href="/models/elektra-reaktive/">Reaktive</a><a href="/models/elektra-megavolt/">Megavolt</a><a href="/models/elektra-harmonic/">Harmonic</a><a href="/models/elektra-beam/">Beam</a><a href="/models/elektra-ignite/">Ignite</a><a href="/models/elektra-regulator/">Regulator</a></div><div class="footer__col"><h5>Explore</h5><a href="/configure/">Configure</a><a href="/test-drive/">Test Drive</a><a href="/get-a-quote/">Get a Quote</a></div><div class="footer__col"><h5>Company</h5><a href="#">About</a><a href="#">Dealers</a></div></div><div class="footer__bottom"><span>© 2026 Elektra Motors.</span></div></div></footer>
+
+<script src="/js/vehicles.js"></script>
+<script src="/js/sdk.js"></script>
+<script src="/js/debug-panel.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+(function () {
+  const params      = new URLSearchParams(window.location.search);
+  const modelSku    = params.get('model');
+  const presetTrim  = params.get('trim');
+
+  let vehicle       = null;
+  let selectedTrim  = null;
+  let selectedColor = null;
+  let optionsTotal  = 0;
+
+  const ADDON_OPTIONS = [
+    { id: 'driver_assist',  label: 'Advanced Driver Assist Package',   price: 3200 },
+    { id: 'premium_audio',  label: 'Premium Audio Upgrade',            price: 1400 },
+    { id: 'tow_package',    label: 'Enhanced Towing Package',          price: 1800 },
+    { id: 'sport_wheels',   label: '22" Sport Alloy Wheels',           price: 2200 },
+    { id: 'pano_roof',      label: 'Panoramic Roof',                   price: 1600 },
+  ];
+
+  const selectedOptions = new Set();
+
+  function init() {
+    if (modelSku) {
+      vehicle = getVehicle(modelSku);
+    }
+
+    if (!vehicle) {
+      showModelPicker();
+      return;
+    }
+
+    renderVehicleConfig();
+  }
+
+  function showModelPicker() {
+    document.getElementById('model-picker').style.display = 'block';
+    document.getElementById('configurator-panel').style.display = 'none';
+    document.querySelector('.config-summary').style.display = 'none';
+
+    const grid = document.getElementById('model-picker-grid');
+    VEHICLE_LIST.forEach(v => {
+      const card = document.createElement('a');
+      card.href  = '/configure/?model=' + v.id;
+      card.className = 'model-card';
+      card.innerHTML = `
+        <div class="model-card__image-wrap">
+          <img class="model-card__image" src="${v.image}" alt="${v.name}" loading="lazy">
+        </div>
+        <div class="model-card__body">
+          <div class="model-card__family">${v.family}</div>
+          <div class="model-card__name">${v.name}</div>
+          <div class="model-card__price">From <strong>${formatPrice(v.msrp)}</strong></div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function renderVehicleConfig() {
+    // Update page header
+    document.getElementById('config-family').textContent = vehicle.family + ' · ' + vehicle.year;
+    document.getElementById('config-title').textContent  = 'Configure your ' + vehicle.name + '.';
+    document.getElementById('config-subtitle').textContent = vehicle.tagline;
+
+    // Vehicle image
+    const strip = document.getElementById('vehicle-image-strip');
+    const img   = document.getElementById('vehicle-hero-img');
+    img.src     = vehicle.image;
+    img.alt     = vehicle.name;
+    strip.style.display = 'block';
+
+    // Summary
+    document.getElementById('summary-model').textContent = vehicle.name;
+
+    // Trim selector
+    const trimContainer = document.getElementById('trim-selector');
+    vehicle.trims.forEach(t => {
+      const div = document.createElement('div');
+      div.className  = 'trim-option';
+      div.dataset.id = t.id;
+      div.innerHTML  = `
+        <div class="trim-option__name">${t.name}</div>
+        <div class="trim-option__price">${formatPrice(t.msrp)}</div>
+      `;
+      div.addEventListener('click', () => selectTrim(t));
+      trimContainer.appendChild(div);
+    });
+
+    // Color swatches
+    const swatchContainer = document.getElementById('color-swatches');
+    vehicle.colors.forEach(c => {
+      const swatch = document.createElement('div');
+      swatch.className        = 'color-swatch';
+      swatch.style.background = c.hex;
+      swatch.title            = c.name;
+      swatch.addEventListener('click', () => selectColor(c));
+      swatchContainer.appendChild(swatch);
+    });
+
+    // Options
+    const optsList = document.getElementById('options-list');
+    ADDON_OPTIONS.forEach(opt => {
+      const row = document.createElement('label');
+      row.style.cssText = `
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 16px;
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: border-color 0.15s;
+      `;
+      row.innerHTML = `
+        <input type="checkbox" data-id="${opt.id}" data-price="${opt.price}"
+               style="accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0;">
+        <span style="flex: 1;">${opt.label}</span>
+        <span style="color: var(--accent); font-size: 0.85rem;">+${formatPrice(opt.price)}</span>
+      `;
+      const cb = row.querySelector('input');
+      cb.addEventListener('change', () => {
+        if (cb.checked) {
+          selectedOptions.add(opt.id);
+          optionsTotal += opt.price;
+          row.style.borderColor = 'rgba(0,180,216,0.4)';
+        } else {
+          selectedOptions.delete(opt.id);
+          optionsTotal -= opt.price;
+          row.style.borderColor = 'var(--border)';
+        }
+        updateSummary();
+      });
+      optsList.appendChild(row);
+    });
+
+    // Pre-select first trim (or from URL param)
+    const defaultTrim = vehicle.trims.find(t => t.id === presetTrim) || vehicle.trims[0];
+    selectTrim(defaultTrim);
+    selectColor(vehicle.colors[0]);
+  }
+
+  function selectTrim(trim) {
+    selectedTrim = trim;
+    document.querySelectorAll('.trim-option').forEach(el => {
+      el.classList.toggle('selected', el.dataset.id === trim.id);
+    });
+    updateSummary();
+    fireConfigureEvent();
+  }
+
+  function selectColor(color) {
+    selectedColor = color;
+    document.querySelectorAll('.color-swatch').forEach(el => {
+      el.classList.toggle('selected', el.title === color.name);
+    });
+    document.getElementById('selected-color-label').textContent = color.name;
+    document.getElementById('summary-color').textContent = color.name;
+    updateSummary();
+  }
+
+  function updateSummary() {
+    if (!selectedTrim) return;
+    const total = selectedTrim.msrp + optionsTotal;
+    document.getElementById('summary-trim').textContent       = selectedTrim.name;
+    document.getElementById('summary-base-price').textContent = formatPrice(selectedTrim.msrp);
+    document.getElementById('summary-options-price').textContent = formatPrice(optionsTotal);
+    document.getElementById('summary-total').textContent      = formatPrice(total);
+  }
+
+  function fireConfigureEvent() {
+    if (!vehicle || !selectedTrim) return;
+    EM.track('vehicle_configure', {
+      vehicleModel:  vehicle.name + ' ' + selectedTrim.name,
+      vehicleSKU:    selectedTrim.sku || vehicle.id,
+      vehicleFamily: vehicle.family,
+      trim:          selectedTrim.name,
+      msrp:          selectedTrim.msrp,
+      productCode:   selectedTrim.productCode,
+    });
+  }
+
+  // "Build Mine" button
+  document.getElementById('btn-build-mine').addEventListener('click', () => {
+    if (!vehicle || !selectedTrim) return;
+
+    const addonsStr = Array.from(selectedOptions).join(',');
+    const qs = new URLSearchParams({
+      model:  selectedTrim.sku || vehicle.id,
+      trim:   selectedTrim.id,
+      color:  selectedColor ? selectedColor.name : '',
+      addons: addonsStr,
+    });
+
+    // Fire configure event one more time with full payload before redirect
+    EM.track('vehicle_configure', {
+      vehicleModel:  vehicle.name + ' ' + selectedTrim.name,
+      vehicleSKU:    selectedTrim.sku || vehicle.id,
+      trim:          selectedTrim.name,
+      color:         selectedColor ? selectedColor.name : '',
+      estimatedMsrp: selectedTrim.msrp + optionsTotal,
+      productCode:   selectedTrim.productCode,
+      addons:        addonsStr,
+    });
+
+    // Small delay to allow the SDK event to fire before navigation
+    setTimeout(() => {
+      window.location.href = '/get-a-quote/?' + qs.toString();
+    }, 120);
+  });
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+
+</body>
+</html>

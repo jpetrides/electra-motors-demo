@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="dc-bundle-id" content="__DC_BUNDLE_ID__">
+  <meta name="dc-tenant-id"  content="__DC_TENANT_ID__">
+  <title>Elektra Motors — Drive the Future</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+
+<!-- ─── Navigation ─────────────────────────────────────────────────────── -->
+<nav class="nav" role="navigation">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo">
+      <img src="/images/logo-consumer.png" alt="Elektra Motors">
+    </a>
+    <ul class="nav__links">
+      <li><a href="/models/">Models</a></li>
+      <li><a href="/configure/">Configure</a></li>
+      <li><a href="/test-drive/">Test Drive</a></li>
+      <li><a href="/get-a-quote/">Get a Quote</a></li>
+    </ul>
+    <div class="nav__cta">
+      <a href="/test-drive/" class="btn btn-outline">Book a Test Drive</a>
+      <a href="/get-a-quote/" class="btn btn-primary">Get a Quote</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ─── Hero ────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero__bg"></div>
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <p class="eyebrow">Introducing the 2026 lineup</p>
+    <h1 class="hero__title">Drive the <em>electric</em> future.</h1>
+    <p class="hero__subtitle">
+      Six model lines. One vision. Elektra Motors builds vehicles that perform without compromise — on the road, on the grid, and for the planet.
+    </p>
+    <div class="hero__actions">
+      <a href="/models/" class="btn btn-primary btn-lg">Explore Models</a>
+      <a href="/test-drive/" class="btn btn-outline btn-lg">Book a Test Drive</a>
+    </div>
+  </div>
+  <div class="hero__scroll">
+    <div class="hero__scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ─── Stats Bar ────────────────────────────────────────────────────────── -->
+<section style="background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="spec-grid" style="border: none; border-radius: 0; background: transparent; margin: 0;">
+      <div class="spec-item">
+        <div class="value">6</div>
+        <div class="label">Model Lines</div>
+      </div>
+      <div class="spec-item">
+        <div class="value">400 mi</div>
+        <div class="label">Max Range</div>
+      </div>
+      <div class="spec-item">
+        <div class="value">2.9 s</div>
+        <div class="label">0 – 60 (Regulator)</div>
+      </div>
+      <div class="spec-item">
+        <div class="value">200+</div>
+        <div class="label">Dealer Locations</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Models Teaser ────────────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Our lineup</p>
+      <h2>Every drive. Every need.</h2>
+      <p>From sport coupes to full-size trucks to pure EV — there's an Elektra for the way you live.</p>
+    </div>
+
+    <div class="grid-3" id="models-grid">
+      <!-- Filled by JS -->
+    </div>
+
+    <div style="text-align: center; margin-top: 48px;">
+      <a href="/models/" class="btn btn-outline btn-lg">View All Models</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EV Feature Banner ─────────────────────────────────────────────────── -->
+<section class="section" style="background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="grid-2" style="align-items: center; gap: 64px;">
+      <div>
+        <p class="eyebrow">Zero Emissions Flagship</p>
+        <h2>Meet the Regulator. 400 miles on a single charge.</h2>
+        <p style="color: var(--text-2); margin-top: 16px; margin-bottom: 32px; line-height: 1.7;">
+          The Regulator is Elektra's dedicated EV platform — not an adaptation. 800V architecture means 20 minutes to 80%. Three motors, 670 horsepower, and a software-defined chassis that gets smarter over time.
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <a href="/models/elektra-regulator/" class="btn btn-primary">Explore Regulator</a>
+          <a href="/configure/?model=ELK-EV-PERF" class="btn btn-outline">Build Yours</a>
+        </div>
+      </div>
+      <div style="position: relative;">
+        <img src="/images/hero-regulator.png" alt="Elektra Regulator"
+             style="border-radius: 16px; width: 100%; object-fit: cover; box-shadow: 0 24px 64px rgba(0,0,0,0.6);">
+        <div style="position: absolute; top: 16px; left: 16px;">
+          <span class="badge badge-ev">Pure Electric</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA Strip ─────────────────────────────────────────────────────────── -->
+<section class="section--sm">
+  <div class="container" style="text-align: center;">
+    <p class="eyebrow">Ready to get started?</p>
+    <h2 style="margin-bottom: 16px;">Your Elektra is waiting.</h2>
+    <p style="color: var(--text-2); max-width: 44ch; margin: 0 auto 36px;">
+      Configure your build, schedule a test drive, or talk to a specialist at your nearest dealer.
+    </p>
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+      <a href="/configure/" class="btn btn-primary btn-lg">Start Configuring</a>
+      <a href="/test-drive/" class="btn btn-outline btn-lg">Book Test Drive</a>
+      <a href="/get-a-quote/" class="btn btn-outline btn-lg">Request a Quote</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <img src="/images/logo-consumer.png" alt="Elektra Motors">
+        <p>Building the future of mobility — one vehicle at a time.</p>
+      </div>
+      <div class="footer__col">
+        <h5>Vehicles</h5>
+        <a href="/models/elektra-reaktive/">Reaktive SUV</a>
+        <a href="/models/elektra-megavolt/">Megavolt Coupe</a>
+        <a href="/models/elektra-harmonic/">Harmonic Sedan</a>
+        <a href="/models/elektra-beam/">Beam Hatchback</a>
+        <a href="/models/elektra-ignite/">Ignite Truck</a>
+        <a href="/models/elektra-regulator/">Regulator EV</a>
+      </div>
+      <div class="footer__col">
+        <h5>Explore</h5>
+        <a href="/configure/">Build &amp; Configure</a>
+        <a href="/test-drive/">Test Drive</a>
+        <a href="/get-a-quote/">Get a Quote</a>
+      </div>
+      <div class="footer__col">
+        <h5>Company</h5>
+        <a href="#">About Elektra</a>
+        <a href="#">Find a Dealer</a>
+        <a href="#">Sustainability</a>
+        <a href="#">Careers</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Elektra Motors. All rights reserved.</span>
+      <span>Privacy Policy &nbsp;·&nbsp; Terms of Use &nbsp;·&nbsp; Cookie Settings</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/vehicles.js"></script>
+<script src="/js/sdk.js"></script>
+<script src="/js/debug-panel.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+(function() {
+  const grid = document.getElementById('models-grid');
+  if (!grid) return;
+
+  // Show top 6 models
+  VEHICLE_LIST.forEach(v => {
+    const card = document.createElement('a');
+    card.href = '/models/' + v.slug + '/';
+    card.className = 'model-card';
+    card.innerHTML = `
+      <div class="model-card__image-wrap">
+        <img class="model-card__image" src="${v.image}" alt="${v.name}" loading="lazy">
+        ${v.isEV ? '<div class="model-card__badge"><span class="badge badge-ev">Pure EV</span></div>' : ''}
+      </div>
+      <div class="model-card__body">
+        <div class="model-card__family">${v.family}</div>
+        <div class="model-card__name">${v.name}</div>
+        <div class="model-card__tagline">${v.tagline}</div>
+        <div class="model-card__price">Starting at <strong>${formatPrice(v.msrp)}</strong></div>
+        <div class="model-card__actions">
+          <span class="btn btn-outline">Explore</span>
+          <span class="btn btn-primary">Configure</span>
+        </div>
+      </div>
+    `;
+
+    // Track product_view on card click
+    card.addEventListener('click', (e) => {
+      EM.track('product_view', {
+        vehicleModel: v.name,
+        vehicleSKU:   v.id,
+        vehicleFamily: v.family,
+      });
+    });
+
+    grid.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>

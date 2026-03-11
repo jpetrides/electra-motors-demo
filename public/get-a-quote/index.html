@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="dc-bundle-id" content="__DC_BUNDLE_ID__">
+  <meta name="dc-tenant-id"  content="__DC_TENANT_ID__">
+  <title>Get a Quote — Elektra Motors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+
+<nav class="nav" role="navigation">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo"><img src="/images/logo-consumer.png" alt="Elektra Motors"></a>
+    <ul class="nav__links">
+      <li><a href="/models/">Models</a></li>
+      <li><a href="/configure/">Configure</a></li>
+      <li><a href="/test-drive/">Test Drive</a></li>
+      <li><a href="/get-a-quote/">Get a Quote</a></li>
+    </ul>
+    <div class="nav__cta">
+      <a href="/test-drive/" class="btn btn-outline">Book a Test Drive</a>
+      <a href="/get-a-quote/" class="btn btn-primary">Get a Quote</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <p class="eyebrow">Personalized pricing</p>
+    <h1>Get your quote.</h1>
+    <p>Tell us a little about yourself and what you're looking for. A specialist will reach out within one business day.</p>
+  </div>
+</div>
+
+<section class="section--sm">
+  <div class="container" style="max-width: 960px;">
+    <div class="grid-2" style="gap: 48px; align-items: start;">
+
+      <!-- Form -->
+      <div>
+        <form id="lead-form" novalidate>
+          <h3 style="margin-bottom: 24px;">Your information</h3>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="firstName">First Name *</label>
+              <input class="form-input" type="text" id="firstName" name="firstName" required placeholder="Adam">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lastName">Last Name *</label>
+              <input class="form-input" type="text" id="lastName" name="lastName" required placeholder="Feder">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address *</label>
+            <input class="form-input" type="email" id="email" name="email" required placeholder="adam.feder@elektramotors.com">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone</label>
+              <input class="form-input" type="tel" id="phone" name="phone" placeholder="555-123-4567">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="zip">ZIP Code</label>
+              <input class="form-input" type="text" id="zip" name="zip" placeholder="75201" maxlength="10">
+            </div>
+          </div>
+
+          <hr class="divider" style="margin: 24px 0;">
+          <h3 style="margin-bottom: 24px;">Vehicle of interest</h3>
+
+          <div class="form-group">
+            <label class="form-label" for="vehicleSelect">Model</label>
+            <select class="form-select" id="vehicleSelect" name="vehicleModel">
+              <option value="">— Select a model —</option>
+            </select>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="trimSelect">Trim</label>
+              <select class="form-select" id="trimSelect" name="trim">
+                <option value="">— Select model first —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="colorInput">Preferred Color</label>
+              <input class="form-input" type="text" id="colorInput" name="color" placeholder="Any">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="preferredDealer">Nearest City / Preferred Region</label>
+            <input class="form-input" type="text" id="preferredDealer" name="preferredDealer" placeholder="e.g. Dallas, TX">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="message">Anything else we should know?</label>
+            <textarea class="form-textarea" id="message" name="message" placeholder="Trade-in, financing questions, delivery timeline..."></textarea>
+          </div>
+
+          <!-- Error state -->
+          <div id="form-error" style="display:none; background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); border-radius: 8px; padding: 12px 16px; color: #e63946; font-size: 0.88rem; margin-bottom: 16px;"></div>
+
+          <button type="submit" id="btn-submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
+            Request My Quote
+          </button>
+          <p style="text-align: center; color: var(--text-3); font-size: 0.8rem; margin-top: 12px;">
+            By submitting, you agree to be contacted by an Elektra dealer. No spam, ever.
+          </p>
+        </form>
+      </div>
+
+      <!-- Sidebar -->
+      <div>
+        <!-- Vehicle summary card (populated from URL params) -->
+        <div id="vehicle-summary-card" style="display: none; margin-bottom: 24px;">
+          <div class="card">
+            <img id="vs-image" src="" alt="" class="card__image">
+            <div class="card__body">
+              <div class="card__tag" id="vs-family"></div>
+              <h3 id="vs-name" style="margin-bottom: 4px;"></h3>
+              <p id="vs-trim" style="color: var(--accent); font-size: 0.9rem; margin-bottom: 12px;"></p>
+              <div id="vs-price" style="color: var(--text-2); font-size: 0.9rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Why Elektra bullets -->
+        <div style="padding: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 16px;">
+          <h4 style="margin-bottom: 20px;">Why Elektra?</h4>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 14px;">
+            <li style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="color: var(--accent); flex-shrink: 0; font-size: 1.1rem;">✓</span>
+              <span style="color: var(--text-2); font-size: 0.9rem; line-height: 1.5;">200+ nationwide dealer locations with certified EV technicians</span>
+            </li>
+            <li style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="color: var(--accent); flex-shrink: 0; font-size: 1.1rem;">✓</span>
+              <span style="color: var(--text-2); font-size: 0.9rem; line-height: 1.5;">No-hassle pricing — your quote is your out-the-door price</span>
+            </li>
+            <li style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="color: var(--accent); flex-shrink: 0; font-size: 1.1rem;">✓</span>
+              <span style="color: var(--text-2); font-size: 0.9rem; line-height: 1.5;">8-year / 100,000-mile battery warranty on all EV models</span>
+            </li>
+            <li style="display: flex; gap: 12px; align-items: flex-start;">
+              <span style="color: var(--accent); flex-shrink: 0; font-size: 1.1rem;">✓</span>
+              <span style="color: var(--text-2); font-size: 0.9rem; line-height: 1.5;">Response within 1 business day — or your first service is free</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="footer__inner"><div class="footer__top"><div class="footer__brand"><img src="/images/logo-consumer.png" alt="Elektra Motors"><p>Building the future of mobility.</p></div><div class="footer__col"><h5>Vehicles</h5><a href="/models/elektra-reaktive/">Reaktive</a><a href="/models/elektra-megavolt/">Megavolt</a><a href="/models/elektra-harmonic/">Harmonic</a><a href="/models/elektra-beam/">Beam</a><a href="/models/elektra-ignite/">Ignite</a><a href="/models/elektra-regulator/">Regulator</a></div><div class="footer__col"><h5>Explore</h5><a href="/configure/">Configure</a><a href="/test-drive/">Test Drive</a><a href="/get-a-quote/">Get a Quote</a></div><div class="footer__col"><h5>Company</h5><a href="#">About</a><a href="#">Dealers</a></div></div><div class="footer__bottom"><span>© 2026 Elektra Motors.</span></div></div></footer>
+
+<script src="/js/vehicles.js"></script>
+<script src="/js/sdk.js"></script>
+<script src="/js/debug-panel.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const modelSku   = params.get('model');
+  const presetTrim = params.get('trim');
+  const presetColor= params.get('color');
+
+  // ─── Populate model select ────────────────────────────────────────────────
+  const vehicleSelect = document.getElementById('vehicleSelect');
+  VEHICLE_LIST.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value       = v.id;
+    opt.textContent = v.name + ' — ' + v.family;
+    vehicleSelect.appendChild(opt);
+  });
+
+  function updateTrimSelect(sku) {
+    const trimSelect = document.getElementById('trimSelect');
+    trimSelect.innerHTML = '';
+    const v = getVehicle(sku);
+    if (!v) {
+      trimSelect.innerHTML = '<option value="">— Select model first —</option>';
+      return;
+    }
+    v.trims.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value       = t.id;
+      opt.textContent = t.name + ' — ' + formatPrice(t.msrp);
+      trimSelect.appendChild(opt);
+    });
+  }
+
+  vehicleSelect.addEventListener('change', () => {
+    updateTrimSelect(vehicleSelect.value);
+    showVehicleSummary(vehicleSelect.value);
+  });
+
+  // ─── Pre-populate from URL params ────────────────────────────────────────
+  if (modelSku) {
+    vehicleSelect.value = modelSku;
+    updateTrimSelect(modelSku);
+    if (presetTrim) {
+      document.getElementById('trimSelect').value = presetTrim;
+    }
+    if (presetColor) {
+      document.getElementById('colorInput').value = presetColor;
+    }
+    showVehicleSummary(modelSku);
+  } else {
+    updateTrimSelect('');
+  }
+
+  function showVehicleSummary(sku) {
+    const v = getVehicle(sku);
+    const card = document.getElementById('vehicle-summary-card');
+    if (!v) { card.style.display = 'none'; return; }
+
+    card.style.display     = 'block';
+    document.getElementById('vs-image').src    = v.image;
+    document.getElementById('vs-image').alt    = v.name;
+    document.getElementById('vs-family').textContent = v.family;
+    document.getElementById('vs-name').textContent   = v.name;
+    document.getElementById('vs-trim').textContent   = presetTrim || v.trims[0].name;
+    document.getElementById('vs-price').textContent  = 'From ' + formatPrice(v.msrp);
+  }
+
+  // ─── Form submit — Identity event FIRST, then POST ────────────────────────
+  document.getElementById('lead-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btn-submit');
+    const errorEl = document.getElementById('form-error');
+    errorEl.style.display = 'none';
+
+    const firstName     = document.getElementById('firstName').value.trim();
+    const lastName      = document.getElementById('lastName').value.trim();
+    const email         = document.getElementById('email').value.trim();
+    const phone         = document.getElementById('phone').value.trim();
+    const zip           = document.getElementById('zip').value.trim();
+    const vehicleModel  = vehicleSelect.options[vehicleSelect.selectedIndex]?.text || '';
+    const vehicleSKU    = vehicleSelect.value;
+    const trim          = document.getElementById('trimSelect').value;
+    const color         = document.getElementById('colorInput').value.trim();
+    const dealer        = document.getElementById('preferredDealer').value.trim();
+    const message       = document.getElementById('message').value.trim();
+
+    if (!firstName || !lastName || !email) {
+      errorEl.textContent = 'Please fill in your name and email address.';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled     = true;
+    btn.textContent  = 'Sending...';
+
+    // ★ IDENTITY EVENT — fires BEFORE any CRM write.
+    //   This is the key event for Data Cloud identity resolution.
+    EM.identify(
+      {
+        firstName:  firstName,
+        lastName:   lastName,
+        email:      email,
+        phone:      phone || undefined,
+        zipCode:    zip || undefined,
+      },
+      'lead_submit',
+      {
+        vehicleModel:  vehicleModel,
+        vehicleSKU:    vehicleSKU,
+        trim:          trim,
+        preferredColor: color,
+        preferredDealer: dealer,
+        pageUrl:       window.location.href,
+      }
+    );
+
+    // POST to server (logged, no Salesforce call — Data Cloud does that via ingestion)
+    try {
+      const res = await fetch('/api/lead', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, phone, zip, vehicleModel, vehicleSKU, trim, color, preferredDealer: dealer, message }),
+      });
+
+      if (res.ok) {
+        const qs = new URLSearchParams({ firstName, vehicleModel: vehicleSKU || '' });
+        window.location.href = '/thank-you/?' + qs.toString();
+      } else {
+        throw new Error('Server error');
+      }
+    } catch {
+      btn.disabled    = false;
+      btn.textContent = 'Request My Quote';
+      errorEl.textContent = 'Something went wrong. Please try again or call us directly.';
+      errorEl.style.display = 'block';
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

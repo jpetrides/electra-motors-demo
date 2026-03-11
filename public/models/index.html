@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="dc-bundle-id" content="__DC_BUNDLE_ID__">
+  <meta name="dc-tenant-id"  content="__DC_TENANT_ID__">
+  <title>Models — Elektra Motors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+
+<nav class="nav" role="navigation">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo"><img src="/images/logo-consumer.png" alt="Elektra Motors"></a>
+    <ul class="nav__links">
+      <li><a href="/models/">Models</a></li>
+      <li><a href="/configure/">Configure</a></li>
+      <li><a href="/test-drive/">Test Drive</a></li>
+      <li><a href="/get-a-quote/">Get a Quote</a></li>
+    </ul>
+    <div class="nav__cta">
+      <a href="/test-drive/" class="btn btn-outline">Book a Test Drive</a>
+      <a href="/get-a-quote/" class="btn btn-primary">Get a Quote</a>
+    </div>
+    <button class="nav__hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <p class="eyebrow">2026 Lineup</p>
+    <h1>Find your Elektra.</h1>
+    <p>Six distinct model lines — each with their own personality, their own purpose, and their own reason to be driven.</p>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div style="background: var(--bg-2); border-bottom: 1px solid var(--border); padding: 16px 0;">
+  <div class="container" style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <button class="btn btn-ghost filter-btn active" data-filter="all">All Models</button>
+    <button class="btn btn-ghost filter-btn" data-filter="SUV">SUV</button>
+    <button class="btn btn-ghost filter-btn" data-filter="Sport Coupe">Sport Coupe</button>
+    <button class="btn btn-ghost filter-btn" data-filter="Sedan">Sedan</button>
+    <button class="btn btn-ghost filter-btn" data-filter="Hatchback">Hatchback</button>
+    <button class="btn btn-ghost filter-btn" data-filter="Truck">Truck</button>
+    <button class="btn btn-ghost filter-btn" data-filter="Full EV">Full EV</button>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="grid-3" id="models-grid"></div>
+  </div>
+</section>
+
+<!-- Compare CTA -->
+<section class="section--sm" style="background: var(--bg-2); border-top: 1px solid var(--border);">
+  <div class="container" style="text-align: center;">
+    <p class="eyebrow">Can't decide?</p>
+    <h2 style="margin-bottom: 16px;">Talk to a specialist.</h2>
+    <p style="color: var(--text-2); max-width: 42ch; margin: 0 auto 32px;">
+      Our product experts can help you choose the right model and trim for your needs — at no cost, no pressure.
+    </p>
+    <a href="/get-a-quote/" class="btn btn-primary btn-lg">Get Personalized Advice</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <img src="/images/logo-consumer.png" alt="Elektra Motors">
+        <p>Building the future of mobility — one vehicle at a time.</p>
+      </div>
+      <div class="footer__col">
+        <h5>Vehicles</h5>
+        <a href="/models/elektra-reaktive/">Reaktive SUV</a>
+        <a href="/models/elektra-megavolt/">Megavolt Coupe</a>
+        <a href="/models/elektra-harmonic/">Harmonic Sedan</a>
+        <a href="/models/elektra-beam/">Beam Hatchback</a>
+        <a href="/models/elektra-ignite/">Ignite Truck</a>
+        <a href="/models/elektra-regulator/">Regulator EV</a>
+      </div>
+      <div class="footer__col">
+        <h5>Explore</h5>
+        <a href="/configure/">Build &amp; Configure</a>
+        <a href="/test-drive/">Test Drive</a>
+        <a href="/get-a-quote/">Get a Quote</a>
+      </div>
+      <div class="footer__col">
+        <h5>Company</h5>
+        <a href="#">About Elektra</a>
+        <a href="#">Find a Dealer</a>
+        <a href="#">Sustainability</a>
+        <a href="#">Careers</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Elektra Motors. All rights reserved.</span>
+      <span>Privacy Policy &nbsp;·&nbsp; Terms of Use</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/vehicles.js"></script>
+<script src="/js/sdk.js"></script>
+<script src="/js/debug-panel.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+(function () {
+  const grid = document.getElementById('models-grid');
+  let activeFilter = 'all';
+
+  function renderGrid(filter) {
+    grid.innerHTML = '';
+    const list = filter === 'all'
+      ? VEHICLE_LIST
+      : VEHICLE_LIST.filter(v => v.family === filter);
+
+    list.forEach(v => {
+      const card = document.createElement('a');
+      card.href = '/models/' + v.slug + '/';
+      card.className = 'model-card';
+      card.setAttribute('data-family', v.family);
+      card.innerHTML = `
+        <div class="model-card__image-wrap">
+          <img class="model-card__image" src="${v.image}" alt="${v.name}" loading="lazy">
+          ${v.isEV ? '<div class="model-card__badge"><span class="badge badge-ev">Pure EV</span></div>' : ''}
+        </div>
+        <div class="model-card__body">
+          <div class="model-card__family">${v.family}</div>
+          <div class="model-card__name">${v.name} <span style="font-weight:400;color:var(--text-3)">${v.trim}</span></div>
+          <div class="model-card__tagline">${v.tagline}</div>
+          <div class="model-card__price">From <strong>${formatPrice(v.msrp)}</strong></div>
+          <div class="model-card__actions">
+            <span class="btn btn-outline">Details</span>
+            <span class="btn btn-primary" onclick="event.preventDefault();window.location='/configure/?model=${v.id}'">Configure</span>
+          </div>
+        </div>
+      `;
+
+      card.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-primary')) return;
+        EM.track('product_view', { vehicleModel: v.name, vehicleSKU: v.id });
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  renderGrid('all');
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      renderGrid(activeFilter);
+      EM.track('filter_models', { filter: activeFilter });
+    });
+  });
+})();
+</script>
+<style>
+  .filter-btn.active { color: var(--accent); background: rgba(0,180,216,0.08); }
+</style>
+
+</body>
+</html>
