@@ -6,7 +6,7 @@
 const VEHICLES = {
   'ELK-SUV-7': {
     id:          'ELK-SUV-7',
-    slug:        'elektra-reaktive',
+    slug:        'electra-reaktive',
     name:        'Electra Reaktive',
     trim:        'Touring',
     family:      'SUV',
@@ -39,7 +39,7 @@ const VEHICLES = {
 
   'ELK-SUV-5': {
     id:          'ELK-SUV-5',
-    slug:        'elektra-reaktive',
+    slug:        'electra-reaktive',
     name:        'Electra Reaktive',
     trim:        'EX',
     family:      'SUV',
@@ -72,7 +72,7 @@ const VEHICLES = {
 
   'ELK-COUPE-GT': {
     id:          'ELK-COUPE-GT',
-    slug:        'elektra-megavolt',
+    slug:        'electra-megavolt',
     name:        'Electra Megavolt',
     trim:        'GT',
     family:      'Sport Coupe',
@@ -105,7 +105,7 @@ const VEHICLES = {
 
   'ELK-SEDAN-AWD': {
     id:          'ELK-SEDAN-AWD',
-    slug:        'elektra-harmonic',
+    slug:        'electra-harmonic',
     name:        'Electra Harmonic',
     trim:        'SE',
     family:      'Sedan',
@@ -137,7 +137,7 @@ const VEHICLES = {
 
   'ELK-HATCH-PLUS': {
     id:          'ELK-HATCH-PLUS',
-    slug:        'elektra-beam',
+    slug:        'electra-beam',
     name:        'Electra Beam',
     trim:        'Plus',
     family:      'Hatchback',
@@ -170,7 +170,7 @@ const VEHICLES = {
 
   'ELK-TRUCK-PLAT': {
     id:          'ELK-TRUCK-PLAT',
-    slug:        'elektra-ignite',
+    slug:        'electra-ignite',
     name:        'Electra Ignite',
     trim:        'Platinum',
     family:      'Truck',
@@ -202,7 +202,7 @@ const VEHICLES = {
 
   'ELK-EV-PERF': {
     id:          'ELK-EV-PERF',
-    slug:        'elektra-regulator',
+    slug:        'electra-regulator',
     name:        'Electra Regulator',
     trim:        'Performance',
     family:      'Full EV',
