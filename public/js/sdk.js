@@ -1,5 +1,5 @@
 /**
- * Elektra Motors — Data Cloud Web SDK wrapper
+ * Electra Motors — Data Cloud Web SDK wrapper
  *
  * Reads bundle ID from <meta name="dc-bundle-id"> injected by the server.
  * Initializes SalesforceInteractions and exposes EM.track / EM.identify helpers.
@@ -20,7 +20,7 @@ const EM = (() => {
 
     SalesforceInteractions.init({
       consents: [{
-        provider: 'Elektra Motors',
+        provider: 'Electra Motors',
         purpose:  'Tracking',
         status:   'OptIn',
       }],

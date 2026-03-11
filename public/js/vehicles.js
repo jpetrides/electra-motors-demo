@@ -1,5 +1,5 @@
 /**
- * Elektra Motors — Vehicle catalog
+ * Electra Motors — Vehicle catalog
  * Sourced from AUTO_Cloud_Demo/Docs/Org_Data_Inventory.md
  * ProductCodes map to Product2.ProductCode in the Salesforce auto org.
  */
@@ -7,7 +7,7 @@ const VEHICLES = {
   'ELK-SUV-7': {
     id:          'ELK-SUV-7',
     slug:        'elektra-reaktive',
-    name:        'Elektra Reaktive',
+    name:        'Electra Reaktive',
     trim:        'Touring',
     family:      'SUV',
     year:        2026,
@@ -31,7 +31,7 @@ const VEHICLES = {
     colors: [
       { name: 'Obsidian Black',  hex: '#1a1a1a' },
       { name: 'Arctic White',    hex: '#f0f0f0' },
-      { name: 'Elektra Red',     hex: '#c0392b' },
+      { name: 'Electra Red',     hex: '#c0392b' },
       { name: 'Storm Grey',      hex: '#5d6470' },
       { name: 'Pacific Blue',    hex: '#1a4f7a' },
     ],
@@ -40,7 +40,7 @@ const VEHICLES = {
   'ELK-SUV-5': {
     id:          'ELK-SUV-5',
     slug:        'elektra-reaktive',
-    name:        'Elektra Reaktive',
+    name:        'Electra Reaktive',
     trim:        'EX',
     family:      'SUV',
     year:        2024,
@@ -64,7 +64,7 @@ const VEHICLES = {
     colors: [
       { name: 'Obsidian Black',  hex: '#1a1a1a' },
       { name: 'Arctic White',    hex: '#f0f0f0' },
-      { name: 'Elektra Red',     hex: '#c0392b' },
+      { name: 'Electra Red',     hex: '#c0392b' },
       { name: 'Storm Grey',      hex: '#5d6470' },
       { name: 'Pacific Blue',    hex: '#1a4f7a' },
     ],
@@ -73,7 +73,7 @@ const VEHICLES = {
   'ELK-COUPE-GT': {
     id:          'ELK-COUPE-GT',
     slug:        'elektra-megavolt',
-    name:        'Elektra Megavolt',
+    name:        'Electra Megavolt',
     trim:        'GT',
     family:      'Sport Coupe',
     year:        2025,
@@ -106,7 +106,7 @@ const VEHICLES = {
   'ELK-SEDAN-AWD': {
     id:          'ELK-SEDAN-AWD',
     slug:        'elektra-harmonic',
-    name:        'Elektra Harmonic',
+    name:        'Electra Harmonic',
     trim:        'SE',
     family:      'Sedan',
     year:        2022,
@@ -138,7 +138,7 @@ const VEHICLES = {
   'ELK-HATCH-PLUS': {
     id:          'ELK-HATCH-PLUS',
     slug:        'elektra-beam',
-    name:        'Elektra Beam',
+    name:        'Electra Beam',
     trim:        'Plus',
     family:      'Hatchback',
     year:        2025,
@@ -171,7 +171,7 @@ const VEHICLES = {
   'ELK-TRUCK-PLAT': {
     id:          'ELK-TRUCK-PLAT',
     slug:        'elektra-ignite',
-    name:        'Elektra Ignite',
+    name:        'Electra Ignite',
     trim:        'Platinum',
     family:      'Truck',
     year:        2026,
@@ -203,14 +203,14 @@ const VEHICLES = {
   'ELK-EV-PERF': {
     id:          'ELK-EV-PERF',
     slug:        'elektra-regulator',
-    name:        'Elektra Regulator',
+    name:        'Electra Regulator',
     trim:        'Performance',
     family:      'Full EV',
     year:        2026,
     productCode: 'PC-6843',
     image:       '/images/hero-regulator.png',
     tagline:     'Zero emissions. Infinite momentum.',
-    description: 'The Regulator Performance is Elektra\'s purest expression of electric mobility. Purpose-built EV platform, 400-mile range, 800V ultra-fast charging, and a tri-motor AWD system that rewrites what a production car can feel like.',
+    description: 'The Regulator Performance is Electra\'s purest expression of electric mobility. Purpose-built EV platform, 400-mile range, 800V ultra-fast charging, and a tri-motor AWD system that rewrites what a production car can feel like.',
     msrp:        89400,
     isEV:        true,
     specs: {

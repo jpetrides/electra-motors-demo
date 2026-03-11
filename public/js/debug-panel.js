@@ -1,5 +1,5 @@
 /**
- * Elektra Motors — SDK Debug Panel
+ * Electra Motors — SDK Debug Panel
  *
  * Activated by appending ?debug=true to any URL.
  * Shows a fixed bottom panel listing every SDK event fired on the page.
