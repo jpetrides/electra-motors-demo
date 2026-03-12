@@ -26,8 +26,8 @@
     SI.init({
       consents: [{
         provider: "Electra Motors",
-        purpose: "Tracking",
-        status: "OptIn",
+        purpose: SI.ConsentPurpose.Tracking,
+        status: SI.ConsentStatus.OptIn,
       }],
     }).then(function () {
       console.log('[Sitemap] init() resolved. Calling initSitemap...');
