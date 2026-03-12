@@ -24,10 +24,24 @@ const EM = (() => {
       console.log('[EM] stub identify:', eventName, userData);
       return;
     }
-    SalesforceInteractions.sendEvent({
-      user: { attributes: userData },
-      interaction: { name: eventName, eventType: eventName, attributes },
-    });
+    var SI = SalesforceInteractions;
+
+    if (userData.email) {
+      SI.sendEvent({
+        user: { attributes: { email: userData.email, eventType: "contactPointEmail" } },
+        interaction: { name: eventName, eventType: eventName, attributes },
+      });
+    }
+    if (userData.phone) {
+      SI.sendEvent({
+        user: { attributes: { phoneNumber: userData.phone, eventType: "contactPointPhone" } },
+      });
+    }
+    if (userData.firstName || userData.lastName) {
+      SI.sendEvent({
+        user: { attributes: { firstName: userData.firstName, lastName: userData.lastName, eventType: "identity", isAnonymous: "0" } },
+      });
+    }
   }
 
   return { track, identify };
