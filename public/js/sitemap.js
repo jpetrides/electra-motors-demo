@@ -49,16 +49,18 @@
             isMatch: function () {
               return window.location.pathname === "/" || window.location.pathname === "/index.html";
             },
+            interaction: { name: "pageView", eventType: "pageView" },
           },
           {
             name: "modelsOverview",
             isMatch: function () { return /^\/models\/?$/.test(window.location.pathname); },
+            interaction: { name: "pageView", eventType: "pageView" },
           },
           {
             name: "vehicleDetailReaktive",
             isMatch: function () { return /^\/models\/electra-reaktive\/?$/.test(window.location.pathname); },
             interaction: {
-              name: CatalogObjectInteractionName.ViewCatalogObject,
+              name: "vehicleView", eventType: "vehicleView",
               catalogObject: { type: "Vehicle", id: "ELK-SUV-7", attributes: { name: "Electra Reaktive Touring", vehicleFamily: "SUV" } },
             },
           },
@@ -66,7 +68,7 @@
             name: "vehicleDetailMegavolt",
             isMatch: function () { return /^\/models\/electra-megavolt\/?$/.test(window.location.pathname); },
             interaction: {
-              name: CatalogObjectInteractionName.ViewCatalogObject,
+              name: "vehicleView", eventType: "vehicleView",
               catalogObject: { type: "Vehicle", id: "ELK-COUPE-GT", attributes: { name: "Electra Megavolt GT", vehicleFamily: "Sport Coupe" } },
             },
           },
@@ -74,7 +76,7 @@
             name: "vehicleDetailHarmonic",
             isMatch: function () { return /^\/models\/electra-harmonic\/?$/.test(window.location.pathname); },
             interaction: {
-              name: CatalogObjectInteractionName.ViewCatalogObject,
+              name: "vehicleView", eventType: "vehicleView",
               catalogObject: { type: "Vehicle", id: "ELK-SEDAN-AWD", attributes: { name: "Electra Harmonic SE", vehicleFamily: "Sedan" } },
             },
           },
@@ -82,7 +84,7 @@
             name: "vehicleDetailBeam",
             isMatch: function () { return /^\/models\/electra-beam\/?$/.test(window.location.pathname); },
             interaction: {
-              name: CatalogObjectInteractionName.ViewCatalogObject,
+              name: "vehicleView", eventType: "vehicleView",
               catalogObject: { type: "Vehicle", id: "ELK-HATCH-PLUS", attributes: { name: "Electra Beam Plus", vehicleFamily: "Hatchback" } },
             },
           },
@@ -90,7 +92,7 @@
             name: "vehicleDetailIgnite",
             isMatch: function () { return /^\/models\/electra-ignite\/?$/.test(window.location.pathname); },
             interaction: {
-              name: CatalogObjectInteractionName.ViewCatalogObject,
+              name: "vehicleView", eventType: "vehicleView",
               catalogObject: { type: "Vehicle", id: "ELK-TRUCK-PLAT", attributes: { name: "Electra Ignite Platinum", vehicleFamily: "Truck" } },
             },
           },
@@ -98,13 +100,14 @@
             name: "vehicleDetailRegulator",
             isMatch: function () { return /^\/models\/electra-regulator\/?$/.test(window.location.pathname); },
             interaction: {
-              name: CatalogObjectInteractionName.ViewCatalogObject,
+              name: "vehicleView", eventType: "vehicleView",
               catalogObject: { type: "Vehicle", id: "ELK-EV-PERF", attributes: { name: "Electra Regulator Performance", vehicleFamily: "Full EV" } },
             },
           },
           {
             name: "configurator",
             isMatch: function () { return /^\/configure\/?/.test(window.location.pathname); },
+            interaction: { name: "pageView", eventType: "pageView" },
             listeners: [
               listener("change", "#trim-select, .color-swatch, .addon-checkbox", function () {
                 var trimEl = document.getElementById("trim-select");
@@ -129,6 +132,7 @@
           {
             name: "leadForm",
             isMatch: function () { return /^\/get-a-quote\/?/.test(window.location.pathname); },
+            interaction: { name: "pageView", eventType: "pageView" },
             listeners: [
               listener("submit", "#quote-form, .lead-form", function () {
                 var email = (cashDom("#email").val() || "").trim();
@@ -144,6 +148,7 @@
           {
             name: "testDriveForm",
             isMatch: function () { return /^\/test-drive\/?/.test(window.location.pathname); },
+            interaction: { name: "pageView", eventType: "pageView" },
             listeners: [
               listener("submit", "#test-drive-form, .test-drive-form", function () {
                 var email = (cashDom("#email, #td-email").val() || "").trim();
@@ -159,6 +164,7 @@
           {
             name: "thankYou",
             isMatch: function () { return /^\/thank-you\/?/.test(window.location.pathname); },
+            interaction: { name: "pageView", eventType: "pageView" },
           },
         ],
       });
