@@ -30,29 +30,16 @@
         status: SI.ConsentStatus.OptIn,
       }],
     }).then(function () {
-      console.log('[Sitemap] init() resolved. Setting consent explicitly...');
+      console.log('[Sitemap] init() resolved. Updating consents...');
 
-      if (typeof SI.setConsent === 'function') {
-        SI.setConsent([{
-          provider: "Electra Motors",
-          purpose: SI.ConsentPurpose.Tracking,
-          status: SI.ConsentStatus.OptIn,
-        }]);
-        console.log('[Sitemap] setConsent() called');
-      } else {
-        console.warn('[Sitemap] setConsent not available, trying ConsentManager...');
-        if (SI.ConsentManager && typeof SI.ConsentManager.setConsent === 'function') {
-          SI.ConsentManager.setConsent([{
-            provider: "Electra Motors",
-            purpose: SI.ConsentPurpose.Tracking,
-            status: SI.ConsentStatus.OptIn,
-          }]);
-          console.log('[Sitemap] ConsentManager.setConsent() called');
-        } else {
-          console.warn('[Sitemap] No consent API found. Available methods:', Object.keys(SI).filter(function(k) { return k.toLowerCase().indexOf('consent') >= 0; }));
-        }
-      }
+      SI.updateConsents([{
+        provider: "Electra Motors",
+        purpose: SI.ConsentPurpose.Tracking,
+        status: SI.ConsentStatus.OptIn,
+      }]);
 
+      console.log('[Sitemap] updateConsents() called. Current opt-in:', SI.currentConsentOptInExists());
+      console.log('[Sitemap] getConsents():', JSON.stringify(SI.getConsents()));
       console.log('[Sitemap] Calling initSitemap...');
 
       var listener = SI.listener;
