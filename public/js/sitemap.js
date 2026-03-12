@@ -18,14 +18,16 @@
     }
     clearInterval(poll);
     console.log('[Sitemap] SDK found after', attempts, 'attempts. Calling init...');
+    console.log('[Sitemap] ConsentPurpose.Tracking =', SI.ConsentPurpose && SI.ConsentPurpose.Tracking);
+    console.log('[Sitemap] ConsentStatus.OptIn =', SI.ConsentStatus && SI.ConsentStatus.OptIn);
 
     SI.setLoggingLevel('DEBUG');
 
     SI.init({
       consents: [{
         provider: "Electra Motors",
-        purpose: SI.ConsentPurpose.Tracking,
-        status: SI.ConsentStatus.OptIn,
+        purpose: "Tracking",
+        status: "OptIn",
       }],
     }).then(function () {
       console.log('[Sitemap] init() resolved. Calling initSitemap...');
