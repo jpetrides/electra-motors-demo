@@ -24,6 +24,10 @@ app.use((req, res, next) => {
   html = html
     .replace('__DC_BUNDLE_ID__', BUNDLE_ID)
     .replace('__DC_TENANT_ID__', TENANT_ID);
+
+  const sdkScript = `<script src="https://cdn.c360a.salesforce.com/beacon/c360a/${BUNDLE_ID}/scripts/c360a.min.js"></script>`;
+  html = html.replace('</head>', `${sdkScript}\n</head>`);
+
   res.setHeader('Content-Type', 'text/html');
   res.send(html);
 });
