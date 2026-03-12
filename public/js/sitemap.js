@@ -30,7 +30,30 @@
         status: SI.ConsentStatus.OptIn,
       }],
     }).then(function () {
-      console.log('[Sitemap] init() resolved. Calling initSitemap...');
+      console.log('[Sitemap] init() resolved. Setting consent explicitly...');
+
+      if (typeof SI.setConsent === 'function') {
+        SI.setConsent([{
+          provider: "Electra Motors",
+          purpose: SI.ConsentPurpose.Tracking,
+          status: SI.ConsentStatus.OptIn,
+        }]);
+        console.log('[Sitemap] setConsent() called');
+      } else {
+        console.warn('[Sitemap] setConsent not available, trying ConsentManager...');
+        if (SI.ConsentManager && typeof SI.ConsentManager.setConsent === 'function') {
+          SI.ConsentManager.setConsent([{
+            provider: "Electra Motors",
+            purpose: SI.ConsentPurpose.Tracking,
+            status: SI.ConsentStatus.OptIn,
+          }]);
+          console.log('[Sitemap] ConsentManager.setConsent() called');
+        } else {
+          console.warn('[Sitemap] No consent API found. Available methods:', Object.keys(SI).filter(function(k) { return k.toLowerCase().indexOf('consent') >= 0; }));
+        }
+      }
+
+      console.log('[Sitemap] Calling initSitemap...');
 
       var listener = SI.listener;
       var cashDom = SI.cashDom;
