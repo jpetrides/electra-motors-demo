@@ -17,30 +17,20 @@
       return;
     }
     clearInterval(poll);
-    console.log('[Sitemap] SDK found after', attempts, 'attempts. Calling init...');
-    console.log('[Sitemap] ConsentPurpose.Tracking =', SI.ConsentPurpose && SI.ConsentPurpose.Tracking);
-    console.log('[Sitemap] ConsentStatus.OptIn =', SI.ConsentStatus && SI.ConsentStatus.OptIn);
+    console.log('[Sitemap] SDK found after', attempts, 'attempts. Skipping init (CDN handles it). Setting consent...');
 
     SI.setLoggingLevel('DEBUG');
 
-    SI.init({
-      consents: [{
-        provider: "Electra Motors",
-        purpose: SI.ConsentPurpose.Tracking,
-        status: SI.ConsentStatus.OptIn,
-      }],
-    }).then(function () {
-      console.log('[Sitemap] init() resolved. Updating consents...');
+    SI.updateConsents([{
+      provider: "Electra Motors",
+      purpose: SI.ConsentPurpose.Tracking,
+      status: SI.ConsentStatus.OptIn,
+    }]);
 
-      SI.updateConsents([{
-        provider: "Electra Motors",
-        purpose: SI.ConsentPurpose.Tracking,
-        status: SI.ConsentStatus.OptIn,
-      }]);
+    console.log('[Sitemap] updateConsents() called. Opt-in:', SI.currentConsentOptInExists());
+    console.log('[Sitemap] Calling initSitemap...');
 
-      console.log('[Sitemap] updateConsents() called. Current opt-in:', SI.currentConsentOptInExists());
-      console.log('[Sitemap] getConsents():', JSON.stringify(SI.getConsents()));
-      console.log('[Sitemap] Calling initSitemap...');
+    {
 
       var listener = SI.listener;
       var cashDom = SI.cashDom;
@@ -173,18 +163,7 @@
         ],
       });
 
-    }).catch(function (err) {
-      console.warn('[Sitemap] init() rejected:', err, '— trying initSitemap directly...');
-      SI.initSitemap({
-        global: { locale: "en_US" },
-        pageTypeDefault: { name: "default" },
-        pageTypes: [
-          { name: "home", isMatch: function () { return window.location.pathname === "/" || window.location.pathname === "/index.html"; } },
-          { name: "testDriveForm", isMatch: function () { return /^\/test-drive\/?/.test(window.location.pathname); } },
-        ],
-      });
-      console.log('[Sitemap] initSitemap called from catch block');
-    });
+    }
   }
 
   var poll = setInterval(setup, 100);
