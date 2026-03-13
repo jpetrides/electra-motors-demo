@@ -10,25 +10,24 @@
 
   function setup() {
     var SI = window.SalesforceInteractions;
-    if (!SI || !SI.initSitemap) {
+    if (!SI || !SI.init) {
       if (++attempts < 50) return;
       console.warn('[Sitemap] SalesforceInteractions not available after 5s');
       clearInterval(poll);
       return;
     }
     clearInterval(poll);
-    console.log('[Sitemap] SDK found after', attempts, 'attempts. Skipping init (CDN handles it). Setting consent...');
+    console.log('[Sitemap] SDK found after', attempts, 'attempts. Calling init()...');
 
-    SI.setLoggingLevel('DEBUG');
-
-    SI.updateConsents([{
-      provider: "Electra Motors",
-      purpose: SI.ConsentPurpose.Tracking,
-      status: SI.ConsentStatus.OptIn,
-    }]);
-
-    console.log('[Sitemap] updateConsents() called. Opt-in:', SI.currentConsentOptInExists());
-    console.log('[Sitemap] Calling initSitemap...');
+    SI.init({
+      consents: [{
+        provider: "Electra Motors",
+        purpose: SI.ConsentPurpose.Tracking,
+        status: SI.ConsentStatus.OptIn,
+      }],
+    }).then(function() {
+      console.log('[Sitemap] SDK initialized. Calling initSitemap...');
+      SI.setLoggingLevel('DEBUG');
 
     {
 
@@ -139,9 +138,9 @@
                 var firstName = (cashDom("#firstName").val() || "").trim();
                 var lastName = (cashDom("#lastName").val() || "").trim();
                 var phone = (cashDom("#phone").val() || "").trim();
-                if (email) { sendEvent({ user: { attributes: { email: email, eventType: "contactPointEmail" } } }); }
-                if (phone) { sendEvent({ user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } } }); }
-                if (firstName || lastName) { sendEvent({ user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } } }); }
+                if (email) { sendEvent({ interaction: { name: "lead_submit", eventType: "contactPointEmail" }, user: { attributes: { email: email, eventType: "contactPointEmail" } } }); }
+                if (phone) { sendEvent({ interaction: { name: "lead_submit", eventType: "contactPointPhone" }, user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } } }); }
+                if (firstName || lastName) { sendEvent({ interaction: { name: "lead_submit", eventType: "identity" }, user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } } }); }
               }),
             ],
           },
@@ -155,9 +154,9 @@
                 var firstName = (cashDom("#firstName, #td-firstName").val() || "").trim();
                 var lastName = (cashDom("#lastName, #td-lastName").val() || "").trim();
                 var phone = (cashDom("#phone, #td-phone").val() || "").trim();
-                if (email) { sendEvent({ user: { attributes: { email: email, eventType: "contactPointEmail" } } }); }
-                if (phone) { sendEvent({ user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } } }); }
-                if (firstName || lastName) { sendEvent({ user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } } }); }
+                if (email) { sendEvent({ interaction: { name: "test_drive_request", eventType: "contactPointEmail" }, user: { attributes: { email: email, eventType: "contactPointEmail" } } }); }
+                if (phone) { sendEvent({ interaction: { name: "test_drive_request", eventType: "contactPointPhone" }, user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } } }); }
+                if (firstName || lastName) { sendEvent({ interaction: { name: "test_drive_request", eventType: "identity" }, user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } } }); }
               }),
             ],
           },
@@ -168,8 +167,7 @@
           },
         ],
       });
-
-    }
+    }); // close then callback
   }
 
   var poll = setInterval(setup, 100);
