@@ -1,284 +1,199 @@
-SalesforceInteractions.init({
-  consents: [{
-    provider: "Electra Motors",
-    purpose: SalesforceInteractions.ConsentPurpose.Tracking,
-    status: SalesforceInteractions.ConsentStatus.OptIn,
-  }],
-}).then(() => {
+/**
+ * Electra Motors — Data Cloud Sitemap
+ *
+ * The CDN c360a.min.js already initializes the SDK. This file:
+ *   1. Sets consent via updateConsents() (NOT init())
+ *   2. Registers page types with eventType on every interaction
+ *   3. Attaches form listeners for identity events (with interaction for interactionName)
+ */
+(function () {
+  var attempts = 0;
 
-  const {
-    listener,
-    cashDom,
-    resolvers,
-    sendEvent,
-    CatalogObjectInteractionName,
-  } = SalesforceInteractions;
+  function setup() {
+    var SI = window.SalesforceInteractions;
+    if (!SI || !SI.initSitemap) {
+      if (++attempts < 50) return;
+      clearInterval(poll);
+      return;
+    }
+    clearInterval(poll);
 
-  const global = {
-    locale: "en_US",
-    onActionEvent: (actionEvent) => {
-      return actionEvent;
-    },
-  };
+    SI.updateConsents([{
+      provider: "Electra Motors",
+      purpose: SI.ConsentPurpose.Tracking,
+      status: SI.ConsentStatus.OptIn,
+    }]);
 
-  const pageTypeDefault = {
-    name: "default",
-  };
+    const {
+      listener,
+      cashDom,
+      sendEvent,
+      CatalogObjectInteractionName,
+    } = SI;
 
-  const homePage = {
-    name: "home",
-    isMatch: () =>
-      window.location.pathname === "/" ||
-      window.location.pathname === "/index.html",
-  };
-
-  const modelsOverview = {
-    name: "modelsOverview",
-    isMatch: () => /^\/models\/?$/.test(window.location.pathname),
-  };
-
-  const vehicleDetailReaktive = {
-    name: "vehicleDetailReaktive",
-    isMatch: () => /^\/models\/electra-reaktive\/?$/.test(window.location.pathname),
-    interaction: {
-      name: CatalogObjectInteractionName.ViewCatalogObject,
-      catalogObject: {
-        type: "Vehicle",
-        id: "ELK-SUV-7",
-        attributes: {
-          name: "Electra Reaktive Touring",
-          vehicleFamily: "SUV",
-        },
+    SI.initSitemap({
+      global: {
+        locale: "en_US",
+        onActionEvent: (actionEvent) => actionEvent,
       },
-    },
-  };
-
-  const vehicleDetailMegavolt = {
-    name: "vehicleDetailMegavolt",
-    isMatch: () => /^\/models\/electra-megavolt\/?$/.test(window.location.pathname),
-    interaction: {
-      name: CatalogObjectInteractionName.ViewCatalogObject,
-      catalogObject: {
-        type: "Vehicle",
-        id: "ELK-COUPE-GT",
-        attributes: {
-          name: "Electra Megavolt GT",
-          vehicleFamily: "Sport Coupe",
+      pageTypeDefault: { name: "default" },
+      pageTypes: [
+        {
+          name: "home",
+          isMatch: () => window.location.pathname === "/" || window.location.pathname === "/index.html",
+          interaction: { name: "pageView", eventType: "pageView" },
         },
-      },
-    },
-  };
-
-  const vehicleDetailHarmonic = {
-    name: "vehicleDetailHarmonic",
-    isMatch: () => /^\/models\/electra-harmonic\/?$/.test(window.location.pathname),
-    interaction: {
-      name: CatalogObjectInteractionName.ViewCatalogObject,
-      catalogObject: {
-        type: "Vehicle",
-        id: "ELK-SEDAN-AWD",
-        attributes: {
-          name: "Electra Harmonic SE",
-          vehicleFamily: "Sedan",
+        {
+          name: "modelsOverview",
+          isMatch: () => /^\/models\/?$/.test(window.location.pathname),
+          interaction: { name: "pageView", eventType: "pageView" },
         },
-      },
-    },
-  };
-
-  const vehicleDetailBeam = {
-    name: "vehicleDetailBeam",
-    isMatch: () => /^\/models\/electra-beam\/?$/.test(window.location.pathname),
-    interaction: {
-      name: CatalogObjectInteractionName.ViewCatalogObject,
-      catalogObject: {
-        type: "Vehicle",
-        id: "ELK-HATCH-PLUS",
-        attributes: {
-          name: "Electra Beam Plus",
-          vehicleFamily: "Hatchback",
+        {
+          name: "vehicleDetailReaktive",
+          isMatch: () => /^\/models\/electra-reaktive\/?$/.test(window.location.pathname),
+          interaction: {
+            name: "vehicleView", eventType: "vehicleView",
+            catalogObject: { type: "Vehicle", id: "ELK-SUV-7", attributes: { name: "Electra Reaktive Touring", vehicleFamily: "SUV" } },
+          },
         },
-      },
-    },
-  };
-
-  const vehicleDetailIgnite = {
-    name: "vehicleDetailIgnite",
-    isMatch: () => /^\/models\/electra-ignite\/?$/.test(window.location.pathname),
-    interaction: {
-      name: CatalogObjectInteractionName.ViewCatalogObject,
-      catalogObject: {
-        type: "Vehicle",
-        id: "ELK-TRUCK-PLAT",
-        attributes: {
-          name: "Electra Ignite Platinum",
-          vehicleFamily: "Truck",
+        {
+          name: "vehicleDetailMegavolt",
+          isMatch: () => /^\/models\/electra-megavolt\/?$/.test(window.location.pathname),
+          interaction: {
+            name: "vehicleView", eventType: "vehicleView",
+            catalogObject: { type: "Vehicle", id: "ELK-COUPE-GT", attributes: { name: "Electra Megavolt GT", vehicleFamily: "Sport Coupe" } },
+          },
         },
-      },
-    },
-  };
-
-  const vehicleDetailRegulator = {
-    name: "vehicleDetailRegulator",
-    isMatch: () => /^\/models\/electra-regulator\/?$/.test(window.location.pathname),
-    interaction: {
-      name: CatalogObjectInteractionName.ViewCatalogObject,
-      catalogObject: {
-        type: "Vehicle",
-        id: "ELK-EV-PERF",
-        attributes: {
-          name: "Electra Regulator Performance",
-          vehicleFamily: "Full EV",
+        {
+          name: "vehicleDetailHarmonic",
+          isMatch: () => /^\/models\/electra-harmonic\/?$/.test(window.location.pathname),
+          interaction: {
+            name: "vehicleView", eventType: "vehicleView",
+            catalogObject: { type: "Vehicle", id: "ELK-SEDAN-AWD", attributes: { name: "Electra Harmonic SE", vehicleFamily: "Sedan" } },
+          },
         },
-      },
-    },
-  };
+        {
+          name: "vehicleDetailBeam",
+          isMatch: () => /^\/models\/electra-beam\/?$/.test(window.location.pathname),
+          interaction: {
+            name: "vehicleView", eventType: "vehicleView",
+            catalogObject: { type: "Vehicle", id: "ELK-HATCH-PLUS", attributes: { name: "Electra Beam Plus", vehicleFamily: "Hatchback" } },
+          },
+        },
+        {
+          name: "vehicleDetailIgnite",
+          isMatch: () => /^\/models\/electra-ignite\/?$/.test(window.location.pathname),
+          interaction: {
+            name: "vehicleView", eventType: "vehicleView",
+            catalogObject: { type: "Vehicle", id: "ELK-TRUCK-PLAT", attributes: { name: "Electra Ignite Platinum", vehicleFamily: "Truck" } },
+          },
+        },
+        {
+          name: "vehicleDetailRegulator",
+          isMatch: () => /^\/models\/electra-regulator\/?$/.test(window.location.pathname),
+          interaction: {
+            name: "vehicleView", eventType: "vehicleView",
+            catalogObject: { type: "Vehicle", id: "ELK-EV-PERF", attributes: { name: "Electra Regulator Performance", vehicleFamily: "Full EV" } },
+          },
+        },
+        {
+          name: "configurator",
+          isMatch: () => /^\/configure\/?/.test(window.location.pathname),
+          interaction: { name: "pageView", eventType: "pageView" },
+          listeners: [
+            listener("change", "#trim-select, .color-swatch, .addon-checkbox", () => {
+              const trimEl = document.getElementById("trim-select");
+              const colorEl = document.querySelector(".color-swatch.active");
+              if (trimEl) {
+                sendEvent({
+                  interaction: {
+                    name: "vehicleConfigure",
+                    eventType: "vehicleConfigure",
+                    attributes: {
+                      vehicleModel: trimEl.options[trimEl.selectedIndex] ? trimEl.options[trimEl.selectedIndex].text : "",
+                      vehicleSKU: trimEl.value || "",
+                      trim: trimEl.options[trimEl.selectedIndex] ? trimEl.options[trimEl.selectedIndex].text : "",
+                      color: colorEl ? colorEl.getAttribute("data-color") : "",
+                    },
+                  },
+                });
+              }
+            }),
+          ],
+        },
+        {
+          name: "leadForm",
+          isMatch: () => /^\/get-a-quote\/?/.test(window.location.pathname),
+          interaction: { name: "pageView", eventType: "pageView" },
+          listeners: [
+            listener("submit", "#quote-form, .lead-form", () => {
+              const email = (cashDom("#email").val() || "").trim();
+              const firstName = (cashDom("#firstName").val() || "").trim();
+              const lastName = (cashDom("#lastName").val() || "").trim();
+              const phone = (cashDom("#phone").val() || "").trim();
 
-  const configuratorPage = {
-    name: "configurator",
-    isMatch: () => /^\/configure\/?/.test(window.location.pathname),
-    listeners: [
-      listener("change", "#trim-select, .color-swatch, .addon-checkbox", () => {
-        const trimEl = document.getElementById("trim-select");
-        const colorEl = document.querySelector(".color-swatch.active");
-        if (trimEl) {
-          sendEvent({
-            interaction: {
-              name: "vehicleConfigure",
-              eventType: "vehicleConfigure",
-              attributes: {
-                vehicleModel: trimEl.options[trimEl.selectedIndex]
-                  ? trimEl.options[trimEl.selectedIndex].text
-                  : "",
-                vehicleSKU: trimEl.value || "",
-                trim: trimEl.options[trimEl.selectedIndex]
-                  ? trimEl.options[trimEl.selectedIndex].text
-                  : "",
-                color: colorEl ? colorEl.getAttribute("data-color") : "",
-              },
-            },
-          });
-        }
-      }),
-    ],
-  };
+              if (email) {
+                sendEvent({
+                  interaction: { name: "lead_submit", eventType: "contactPointEmail" },
+                  user: { attributes: { email: email, eventType: "contactPointEmail" } },
+                });
+              }
+              if (phone) {
+                sendEvent({
+                  interaction: { name: "lead_submit", eventType: "contactPointPhone" },
+                  user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } },
+                });
+              }
+              if (firstName || lastName) {
+                sendEvent({
+                  interaction: { name: "lead_submit", eventType: "identity" },
+                  user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } },
+                });
+              }
+            }),
+          ],
+        },
+        {
+          name: "testDriveForm",
+          isMatch: () => /^\/test-drive\/?/.test(window.location.pathname),
+          interaction: { name: "pageView", eventType: "pageView" },
+          listeners: [
+            listener("submit", "#test-drive-form, .test-drive-form", () => {
+              const email = (cashDom("#email, #td-email").val() || "").trim();
+              const firstName = (cashDom("#firstName, #td-firstName").val() || "").trim();
+              const lastName = (cashDom("#lastName, #td-lastName").val() || "").trim();
+              const phone = (cashDom("#phone, #td-phone").val() || "").trim();
 
-  const getAQuotePage = {
-    name: "leadForm",
-    isMatch: () => /^\/get-a-quote\/?/.test(window.location.pathname),
-    listeners: [
-      listener("submit", "#quote-form, .lead-form", () => {
-        const email = (cashDom("#email").val() || "").trim();
-        const firstName = (cashDom("#firstName").val() || "").trim();
-        const lastName = (cashDom("#lastName").val() || "").trim();
-        const phone = (cashDom("#phone").val() || "").trim();
+              if (email) {
+                sendEvent({
+                  interaction: { name: "test_drive_request", eventType: "contactPointEmail" },
+                  user: { attributes: { email: email, eventType: "contactPointEmail" } },
+                });
+              }
+              if (phone) {
+                sendEvent({
+                  interaction: { name: "test_drive_request", eventType: "contactPointPhone" },
+                  user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } },
+                });
+              }
+              if (firstName || lastName) {
+                sendEvent({
+                  interaction: { name: "test_drive_request", eventType: "identity" },
+                  user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } },
+                });
+              }
+            }),
+          ],
+        },
+        {
+          name: "thankYou",
+          isMatch: () => /^\/thank-you\/?/.test(window.location.pathname),
+          interaction: { name: "pageView", eventType: "pageView" },
+        },
+      ],
+    });
+  }
 
-        if (email) {
-          sendEvent({
-            user: {
-              attributes: {
-                email: email,
-                eventType: "contactPointEmail",
-              },
-            },
-          });
-        }
-
-        if (phone) {
-          sendEvent({
-            user: {
-              attributes: {
-                phoneNumber: phone,
-                eventType: "contactPointPhone",
-              },
-            },
-          });
-        }
-
-        if (firstName || lastName) {
-          sendEvent({
-            user: {
-              attributes: {
-                firstName: firstName,
-                lastName: lastName,
-                eventType: "identity",
-                isAnonymous: "0",
-              },
-            },
-          });
-        }
-      }),
-    ],
-  };
-
-  const testDrivePage = {
-    name: "testDriveForm",
-    isMatch: () => /^\/test-drive\/?/.test(window.location.pathname),
-    listeners: [
-      listener("submit", "#test-drive-form, .test-drive-form", () => {
-        const email = (cashDom("#email, #td-email").val() || "").trim();
-        const firstName = (cashDom("#firstName, #td-firstName").val() || "").trim();
-        const lastName = (cashDom("#lastName, #td-lastName").val() || "").trim();
-        const phone = (cashDom("#phone, #td-phone").val() || "").trim();
-
-        if (email) {
-          sendEvent({
-            user: {
-              attributes: {
-                email: email,
-                eventType: "contactPointEmail",
-              },
-            },
-          });
-        }
-
-        if (phone) {
-          sendEvent({
-            user: {
-              attributes: {
-                phoneNumber: phone,
-                eventType: "contactPointPhone",
-              },
-            },
-          });
-        }
-
-        if (firstName || lastName) {
-          sendEvent({
-            user: {
-              attributes: {
-                firstName: firstName,
-                lastName: lastName,
-                eventType: "identity",
-                isAnonymous: "0",
-              },
-            },
-          });
-        }
-      }),
-    ],
-  };
-
-  const thankYouPage = {
-    name: "thankYou",
-    isMatch: () => /^\/thank-you\/?/.test(window.location.pathname),
-  };
-
-  SalesforceInteractions.initSitemap({
-    global,
-    pageTypeDefault,
-    pageTypes: [
-      homePage,
-      modelsOverview,
-      vehicleDetailReaktive,
-      vehicleDetailMegavolt,
-      vehicleDetailHarmonic,
-      vehicleDetailBeam,
-      vehicleDetailIgnite,
-      vehicleDetailRegulator,
-      configuratorPage,
-      getAQuotePage,
-      testDrivePage,
-      thankYouPage,
-    ],
-  });
-});
+  var poll = setInterval(setup, 100);
+  setup();
+})();
