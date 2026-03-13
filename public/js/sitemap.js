@@ -18,6 +18,9 @@
     }
     clearInterval(poll);
 
+    SI.setLoggingLevel('DEBUG');
+    console.log('[Sitemap] SDK ready. Setting consent and initializing sitemap...');
+
     SI.updateConsents([{
       provider: "Electra Motors",
       purpose: SI.ConsentPurpose.Tracking,
