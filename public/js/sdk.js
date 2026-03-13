@@ -35,11 +35,13 @@ const EM = (() => {
     if (userData.phone) {
       SI.sendEvent({
         user: { attributes: { phoneNumber: userData.phone, eventType: "contactPointPhone" } },
+        interaction: { name: eventName, eventType: "contactPointPhone", attributes },
       });
     }
     if (userData.firstName || userData.lastName) {
       SI.sendEvent({
         user: { attributes: { firstName: userData.firstName, lastName: userData.lastName, eventType: "identity", isAnonymous: "0" } },
+        interaction: { name: eventName, eventType: "identity", attributes },
       });
     }
   }
