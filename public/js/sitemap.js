@@ -33,7 +33,14 @@
 
       var listener = SI.listener;
       var cashDom = SI.cashDom;
-      var sendEvent = SI.sendEvent;
+      var sendEvent = function(payload) {
+        var eventName = (payload.interaction && payload.interaction.name) || 'sendEvent';
+        console.log('[Sitemap] sendEvent:', eventName, payload);
+        window.dispatchEvent(new CustomEvent('em:sdk:event', {
+          detail: { eventName: eventName, payload: payload, ts: new Date().toISOString() },
+        }));
+        return SI.sendEvent(payload);
+      };
       var CatalogObjectInteractionName = SI.CatalogObjectInteractionName;
 
       SI.initSitemap({
