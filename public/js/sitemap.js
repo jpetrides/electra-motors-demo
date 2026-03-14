@@ -174,7 +174,7 @@
           },
         ],
       });
-    }); // close then callback
+    }}); // close extra block, then callback
   }
 
   var poll = setInterval(setup, 100);
