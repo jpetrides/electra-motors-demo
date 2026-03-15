@@ -302,7 +302,7 @@
 
   function fireConfigureEvent() {
     if (!vehicle || !selectedTrim) return;
-    EM.track('vehicle_configure', {
+    EM.track('vehicleConfigure', {
       attributeVehicleModel:  vehicle.name + ' ' + selectedTrim.name,
       attributeVehicleSku:    selectedTrim.sku || vehicle.id,
       attributeVehicleFamily: vehicle.family,
@@ -325,7 +325,7 @@
     });
 
     // Fire configure event one more time with full payload before redirect
-    EM.track('vehicle_configure', {
+    EM.track('vehicleConfigure', {
       attributeVehicleModel:  vehicle.name + ' ' + selectedTrim.name,
       attributeVehicleSku:    selectedTrim.sku || vehicle.id,
       attributeTrim:          selectedTrim.name,
