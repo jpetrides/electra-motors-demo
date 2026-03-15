@@ -303,12 +303,12 @@
   function fireConfigureEvent() {
     if (!vehicle || !selectedTrim) return;
     EM.track('vehicle_configure', {
-      vehicleModel:  vehicle.name + ' ' + selectedTrim.name,
-      vehicleSKU:    selectedTrim.sku || vehicle.id,
-      vehicleFamily: vehicle.family,
-      trim:          selectedTrim.name,
-      msrp:          selectedTrim.msrp,
-      productCode:   selectedTrim.productCode,
+      attributeVehicleModel:  vehicle.name + ' ' + selectedTrim.name,
+      attributeVehicleSku:    selectedTrim.sku || vehicle.id,
+      attributeVehicleFamily: vehicle.family,
+      attributeTrim:          selectedTrim.name,
+      attributeMsrp:          selectedTrim.msrp,
+      attributeProductCode:   selectedTrim.productCode,
     });
   }
 
@@ -326,13 +326,13 @@
 
     // Fire configure event one more time with full payload before redirect
     EM.track('vehicle_configure', {
-      vehicleModel:  vehicle.name + ' ' + selectedTrim.name,
-      vehicleSKU:    selectedTrim.sku || vehicle.id,
-      trim:          selectedTrim.name,
-      color:         selectedColor ? selectedColor.name : '',
-      estimatedMsrp: selectedTrim.msrp + optionsTotal,
-      productCode:   selectedTrim.productCode,
-      addons:        addonsStr,
+      attributeVehicleModel:  vehicle.name + ' ' + selectedTrim.name,
+      attributeVehicleSku:    selectedTrim.sku || vehicle.id,
+      attributeTrim:          selectedTrim.name,
+      attributePreferredColor: selectedColor ? selectedColor.name : '',
+      attributeEstimatedMsrp: selectedTrim.msrp + optionsTotal,
+      attributeProductCode:   selectedTrim.productCode,
+      attributeAddons:        addonsStr,
     });
 
     // Small delay to allow the SDK event to fire before navigation
