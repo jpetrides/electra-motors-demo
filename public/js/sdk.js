@@ -23,7 +23,7 @@ const EM = (() => {
     }
     _logAndDispatch(eventName, attributes);
     SalesforceInteractions.sendEvent({
-      interaction: { name: eventName, eventType: eventName, attributes },
+      interaction: { name: eventName, eventType: eventName, ...attributes },
     });
   }
 
