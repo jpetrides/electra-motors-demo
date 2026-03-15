@@ -285,12 +285,12 @@
 
     // ★ BEHAVIORAL EVENT — records the lead submission in the engagement stream.
     EM.track('lead_submit', {
-      vehicleModel:    vehicleModel,
-      vehicleSKU:      vehicleSKU,
-      trim:            trim,
-      preferredColor:  color,
-      preferredDealer: dealer,
-      pageUrl:         window.location.href,
+      attributeVehicleModel:    vehicleModel,
+      attributeVehicleSKU:      vehicleSKU,
+      attributeTrim:            trim,
+      attributePreferredColor:  color,
+      attributePreferredDealer: dealer,
+      attributePageUrl:         window.location.href,
     });
 
     // POST to server (logged, no Salesforce call — Data Cloud does that via ingestion)

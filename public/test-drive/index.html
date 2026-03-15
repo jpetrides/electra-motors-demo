@@ -237,11 +237,11 @@
 
     // ★ BEHAVIORAL EVENT — records the test drive request in the engagement stream.
     EM.track('testDriveRequest', {
-      vehicleModel:    vehicleModel,
-      vehicleSKU:      vehicleSKU,
-      preferredDate:   preferredDate,
-      preferredDealer: dealer,
-      pageUrl:         window.location.href,
+      attributeVehicleModel:    vehicleModel,
+      attributeVehicleSKU:      vehicleSKU,
+      attributePreferredDate:   preferredDate,
+      attributePreferredDealer: dealer,
+      attributePageUrl:         window.location.href,
     });
 
     try {
