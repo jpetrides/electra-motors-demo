@@ -19,6 +19,7 @@
     clearInterval(poll);
     console.log('[Sitemap] SDK found after', attempts, 'attempts. Calling init()...');
 
+    SI.setLoggingLevel('DEBUG');
     SI.init({
       consents: [{
         provider: "Electra Motors",
