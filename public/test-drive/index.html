@@ -235,6 +235,15 @@
       }
     );
 
+    // ★ BEHAVIORAL EVENT — records the test drive request in the engagement stream.
+    EM.track('testDriveRequest', {
+      vehicleModel:    vehicleModel,
+      vehicleSKU:      vehicleSKU,
+      preferredDate:   preferredDate,
+      preferredDealer: dealer,
+      pageUrl:         window.location.href,
+    });
+
     try {
       const res = await fetch('/api/test-drive', {
         method:  'POST',
