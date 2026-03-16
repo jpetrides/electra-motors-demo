@@ -37,18 +37,21 @@ const EM = (() => {
     if (userData.email) {
       _logAndDispatch(eventName, { email: userData.email, eventType: 'contactPointEmail' });
       SI.sendEvent({
+        interaction: { name: eventName },
         user: { attributes: { email: userData.email, eventType: "contactPointEmail" } },
       });
     }
     if (userData.phone) {
       _logAndDispatch(eventName, { phoneNumber: userData.phone, eventType: 'contactPointPhone' });
       SI.sendEvent({
+        interaction: { name: eventName },
         user: { attributes: { phoneNumber: userData.phone, eventType: "contactPointPhone" } },
       });
     }
     if (userData.firstName || userData.lastName) {
       _logAndDispatch(eventName, { firstName: userData.firstName, lastName: userData.lastName, eventType: 'identity' });
       SI.sendEvent({
+        interaction: { name: eventName },
         user: { attributes: { firstName: userData.firstName, lastName: userData.lastName, eventType: "identity", isAnonymous: "0" } },
       });
     }
