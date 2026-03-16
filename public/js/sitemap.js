@@ -145,33 +145,11 @@
             name: "leadForm",
             isMatch: function () { return /^\/get-a-quote\/?/.test(window.location.pathname); },
             interaction: { name: "pageView", eventType: "pageViewEvent" },
-            listeners: [
-              listener("submit", "#quote-form, .lead-form", function () {
-                var email = (cashDom("#email").val() || "").trim();
-                var firstName = (cashDom("#firstName").val() || "").trim();
-                var lastName = (cashDom("#lastName").val() || "").trim();
-                var phone = (cashDom("#phone").val() || "").trim();
-                if (email) { sendEvent({ interaction: { name: "lead_submit", eventType: "contactPointEmail" }, user: { attributes: { email: email, eventType: "contactPointEmail" } } }); }
-                if (phone) { sendEvent({ interaction: { name: "lead_submit", eventType: "contactPointPhone" }, user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } } }); }
-                if (firstName || lastName) { sendEvent({ interaction: { name: "lead_submit", eventType: "identity" }, user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } } }); }
-              }),
-            ],
           },
           {
             name: "testDriveForm",
             isMatch: function () { return /^\/test-drive\/?/.test(window.location.pathname); },
             interaction: { name: "pageView", eventType: "pageViewEvent" },
-            listeners: [
-              listener("submit", "#test-drive-form, .test-drive-form", function () {
-                var email = (cashDom("#email, #td-email").val() || "").trim();
-                var firstName = (cashDom("#firstName, #td-firstName").val() || "").trim();
-                var lastName = (cashDom("#lastName, #td-lastName").val() || "").trim();
-                var phone = (cashDom("#phone, #td-phone").val() || "").trim();
-                if (email) { sendEvent({ interaction: { name: "test_drive_request", eventType: "contactPointEmail" }, user: { attributes: { email: email, eventType: "contactPointEmail" } } }); }
-                if (phone) { sendEvent({ interaction: { name: "test_drive_request", eventType: "contactPointPhone" }, user: { attributes: { phoneNumber: phone, eventType: "contactPointPhone" } } }); }
-                if (firstName || lastName) { sendEvent({ interaction: { name: "test_drive_request", eventType: "identity" }, user: { attributes: { firstName: firstName, lastName: lastName, eventType: "identity", isAnonymous: "0" } } }); }
-              }),
-            ],
           },
           {
             name: "thankYou",

@@ -35,24 +35,21 @@ const EM = (() => {
     var SI = SalesforceInteractions;
 
     if (userData.email) {
-      _logAndDispatch(eventName, { email: userData.email, eventType: 'contactPointEmail', ...attributes });
+      _logAndDispatch(eventName, { email: userData.email, eventType: 'contactPointEmail' });
       SI.sendEvent({
         user: { attributes: { email: userData.email, eventType: "contactPointEmail" } },
-        interaction: { name: eventName, eventType: eventName, attributes },
       });
     }
     if (userData.phone) {
-      _logAndDispatch(eventName, { phoneNumber: userData.phone, eventType: 'contactPointPhone', ...attributes });
+      _logAndDispatch(eventName, { phoneNumber: userData.phone, eventType: 'contactPointPhone' });
       SI.sendEvent({
         user: { attributes: { phoneNumber: userData.phone, eventType: "contactPointPhone" } },
-        interaction: { name: eventName, eventType: "contactPointPhone", attributes },
       });
     }
     if (userData.firstName || userData.lastName) {
-      _logAndDispatch(eventName, { firstName: userData.firstName, lastName: userData.lastName, eventType: 'identity', ...attributes });
+      _logAndDispatch(eventName, { firstName: userData.firstName, lastName: userData.lastName, eventType: 'identity' });
       SI.sendEvent({
         user: { attributes: { firstName: userData.firstName, lastName: userData.lastName, eventType: "identity", isAnonymous: "0" } },
-        interaction: { name: eventName, eventType: "identity", attributes },
       });
     }
   }
