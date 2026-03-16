@@ -68,7 +68,7 @@
             interaction: {
               name: "vehicleView", eventType: "productView",
               catalogObject: { type: "Vehicle", id: "ELK-SUV-7", attributes: { name: "Electra Reaktive Touring", vehicleFamily: "SUV" } },
-              attributes: { attributeVehicleSku: "ELK-SUV-7", attributeVehicleModel: "Electra Reaktive Touring", attributeVehicleFamily: "SUV" },
+              attributes: { attributeSkuCode: "ELK-SUV-7", attributeVehicleModel: "Electra Reaktive Touring", attributeVehicleFamily: "SUV" },
             },
           },
           {
@@ -77,7 +77,7 @@
             interaction: {
               name: "vehicleView", eventType: "productView",
               catalogObject: { type: "Vehicle", id: "ELK-COUPE-GT", attributes: { name: "Electra Megavolt GT", vehicleFamily: "Sport Coupe" } },
-              attributes: { attributeVehicleSku: "ELK-COUPE-GT", attributeVehicleModel: "Electra Megavolt GT", attributeVehicleFamily: "Sport Coupe" },
+              attributes: { attributeSkuCode: "ELK-COUPE-GT", attributeVehicleModel: "Electra Megavolt GT", attributeVehicleFamily: "Sport Coupe" },
             },
           },
           {
@@ -86,7 +86,7 @@
             interaction: {
               name: "vehicleView", eventType: "productView",
               catalogObject: { type: "Vehicle", id: "ELK-SEDAN-AWD", attributes: { name: "Electra Harmonic SE", vehicleFamily: "Sedan" } },
-              attributes: { attributeVehicleSku: "ELK-SEDAN-AWD", attributeVehicleModel: "Electra Harmonic SE", attributeVehicleFamily: "Sedan" },
+              attributes: { attributeSkuCode: "ELK-SEDAN-AWD", attributeVehicleModel: "Electra Harmonic SE", attributeVehicleFamily: "Sedan" },
             },
           },
           {
@@ -95,7 +95,7 @@
             interaction: {
               name: "vehicleView", eventType: "productView",
               catalogObject: { type: "Vehicle", id: "ELK-HATCH-PLUS", attributes: { name: "Electra Beam Plus", vehicleFamily: "Hatchback" } },
-              attributes: { attributeVehicleSku: "ELK-HATCH-PLUS", attributeVehicleModel: "Electra Beam Plus", attributeVehicleFamily: "Hatchback" },
+              attributes: { attributeSkuCode: "ELK-HATCH-PLUS", attributeVehicleModel: "Electra Beam Plus", attributeVehicleFamily: "Hatchback" },
             },
           },
           {
@@ -104,7 +104,7 @@
             interaction: {
               name: "vehicleView", eventType: "productView",
               catalogObject: { type: "Vehicle", id: "ELK-TRUCK-PLAT", attributes: { name: "Electra Ignite Platinum", vehicleFamily: "Truck" } },
-              attributes: { attributeVehicleSku: "ELK-TRUCK-PLAT", attributeVehicleModel: "Electra Ignite Platinum", attributeVehicleFamily: "Truck" },
+              attributes: { attributeSkuCode: "ELK-TRUCK-PLAT", attributeVehicleModel: "Electra Ignite Platinum", attributeVehicleFamily: "Truck" },
             },
           },
           {
@@ -113,7 +113,7 @@
             interaction: {
               name: "vehicleView", eventType: "productView",
               catalogObject: { type: "Vehicle", id: "ELK-EV-PERF", attributes: { name: "Electra Regulator Performance", vehicleFamily: "Full EV" } },
-              attributes: { attributeVehicleSku: "ELK-EV-PERF", attributeVehicleModel: "Electra Regulator Performance", attributeVehicleFamily: "Full EV" },
+              attributes: { attributeSkuCode: "ELK-EV-PERF", attributeVehicleModel: "Electra Regulator Performance", attributeVehicleFamily: "Full EV" },
             },
           },
           {

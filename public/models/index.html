@@ -146,7 +146,7 @@
 
       card.addEventListener('click', (e) => {
         if (e.target.classList.contains('btn-primary')) return;
-        EM.track('productView', { attributeVehicleModel: v.name, attributeVehicleSku: v.id });
+        EM.track('productView', { attributeVehicleModel: v.name, attributeSkuCode: v.id });
       });
 
       grid.appendChild(card);
