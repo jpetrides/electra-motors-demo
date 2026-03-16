@@ -9,7 +9,7 @@ SELECT
     "sessionId__c",
     "eventId__c",
     "testDriveRequest_attributeVehicleModel__c",
-    "testDriveRequest_attributeVehicleSKU__c",
+    "testDriveRequest_attributeSkuCode__c",
     "testDriveRequest_attributePreferredDate__c",
     "testDriveRequest_sourceUrl__c",
     "testDriveRequest_sourcePageType__c",

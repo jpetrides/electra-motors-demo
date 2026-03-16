@@ -9,7 +9,7 @@ SELECT
     "sessionId__c",
     "eventId__c",
     "vehicleConfigure_attributeVehicleModel__c",
-    "vehicleConfigure_attributeVehicleSKU__c",
+    "vehicleConfigure_attributeSkuCode__c",
     "vehicleConfigure_attributeVehicleFamily__c",
     "vehicleConfigure_attributeTrim__c",
     "vehicleConfigure_attributeMsrp__c",

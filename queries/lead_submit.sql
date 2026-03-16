@@ -8,7 +8,7 @@ SELECT
     "sessionId__c",
     "eventId__c",
     "leadSubmit_attributeVehicleModel__c",
-    "leadSubmit_attributeVehicleSKU__c",
+    "leadSubmit_attributeSkuCode__c",
     "leadSubmit_attributeTrim__c",
     "leadSubmit_attributePreferredColor__c",
     "leadSubmit_attributePreferredDealer__c",

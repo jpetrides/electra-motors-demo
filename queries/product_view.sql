@@ -8,7 +8,7 @@ SELECT
     "sessionId__c",
     "eventId__c",
     "productView_attributeVehicleModel__c",
-    "productView_attributeVehicleSKU__c",
+    "productView_attributeSkuCode__c",
     "productView_attributeVehicleFamily__c",
     "productView_sourceUrl__c",
     "productView_sourcePageType__c",

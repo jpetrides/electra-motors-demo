@@ -1,6 +1,6 @@
 -- Funnel Analysis
 -- Table: Electra_Heroku_Behavioral_Event_E3F8DAD6__dll
---        Electra_Heroku_identity_E3F8DB62__dll
+--        Electra_Heroku_identity_F4AD4B6B__dll
 
 
 -- Overall event volume by type (health check)
@@ -47,17 +47,17 @@ ORDER BY leads_submitted DESC, configure_events DESC;
 
 -- Known visitors: identity joined to behavioral events
 SELECT
-    "Electra_Heroku_identity_E3F8DB62__dll"."email__c",
-    "Electra_Heroku_identity_E3F8DB62__dll"."firstName__c",
-    "Electra_Heroku_identity_E3F8DB62__dll"."lastName__c",
+    "Electra_Heroku_identity_F4AD4B6B__dll"."email__c",
+    "Electra_Heroku_identity_F4AD4B6B__dll"."firstName__c",
+    "Electra_Heroku_identity_F4AD4B6B__dll"."lastName__c",
     "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."eventType__c",
     "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."dateTime__c",
     "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."productView_attributeVehicleModel__c",
     "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."vehicleConfigure_attributeVehicleModel__c",
     "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."leadSubmit_attributeVehicleModel__c"
-FROM "Electra_Heroku_identity_E3F8DB62__dll"
+FROM "Electra_Heroku_identity_F4AD4B6B__dll"
 JOIN "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"
-  ON "Electra_Heroku_identity_E3F8DB62__dll"."deviceId__c" = "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."deviceId__c"
+  ON "Electra_Heroku_identity_F4AD4B6B__dll"."deviceId__c" = "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."deviceId__c"
 WHERE "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."dateTime__c" >= '2026-03-15T00:00:00Z'
 ORDER BY "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"."dateTime__c" DESC
 LIMIT 100;
