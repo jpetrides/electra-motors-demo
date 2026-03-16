@@ -30,11 +30,11 @@ WHERE "deviceId__c" = '258fa94438db382b'
 ORDER BY "dateTime__c" ASC;
 
 
--- Funnel: productView -> vehicle_configure -> leadSubmit (per device)
+-- Funnel: productView -> vehicleConfigure -> leadSubmit (per device)
 SELECT
     "deviceId__c",
     COUNT(CASE WHEN "eventType__c" = 'productView'       THEN 1 END) AS product_views,
-    COUNT(CASE WHEN "eventType__c" = 'vehicle_configure' THEN 1 END) AS configure_events,
+    COUNT(CASE WHEN "eventType__c" = 'vehicleConfigure'  THEN 1 END) AS configure_events,
     COUNT(CASE WHEN "eventType__c" = 'testDriveRequest'  THEN 1 END) AS test_drive_requests,
     COUNT(CASE WHEN "eventType__c" = 'leadSubmit'        THEN 1 END) AS leads_submitted,
     MIN(CASE WHEN "eventType__c" = 'productView'         THEN "dateTime__c" END) AS first_product_view,

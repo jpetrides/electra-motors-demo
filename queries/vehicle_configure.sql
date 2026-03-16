@@ -1,4 +1,4 @@
--- Event: vehicle_configure
+-- Event: vehicleConfigure
 -- Fires when a visitor selects a trim on the configurator page,
 -- and again when they click "Build Mine — Get a Quote"
 -- Table: Electra_Heroku_Behavioral_Event_E3F8DAD6__dll
@@ -22,7 +22,7 @@ SELECT
     "cdp_sys_DeviceType__c",
     "cdp_sys_BrowserName__c"
 FROM "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"
-WHERE "eventType__c" = 'vehicle_configure'
+WHERE "eventType__c" = 'vehicleConfigure'
   AND "dateTime__c" >= '2026-03-15T00:00:00Z'
 ORDER BY "dateTime__c" DESC
 LIMIT 50;
@@ -34,7 +34,7 @@ SELECT
     "vehicleConfigure_attributeTrim__c",
     COUNT(*) AS configure_count
 FROM "Electra_Heroku_Behavioral_Event_E3F8DAD6__dll"
-WHERE "eventType__c" = 'vehicle_configure'
+WHERE "eventType__c" = 'vehicleConfigure'
   AND "dateTime__c" >= '2026-03-15T00:00:00Z'
   AND "vehicleConfigure_attributeVehicleModel__c" IS NOT NULL
 GROUP BY "vehicleConfigure_attributeVehicleModel__c", "vehicleConfigure_attributeTrim__c"
