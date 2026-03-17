@@ -166,7 +166,7 @@ SalesforceInteractions.init({
     name: "leadForm",
     isMatch: () => /^\/get-a-quote\/?/.test(window.location.pathname),
     listeners: [
-      listener("submit", "#quote-form, .lead-form", () => {
+      listener("submit", "#lead-form, #quote-form, .lead-form", () => {
         const email = (cashDom("#email").val() || "").trim();
         const firstName = (cashDom("#firstName").val() || "").trim();
         const lastName = (cashDom("#lastName").val() || "").trim();
