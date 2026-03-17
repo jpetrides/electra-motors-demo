@@ -27,7 +27,7 @@ const EM = (() => {
     });
   }
 
-  function identify(userData, eventName = 'lead_submit', attributes = {}) {
+  function identify(userData, eventName = 'leadSubmit', attributes = {}) {
     if (typeof SalesforceInteractions === 'undefined') {
       console.log('[EM] stub identify:', eventName, userData);
       return;
