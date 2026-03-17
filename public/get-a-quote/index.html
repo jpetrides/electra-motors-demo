@@ -265,7 +265,6 @@
 
     // ★ IDENTITY EVENT — fires BEFORE any CRM write.
     //   This is the key event for Data Cloud identity resolution.
-    console.log('[DEBUG] identify payload:', { firstName, lastName, email, phone });
     EM.identify(
       {
         firstName:  firstName,
@@ -274,7 +273,7 @@
         phone:      phone || undefined,
         zipCode:    zip || undefined,
       },
-      'leadSubmit',
+      'formSubmit',
       {
         vehicleModel:  vehicleModel,
         vehicleSKU:    vehicleSKU,
