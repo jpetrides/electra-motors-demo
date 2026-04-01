@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Tools — Elektra Motors</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e8;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #111118;
+      border-bottom: 1px solid #1e1e2e;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .header-logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .header-logo span { color: #7c6af7; }
+    .header-badge {
+      background: #1e1e2e;
+      border: 1px solid #2e2e4e;
+      color: #888;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    /* ── Layout ── */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ── Panels ── */
+    .panel {
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #1e1e2e;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .panel-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #aaa;
+    }
+    .panel-body { padding: 1.5rem; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn:not(:disabled):hover { opacity: 0.85; }
+    .btn-primary { background: #7c6af7; color: #fff; }
+    .btn-danger  { background: #c0392b; color: #fff; }
+    .btn-ghost   { background: #1e1e2e; color: #ccc; border: 1px solid #2e2e4e; }
+
+    /* ── Inputs ── */
+    .input-row {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+    input[type="text"], input[type="email"] {
+      flex: 1;
+      background: #0d0d15;
+      border: 1px solid #2e2e4e;
+      color: #e0e0e8;
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    input[type="text"]:focus, input[type="email"]:focus {
+      border-color: #7c6af7;
+    }
+
+    /* ── Status badges ── */
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .badge-ready   { background: #0e3d2a; color: #3ecf8e; }
+    .badge-reset   { background: #3d2200; color: #f59e0b; }
+    .badge-nodata  { background: #1e1e2e; color: #666; }
+
+    /* ── Accounts table ── */
+    .accounts-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .accounts-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #666;
+      border-bottom: 1px solid #1e1e2e;
+      white-space: nowrap;
+    }
+    .accounts-table td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid #141420;
+      color: #ccc;
+      white-space: nowrap;
+    }
+    .accounts-table tr:last-child td { border-bottom: none; }
+    .accounts-table tr:hover td { background: #13131f; }
+    .accounts-table td.email { color: #7c9cf7; font-size: 0.82rem; }
+    .accounts-table td.name  { color: #fff; font-weight: 500; }
+    .accounts-table td.num   { text-align: center; }
+
+    .use-btn {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.65rem;
+      background: #1e1e2e;
+      border: 1px solid #2e2e4e;
+      border-radius: 4px;
+      color: #aaa;
+      cursor: pointer;
+    }
+    .use-btn:hover { background: #2e2e4e; color: #fff; }
+
+    /* ── Status / Reset result ── */
+    .result-card {
+      background: #0d0d15;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .result-row {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #141420;
+      align-items: flex-start;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-label {
+      color: #666;
+      min-width: 150px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding-top: 0.05rem;
+    }
+    .result-val { color: #e0e0e8; }
+    .result-val.good { color: #3ecf8e; }
+    .result-val.warn { color: #f59e0b; }
+    .result-val.dim  { color: #555; }
+
+    .leads-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 1rem; }
+    .lead-item {
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      border-radius: 6px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lead-model { color: #fff; font-weight: 500; }
+    .lead-meta  { color: #666; font-size: 0.75rem; }
+
+    /* ── Reset confirm ── */
+    .reset-preview {
+      background: #1a0a0a;
+      border: 1px solid #3d1010;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .reset-preview-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #c0392b;
+      margin-bottom: 0.75rem;
+    }
+    .reset-action { font-size: 0.85rem; color: #ccc; padding: 0.25rem 0; }
+    .reset-action span { color: #f59e0b; }
+    .reset-note {
+      margin-top: 0.75rem;
+      font-size: 0.78rem;
+      color: #666;
+      border-top: 1px solid #2e1a1a;
+      padding-top: 0.75rem;
+    }
+    .confirm-row { display: flex; gap: 0.75rem; margin-top: 1rem; align-items: center; }
+
+    /* ── Misc ── */
+    .empty { color: #555; font-size: 0.85rem; text-align: center; padding: 2rem 0; }
+    .error-msg { color: #e74c3c; font-size: 0.85rem; padding: 0.75rem; background: #1a0505; border-radius: 6px; border: 1px solid #3d1010; }
+    .success-msg { color: #3ecf8e; font-size: 0.85rem; padding: 0.75rem; background: #051a0e; border-radius: 6px; border: 1px solid #0e3d2a; }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #444; border-top-color: #7c6af7; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .summary-bar { font-size: 0.82rem; color: #666; }
+    .summary-bar strong { color: #3ecf8e; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">Elektra<span>Motors</span></div>
+  <div class="header-badge">Demo Tools</div>
+</div>
+
+<div class="main">
+
+  <!-- ── Account Finder ───────────────────────────────────────── -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Account Finder</span>
+      <button class="btn btn-primary" id="find-btn">
+        <span id="find-spinner" style="display:none" class="spinner"></span>
+        Find Demo-Ready Accounts
+      </button>
+    </div>
+    <div class="panel-body">
+      <div id="find-result">
+        <div class="empty">Click "Find Demo-Ready Accounts" to load the list.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Account Status ──────────────────────────────────────── -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Account Status</span>
+    </div>
+    <div class="panel-body">
+      <div class="input-row">
+        <input type="email" id="status-email" placeholder="customer@example.com" />
+        <button class="btn btn-ghost" id="status-btn">Inspect</button>
+      </div>
+      <div id="status-result" style="margin-top:1rem"></div>
+    </div>
+  </div>
+
+  <!-- ── Reset Account ───────────────────────────────────────── -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Reset Account</span>
+    </div>
+    <div class="panel-body">
+      <div class="input-row">
+        <input type="email" id="reset-email" placeholder="customer@example.com" />
+        <button class="btn btn-ghost" id="reset-preview-btn">Preview</button>
+      </div>
+      <div id="reset-result" style="margin-top:1rem"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Helpers ───────────────────────────────────────────────────────
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function badge(status) {
+  if (status === 'READY')      return `<span class="badge badge-ready">Ready ✓</span>`;
+  if (status === 'NEEDS RESET') return `<span class="badge badge-reset">Needs Reset</span>`;
+  return `<span class="badge badge-nodata">No Data</span>`;
+}
+
+// ── Account Finder ────────────────────────────────────────────────
+const findBtn     = document.getElementById('find-btn');
+const findSpinner = document.getElementById('find-spinner');
+const findResult  = document.getElementById('find-result');
+
+findBtn.addEventListener('click', loadAccounts);
+
+async function loadAccounts() {
+  findBtn.disabled = true;
+  findSpinner.style.display = 'inline-block';
+  findResult.innerHTML = '';
+  try {
+    const res = await fetch('/api/tools/accounts');
+    const data = await res.json();
+    if (data.error) { findResult.innerHTML = `<div class="error-msg">${esc(data.error)}</div>`; return; }
+
+    const accounts = data.accounts;
+    const ready = accounts.filter(a => a.status === 'READY').length;
+
+    if (!accounts.length) {
+      findResult.innerHTML = `<div class="empty">No demo-eligible accounts found.</div>`;
+      return;
+    }
+
+    let html = `
+      <div class="summary-bar" style="margin-bottom:1rem">
+        <strong>${ready}</strong> account${ready !== 1 ? 's' : ''} ready to demo
+        &nbsp;·&nbsp; ${accounts.length} total
+      </div>
+      <table class="accounts-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>MDM ID</th>
+            <th>DC UID</th>
+            <th style="text-align:center">Leads</th>
+            <th style="text-align:center">Vehicles</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    accounts.forEach((a, i) => {
+      const uid = a.dcUid ? a.dcUid.slice(0,8) + '…' : '—';
+      html += `
+        <tr>
+          <td style="color:#555">${i+1}</td>
+          <td class="name">${esc(a.name)}</td>
+          <td class="email">${esc(a.email)}</td>
+          <td style="color:#888;font-size:0.8rem">${esc(a.mdmId)}</td>
+          <td style="color:#888;font-size:0.78rem;font-family:monospace">${esc(uid)}</td>
+          <td class="num">${a.leads || '—'}</td>
+          <td class="num">${a.vehicles || '—'}</td>
+          <td>${badge(a.status)}</td>
+          <td>
+            <button class="use-btn" onclick="useEmail('${esc(a.email)}')">Use</button>
+          </td>
+        </tr>
+      `;
+    });
+    html += `</tbody></table>`;
+    findResult.innerHTML = html;
+  } catch(e) {
+    findResult.innerHTML = `<div class="error-msg">${esc(e.message)}</div>`;
+  } finally {
+    findBtn.disabled = false;
+    findSpinner.style.display = 'none';
+  }
+}
+
+function useEmail(email) {
+  document.getElementById('status-email').value = email;
+  document.getElementById('reset-email').value = email;
+  document.getElementById('status-result').innerHTML = '';
+  document.getElementById('reset-result').innerHTML = '';
+  document.getElementById('status-email').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── Account Status ────────────────────────────────────────────────
+const statusEmailInput = document.getElementById('status-email');
+const statusBtn        = document.getElementById('status-btn');
+const statusResult     = document.getElementById('status-result');
+
+statusBtn.addEventListener('click', loadStatus);
+statusEmailInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadStatus(); });
+
+async function loadStatus() {
+  const email = statusEmailInput.value.trim();
+  if (!email) return;
+  statusBtn.disabled = true;
+  statusBtn.textContent = '...';
+  statusResult.innerHTML = '';
+  try {
+    const res = await fetch(`/api/tools/status?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    if (data.error) { statusResult.innerHTML = `<div class="error-msg">${esc(data.error)}</div>`; return; }
+
+    const isReady = !data.dcUid && !data.leads.length;
+    let html = `<div class="result-card">
+      <div class="result-row"><span class="result-label">Name</span><span class="result-val">${esc(data.name)}</span></div>
+      <div class="result-row"><span class="result-label">Email</span><span class="result-val">${esc(data.email)}</span></div>
+      <div class="result-row"><span class="result-label">MDM ID</span><span class="result-val ${data.mdmId ? '' : 'dim'}">${esc(data.mdmId || '—')}</span></div>
+      <div class="result-row"><span class="result-label">DC Individual ID</span><span class="result-val ${data.dcUid ? 'warn' : 'dim'}">${data.dcUid ? esc(data.dcUid.slice(0,20)+'…') : '— not stamped'}</span></div>
+      <div class="result-row"><span class="result-label">Active Leads</span><span class="result-val ${data.leads.length ? 'warn' : 'dim'}">${data.leads.length || 'None'}</span></div>
+      <div class="result-row"><span class="result-label">Status</span><span class="result-val ${isReady ? 'good' : 'warn'}">${isReady ? 'READY ✓' : 'NEEDS RESET'}</span></div>
+    </div>`;
+
+    if (data.leads.length) {
+      html += `<div class="leads-list">`;
+      for (const l of data.leads) {
+        html += `<div class="lead-item">
+          <div>
+            <div class="lead-model">${esc(l.model || 'Unknown model')}</div>
+            <div class="lead-meta">${esc(l.id)} &nbsp;·&nbsp; ${esc(l.status)}</div>
+          </div>
+          <div class="lead-meta">${esc(l.createdDate)}</div>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+
+    statusResult.innerHTML = html;
+  } catch(e) {
+    statusResult.innerHTML = `<div class="error-msg">${esc(e.message)}</div>`;
+  } finally {
+    statusBtn.disabled = false;
+    statusBtn.textContent = 'Inspect';
+  }
+}
+
+// ── Reset Account ─────────────────────────────────────────────────
+const resetEmailInput  = document.getElementById('reset-email');
+const resetPreviewBtn  = document.getElementById('reset-preview-btn');
+const resetResult      = document.getElementById('reset-result');
+
+resetPreviewBtn.addEventListener('click', loadResetPreview);
+resetEmailInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadResetPreview(); });
+
+async function loadResetPreview() {
+  const email = resetEmailInput.value.trim();
+  if (!email) return;
+  resetPreviewBtn.disabled = true;
+  resetPreviewBtn.textContent = '...';
+  resetResult.innerHTML = '';
+  try {
+    const res = await fetch(`/api/tools/status?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    if (data.error) { resetResult.innerHTML = `<div class="error-msg">${esc(data.error)}</div>`; return; }
+
+    if (!data.dcUid && !data.leads.length) {
+      resetResult.innerHTML = `<div class="success-msg">Account is already clean — nothing to reset.</div>`;
+      return;
+    }
+
+    let actionsHtml = '';
+    if (data.leads.length) {
+      for (const l of data.leads) {
+        actionsHtml += `<div class="reset-action">DELETE Lead — <span>${esc(l.model || 'Unknown')} (${esc(l.id)})</span></div>`;
+      }
+    }
+    if (data.dcUid) {
+      actionsHtml += `<div class="reset-action">CLEAR DC_Individual_Id__c — <span>${esc(data.dcUid.slice(0,20))}…</span></div>`;
+    }
+
+    resetResult.innerHTML = `
+      <div class="reset-preview">
+        <div class="reset-preview-title">Actions for ${esc(data.name)}</div>
+        ${actionsHtml}
+        <div class="reset-note">
+          Data Cloud DLO records (behavioral events, identity) cannot be deleted.<br>
+          Lead360 and DC Inspector are date-scoped to the current session — old data will not appear on the next run.
+        </div>
+      </div>
+      <div class="confirm-row">
+        <button class="btn btn-danger" id="confirm-reset-btn" data-email="${esc(email)}">Confirm Reset</button>
+        <button class="btn btn-ghost" onclick="resetResult.innerHTML=''">Cancel</button>
+      </div>
+    `;
+
+    document.getElementById('confirm-reset-btn').addEventListener('click', doReset);
+  } catch(e) {
+    resetResult.innerHTML = `<div class="error-msg">${esc(e.message)}</div>`;
+  } finally {
+    resetPreviewBtn.disabled = false;
+    resetPreviewBtn.textContent = 'Preview';
+  }
+}
+
+async function doReset(e) {
+  const email = e.currentTarget.dataset.email;
+  e.currentTarget.disabled = true;
+  e.currentTarget.textContent = 'Resetting…';
+  try {
+    const res = await fetch('/api/tools/reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (data.error) { resetResult.innerHTML = `<div class="error-msg">${esc(data.error)}</div>`; return; }
+
+    let html = `<div class="success-msg">Reset complete — <strong>${esc(data.name)}</strong> is ready for a fresh demo run.<br><br>`;
+    for (const d of data.deleted) html += `✓ Deleted Lead: ${esc(d.model || d.id)}<br>`;
+    for (const f of data.failed)  html += `✗ Failed: ${esc(f.id)} — ${esc(f.error)}<br>`;
+    if (data.dcCleared) html += `✓ Cleared DC_Individual_Id__c`;
+    html += `</div>`;
+    resetResult.innerHTML = html;
+
+    // Refresh the finder if it was loaded
+    if (document.querySelector('.accounts-table')) loadAccounts();
+  } catch(err) {
+    resetResult.innerHTML = `<div class="error-msg">${esc(err.message)}</div>`;
+  }
+}
+</script>
+</body>
+</html>

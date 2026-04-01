@@ -73,11 +73,58 @@ function sfGet(urlPath, token) {
   });
 }
 
+function sfRequest(method, urlPath, token, bodyObj) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(urlPath, tokenCache.instanceUrl);
+    const payload = bodyObj ? JSON.stringify(bodyObj) : null;
+    const headers = { 'Authorization': `Bearer ${token}` };
+    if (payload) {
+      headers['Content-Type'] = 'application/json';
+      headers['Content-Length'] = Buffer.byteLength(payload);
+    }
+    const req = https.request({
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      method,
+      headers,
+    }, (res) => {
+      let body = '';
+      res.on('data', (d) => body += d);
+      res.on('end', () => {
+        if (res.statusCode >= 400) return reject(new Error(`SF API ${res.statusCode}: ${body.slice(0, 300)}`));
+        resolve(body ? JSON.parse(body) : {});
+      });
+    });
+    req.on('error', reject);
+    if (payload) req.write(payload);
+    req.end();
+  });
+}
+
+function sfQuery(soql, token) {
+  const encoded = encodeURIComponent(soql);
+  return sfGet(`/services/data/v56.0/query?q=${encoded}`, token)
+    .then(r => r.records || []);
+}
+
+function dcQueryHttp(sql, token) {
+  return sfRequest('POST', '/services/data/v64.0/ssot/query-sql', token, { sql })
+    .then(r => {
+      const cols = (r.metadata || []).map(m => typeof m === 'object' ? m.name : m);
+      return { cols, rows: r.data || [] };
+    });
+}
+
 app.use(express.json());
 
 // Presentation — served before the SDK injection middleware
 app.get('/preso', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'preso', 'index.html'));
+});
+
+// Demo Tools — served before SDK injection middleware (no tracking needed)
+app.get('/tools', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'tools', 'index.html'));
 });
 
 // Inject SDK meta tags into every HTML response
@@ -203,6 +250,167 @@ app.get('/api/dc-lookup/:deviceId', async (req, res) => {
     res.json({ status, deviceId, profile, leads, sources });
   } catch (err) {
     console.error('[DC Lookup Error]', err.message);
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// ── Demo Tools API ────────────────────────────────────────────────────────────
+
+// GET /api/tools/accounts — list all demo-eligible accounts with status
+app.get('/api/tools/accounts', async (req, res) => {
+  if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
+  try {
+    const { accessToken } = await getSfToken();
+
+    // 1. All Person Accounts with PAccount MDM IDs
+    const accounts = await sfQuery(
+      "SELECT Id, FirstName, LastName, PersonEmail, DC_Individual_Id__c, External_ID__pc " +
+      "FROM Account WHERE IsPersonAccount = true AND External_ID__pc LIKE 'PAccount.%' ORDER BY LastName",
+      accessToken
+    );
+
+    if (!accounts.length) return res.json({ accounts: [] });
+
+    // 2. Count active leads per account
+    const idList = accounts.map(a => `'${a.Id}'`).join(',');
+    const leadRows = await sfQuery(
+      `SELECT Person_Account__c, COUNT(Id) cnt FROM Lead WHERE Person_Account__c IN (${idList}) AND IsConverted = false GROUP BY Person_Account__c`,
+      accessToken
+    );
+    const leadCounts = {};
+    for (const l of leadRows) leadCounts[l.Person_Account__c] = l.cnt;
+
+    // 3. Vehicle ownership counts from Data Cloud
+    const mdmIds = accounts.map(a => a.External_ID__pc).filter(Boolean);
+    const mdmList = mdmIds.map(m => `'${m}'`).join(',');
+    const vehicleCounts = {};
+    if (mdmList) {
+      const { rows } = await dcQueryHttp(
+        `SELECT "iv_mdm_id__c", COUNT(*) AS "cnt" FROM "Vehicle_Ownership__dlm" WHERE "iv_mdm_id__c" IN (${mdmList}) GROUP BY "iv_mdm_id__c"`,
+        accessToken
+      );
+      for (const row of rows) {
+        const mdm = Array.isArray(row) ? row[0] : row['iv_mdm_id__c'];
+        const cnt = Array.isArray(row) ? row[1] : row['cnt'];
+        vehicleCounts[mdm] = cnt || 0;
+      }
+    }
+
+    // 4. Build result
+    const result = accounts.map(acc => {
+      const mdm = acc.External_ID__pc;
+      const dcUid = acc.DC_Individual_Id__c;
+      const leads = leadCounts[acc.Id] || 0;
+      const vehicles = vehicleCounts[mdm] || 0;
+      let status;
+      if (vehicles === 0) status = 'NO DATA';
+      else if (dcUid || leads > 0) status = 'NEEDS RESET';
+      else status = 'READY';
+      return {
+        id: acc.Id,
+        name: `${acc.FirstName || ''} ${acc.LastName || ''}`.trim(),
+        email: acc.PersonEmail || '',
+        mdmId: mdm || '',
+        dcUid: dcUid || '',
+        leads,
+        vehicles,
+        status,
+      };
+    });
+
+    res.json({ accounts: result });
+  } catch (err) {
+    console.error('[Tools/accounts]', err.message);
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// GET /api/tools/status?email= — inspect a specific account
+app.get('/api/tools/status', async (req, res) => {
+  if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
+  const email = (req.query.email || '').trim();
+  if (!email) return res.status(400).json({ error: 'email param required' });
+  try {
+    const { accessToken } = await getSfToken();
+    const esc = v => v.replace(/'/g, "\\'");
+    const accounts = await sfQuery(
+      `SELECT Id, FirstName, LastName, PersonEmail, DC_Individual_Id__c, External_ID__pc FROM Account WHERE IsPersonAccount = true AND PersonEmail = '${esc(email)}' LIMIT 1`,
+      accessToken
+    );
+    if (!accounts.length) return res.status(404).json({ error: `No Person Account found for ${email}` });
+    const acc = accounts[0];
+
+    const leads = await sfQuery(
+      `SELECT Id, Vehicle_Model__c, Vehicle_SKU__c, Status, CreatedDate FROM Lead WHERE Person_Account__c = '${acc.Id}' AND IsConverted = false ORDER BY CreatedDate DESC`,
+      accessToken
+    );
+
+    res.json({
+      id: acc.Id,
+      name: `${acc.FirstName || ''} ${acc.LastName || ''}`.trim(),
+      email: acc.PersonEmail,
+      mdmId: acc.External_ID__pc || '',
+      dcUid: acc.DC_Individual_Id__c || '',
+      leads: leads.map(l => ({
+        id: l.Id,
+        model: l.Vehicle_Model__c || '',
+        sku: l.Vehicle_SKU__c || '',
+        status: l.Status,
+        createdDate: (l.CreatedDate || '').slice(0, 10),
+      })),
+    });
+  } catch (err) {
+    console.error('[Tools/status]', err.message);
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// POST /api/tools/reset — delete leads + clear DC UID for an account
+app.post('/api/tools/reset', async (req, res) => {
+  if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
+  const email = (req.body.email || '').trim();
+  if (!email) return res.status(400).json({ error: 'email required' });
+  try {
+    const { accessToken } = await getSfToken();
+    const esc = v => v.replace(/'/g, "\\'");
+    const accounts = await sfQuery(
+      `SELECT Id, FirstName, LastName, DC_Individual_Id__c FROM Account WHERE IsPersonAccount = true AND PersonEmail = '${esc(email)}' LIMIT 1`,
+      accessToken
+    );
+    if (!accounts.length) return res.status(404).json({ error: `No Person Account found for ${email}` });
+    const acc = accounts[0];
+
+    const leads = await sfQuery(
+      `SELECT Id, Vehicle_Model__c FROM Lead WHERE Person_Account__c = '${acc.Id}' AND IsConverted = false`,
+      accessToken
+    );
+
+    const deleted = [];
+    const failed = [];
+    for (const l of leads) {
+      try {
+        await sfRequest('DELETE', `/services/data/v56.0/sobjects/Lead/${l.Id}`, accessToken);
+        deleted.push({ id: l.Id, model: l.Vehicle_Model__c || '' });
+      } catch (e) {
+        failed.push({ id: l.Id, error: e.message });
+      }
+    }
+
+    let dcCleared = false;
+    if (acc.DC_Individual_Id__c) {
+      await sfRequest('PATCH', `/services/data/v56.0/sobjects/Account/${acc.Id}`, accessToken, { DC_Individual_Id__c: null });
+      dcCleared = true;
+    }
+
+    res.json({
+      name: `${acc.FirstName || ''} ${acc.LastName || ''}`.trim(),
+      email,
+      deleted,
+      failed,
+      dcCleared,
+    });
+  } catch (err) {
+    console.error('[Tools/reset]', err.message);
     res.status(502).json({ error: err.message });
   }
 });
