@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elektra Motors — Data Cloud Real-Time Identity Resolution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Base ──────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #08090e;
+  color: #e8eaf0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Slide Container ───────────────────────────────────────────────────── */
+.deck {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 120px;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* ─── Typography ────────────────────────────────────────────────────────── */
+.eyebrow {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #00b4d8;
+  margin-bottom: 20px;
+}
+h1 {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
+}
+h1 em { font-style: normal; color: #00b4d8; }
+h2 {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+h2 em { font-style: normal; color: #00b4d8; }
+.subtitle {
+  font-size: 22px;
+  line-height: 1.6;
+  color: #9aa3b8;
+  max-width: 720px;
+  font-weight: 400;
+}
+.subtitle strong { color: #e8eaf0; font-weight: 600; }
+
+/* ─── Shared Layouts ────────────────────────────────────────────────────── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.three-col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────── */
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 36px;
+}
+.card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+.card-icon.blue { background: rgba(0,180,216,0.12); color: #00b4d8; }
+.card-icon.green { background: rgba(46,196,182,0.12); color: #2ec4b6; }
+.card-icon.purple { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+.card-icon.orange { background: rgba(251,146,60,0.12); color: #fb923c; }
+.card-icon.red { background: rgba(230,57,70,0.12); color: #e63946; }
+.card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.card p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #9aa3b8;
+}
+
+/* ─── Flow Diagram ──────────────────────────────────────────────────────── */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 48px;
+  flex-wrap: wrap;
+}
+.flow-step {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 24px 28px;
+  text-align: center;
+  flex: 1;
+  min-width: 160px;
+}
+.flow-step .step-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: #00b4d8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.flow-step h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.flow-step p {
+  font-size: 13px;
+  color: #5c6478;
+  line-height: 1.5;
+}
+.flow-arrow {
+  font-size: 24px;
+  color: #00b4d8;
+  flex-shrink: 0;
+}
+
+/* ─── Stat Row ──────────────────────────────────────────────────────────── */
+.stats {
+  display: flex;
+  gap: 60px;
+  margin-top: 48px;
+}
+.stat-value {
+  font-size: 56px;
+  font-weight: 900;
+  color: #00b4d8;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-size: 15px;
+  color: #5c6478;
+  font-weight: 500;
+}
+
+/* ─── Bullet List ───────────────────────────────────────────────────────── */
+.bullets {
+  list-style: none;
+  margin-top: 32px;
+}
+.bullets li {
+  font-size: 18px;
+  line-height: 1.5;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.bullets li::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #00b4d8;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.bullets li:last-child { border-bottom: none; }
+.bullets .dim { color: #5c6478; font-size: 14px; margin-top: 3px; }
+
+/* ─── Title Slide Special ───────────────────────────────────────────────── */
+.slide-title {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.slide-title h1 { font-size: 72px; max-width: 900px; }
+.slide-title .subtitle { max-width: 640px; margin: 0 auto; }
+.brand-line {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+.brand-line .divider {
+  width: 40px;
+  height: 2px;
+  background: rgba(255,255,255,0.15);
+}
+.brand-name {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5c6478;
+}
+.sf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: rgba(0,180,216,0.08);
+  border: 1px solid rgba(0,180,216,0.2);
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #00b4d8;
+  margin-top: 36px;
+}
+
+/* ─── End Slide ─────────────────────────────────────────────────────────── */
+.slide-end {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.slide-end h1 { font-size: 56px; }
+
+/* ─── Persona Box ───────────────────────────────────────────────────────── */
+.persona {
+  background: linear-gradient(135deg, rgba(0,180,216,0.06), rgba(0,180,216,0.02));
+  border: 1px solid rgba(0,180,216,0.15);
+  border-radius: 16px;
+  padding: 36px;
+}
+.persona-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.persona-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0090ae, #00b4d8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.persona-name { font-size: 22px; font-weight: 700; }
+.persona-role { font-size: 14px; color: #5c6478; }
+.persona-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.persona-detail {
+  font-size: 14px;
+  color: #9aa3b8;
+}
+.persona-detail strong {
+  color: #e8eaf0;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+/* ─── Navigation ────────────────────────────────────────────────────────── */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: rgba(8,9,14,0.9);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  z-index: 100;
+}
+.nav-progress {
+  display: flex;
+  gap: 6px;
+}
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  transition: background 0.3s, width 0.3s;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+.nav-dot.active {
+  background: #00b4d8;
+  width: 28px;
+  border-radius: 4px;
+}
+.nav-arrows {
+  display: flex;
+  gap: 8px;
+}
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: #e8eaf0;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.slide-counter {
+  font-size: 13px;
+  color: #5c6478;
+  font-weight: 500;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* ─── Background Accents ────────────────────────────────────────────────── */
+.bg-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(180px);
+  opacity: 0.07;
+  pointer-events: none;
+}
+.bg-glow.blue { background: #00b4d8; top: -200px; right: -100px; }
+.bg-glow.green { background: #2ec4b6; bottom: -200px; left: -100px; }
+
+/* ─── Highlight Box ─────────────────────────────────────────────────────── */
+.highlight-box {
+  background: rgba(0,180,216,0.06);
+  border-left: 3px solid #00b4d8;
+  border-radius: 0 10px 10px 0;
+  padding: 20px 28px;
+  margin-top: 32px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #9aa3b8;
+}
+.highlight-box strong { color: #e8eaf0; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ═══ SLIDE 1: Title ═══════════════════════════════════════════════════ -->
+  <div class="slide slide-title active" data-slide="0">
+    <div class="bg-glow blue"></div>
+    <div class="bg-glow green"></div>
+    <div class="brand-line">
+      <span class="brand-name">Elektra Motors</span>
+      <span class="divider"></span>
+      <span class="brand-name">Salesforce Data Cloud</span>
+    </div>
+    <h1>Real-Time <em>Identity Resolution</em></h1>
+    <p class="subtitle">
+      Turning anonymous digital interactions into unified customer profiles — in sub-seconds.
+    </p>
+    <div class="sf-badge">Live Interactive Demo</div>
+  </div>
+
+  <!-- ═══ SLIDE 2: The Challenge ══════════════════════════════════════════ -->
+  <div class="slide" data-slide="1">
+    <div class="bg-glow blue"></div>
+    <p class="eyebrow">The Challenge</p>
+    <h2>Your customers are <em>everywhere</em>.<br>Your data is in silos.</h2>
+    <p class="subtitle">
+      Today's auto buyers research across devices, visit dealership sites, configure vehicles, and request quotes — all before speaking to a single person. <strong>Most of these interactions are anonymous.</strong>
+    </p>
+    <div class="three-col">
+      <div class="card">
+        <div class="card-icon red">!</div>
+        <h3>Anonymous Browsing</h3>
+        <p>87% of the digital journey happens before a customer ever identifies themselves. That's insight you're flying blind on.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon orange">///</div>
+        <h3>Fragmented Profiles</h3>
+        <p>CRM, website analytics, dealer systems, and marketing platforms each hold a piece of the puzzle — none have the full picture.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon purple">~</div>
+        <h3>Delayed Response</h3>
+        <p>Batch processing means leads arrive hours or days after a customer showed intent. By then, they've moved on.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3: The Solution ═══════════════════════════════════════════ -->
+  <div class="slide" data-slide="2">
+    <div class="bg-glow green"></div>
+    <p class="eyebrow">The Solution</p>
+    <h2>Salesforce <em>Data Cloud</em></h2>
+    <p class="subtitle">
+      A real-time customer data platform built natively into Salesforce that ingests, harmonizes, and unifies customer data — <strong>as it happens</strong>.
+    </p>
+    <div class="three-col">
+      <div class="card">
+        <div class="card-icon blue">&#9670;</div>
+        <h3>Real-Time Ingestion</h3>
+        <p>Web SDK streams behavioral events, identity signals, and engagement data directly into Data Cloud with zero batch delay.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon green">&#10003;</div>
+        <h3>Identity Resolution</h3>
+        <p>Matching and reconciliation rules unify anonymous device IDs with known CRM contacts — automatically, in sub-seconds.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon purple">&#9881;</div>
+        <h3>Automated Actions</h3>
+        <p>Event-triggered flows create leads, update accounts, and activate segments the moment a customer raises their hand.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4: What You'll See ════════════════════════════════════════ -->
+  <div class="slide" data-slide="3">
+    <div class="bg-glow blue"></div>
+    <p class="eyebrow">The Demo</p>
+    <h2>What you'll <em>see</em></h2>
+    <div class="two-col">
+      <div>
+        <p class="subtitle" style="margin-bottom: 36px;">
+          A complete customer journey on the <strong>Elektra Motors</strong> website — from first anonymous visit to real-time profile unification — with a live view into Data Cloud at every step.
+        </p>
+        <ul class="bullets">
+          <li>Anonymous browsing and vehicle exploration</li>
+          <li>Vehicle configuration with model, trim, and color</li>
+          <li>Lead submission with contact details</li>
+          <li>Instant identity resolution in Data Cloud</li>
+          <li>Unified profile with CRM data enrichment</li>
+        </ul>
+      </div>
+      <div class="persona">
+        <div class="persona-header">
+          <div class="persona-avatar">YA</div>
+          <div>
+            <div class="persona-name">Yvette Acme</div>
+            <div class="persona-role">Existing CRM customer — unknown to the website</div>
+          </div>
+        </div>
+        <div class="persona-details">
+          <div class="persona-detail"><strong>Email</strong>yvette.acme@example.com</div>
+          <div class="persona-detail"><strong>Location</strong>San Mateo, CA</div>
+          <div class="persona-detail"><strong>Scenario</strong>Browses anonymously, submits 2 leads</div>
+          <div class="persona-detail"><strong>Result</strong>Both leads resolve to one Unified Individual</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5: The Flow ═══════════════════════════════════════════════ -->
+  <div class="slide" data-slide="4">
+    <div class="bg-glow green"></div>
+    <p class="eyebrow">Demo Flow</p>
+    <h2>From <em>anonymous</em> to <em>unified</em></h2>
+    <p class="subtitle">Each step streams data to Data Cloud in real time. Identity resolution runs continuously.</p>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">Step 1</div>
+        <h4>Browse</h4>
+        <p>Anonymous visitor lands on Elektra Motors. Device ID assigned.</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="step-num">Step 2</div>
+        <h4>Explore</h4>
+        <p>Views models, reads specs. Behavioral events stream to Data Cloud.</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="step-num">Step 3</div>
+        <h4>Configure</h4>
+        <p>Selects model, trim, color. Configuration events captured with full detail.</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="step-num">Step 4</div>
+        <h4>Submit Lead</h4>
+        <p>Provides name, email, phone. Identity signals fire. Profile created.</p>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step" style="border-color: rgba(0,180,216,0.3); background: rgba(0,180,216,0.04);">
+        <div class="step-num">Result</div>
+        <h4>Unified</h4>
+        <p>Anonymous device resolves to CRM contact. Full profile + leads in one view.</p>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <strong>Key moment:</strong> The Data Cloud Inspector panel on the site lets us watch this happen live — from "No profile found" to a fully resolved Unified Individual with CRM enrichment.
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6: Behind the Scenes ═════════════════════════════════════ -->
+  <div class="slide" data-slide="5">
+    <div class="bg-glow blue"></div>
+    <p class="eyebrow">Under the Hood</p>
+    <h2>How <em>identity resolution</em> works</h2>
+    <div class="two-col">
+      <div>
+        <ul class="bullets bullets--two-line">
+          <li>
+            <div>
+              <div>Web SDK assigns a <strong>device ID</strong> to every visitor</div>
+              <div class="dim">A unique anonymous identifier per browser</div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <div>Behavioral events <strong>stream in real time</strong></div>
+              <div class="dim">Page views, product views, configurations</div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <div>Lead submission sends <strong>identity signals</strong></div>
+              <div class="dim">Email, phone, name matched against CRM contacts</div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <div>Data Cloud <strong>reconciliation rules</strong> match and merge</div>
+              <div class="dim">Anonymous device + CRM record = one Unified Individual</div>
+            </div>
+          </li>
+          <li>
+            <div>
+              <div>Unified profile includes <strong>full CRM enrichment</strong></div>
+              <div class="dim">Address, MDM ID, dealer history, and every lead</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom: 16px;">
+          <h3 style="color: #5c6478; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">Data Streams</h3>
+          <div style="display:flex; flex-direction:column; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(0,180,216,0.06); border-radius: 8px; font-size: 14px;">
+              <span>Behavioral Events</span><span style="color:#00b4d8;">Real-time</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(46,196,182,0.06); border-radius: 8px; font-size: 14px;">
+              <span>Identity Signals</span><span style="color:#2ec4b6;">Real-time</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(139,92,246,0.06); border-radius: 8px; font-size: 14px;">
+              <span>Contact Point Email</span><span style="color:#8b5cf6;">Real-time</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(251,146,60,0.06); border-radius: 8px; font-size: 14px;">
+              <span>Contact Point Phone</span><span style="color:#fb923c;">Real-time</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 14px;">
+              <span>CRM Contacts</span><span style="color:#5c6478;">Synced</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="color: #5c6478; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">Resolution Output</h3>
+          <div style="display:flex; flex-direction:column; gap: 10px;">
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(0,180,216,0.06); border-radius: 8px; font-size: 14px;">
+              <span>Unified Individual</span><span style="color:#00b4d8;">1 profile</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(46,196,182,0.06); border-radius: 8px; font-size: 14px;">
+              <span>Lead Engagements</span><span style="color:#2ec4b6;">Per vehicle</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 14px;">
+              <span>Resolved Sources</span><span style="color:#5c6478;">Device + CRM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7: Business Value ═════════════════════════════════════════ -->
+  <div class="slide" data-slide="6">
+    <div class="bg-glow green"></div>
+    <p class="eyebrow">Why It Matters</p>
+    <h2>The value for <em>auto OEMs</em></h2>
+    <p class="subtitle">
+      Data Cloud transforms how manufacturers understand and engage their customers across the entire buying journey.
+    </p>
+    <div class="three-col">
+      <div class="card">
+        <div class="card-icon blue">&#9201;</div>
+        <h3>Speed to Lead</h3>
+        <p>Leads created in real time — not hours or days later. Dealers receive enriched, qualified leads the moment a customer shows intent.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon green">&#9673;</div>
+        <h3>Complete Customer View</h3>
+        <p>Every interaction — anonymous and known — stitched into a single profile. No more fragmented views across CRM, web, and dealer systems.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon purple">&#9883;</div>
+        <h3>Intelligent Segmentation</h3>
+        <p>Build real-time segments based on live behavior. Target customers who configured a truck in the last 10 minutes, not last quarter.</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div>
+        <div class="stat-value">&lt;1s</div>
+        <div class="stat-label">Identity resolution latency</div>
+      </div>
+      <div>
+        <div class="stat-value">100%</div>
+        <div class="stat-label">Digital journey captured</div>
+      </div>
+      <div>
+        <div class="stat-value">1</div>
+        <div class="stat-label">Unified profile per customer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8: Let's Go ═══════════════════════════════════════════════ -->
+  <div class="slide slide-end" data-slide="7">
+    <div class="bg-glow blue"></div>
+    <div class="bg-glow green"></div>
+    <p class="eyebrow">Live Demo</p>
+    <h1>Let's see it <em>in action</em>.</h1>
+    <p class="subtitle" style="margin: 0 auto;">
+      We'll walk through the Elektra Motors site as a customer, submit leads, and watch Data Cloud resolve everything to a single unified profile — live.
+    </p>
+    <div class="sf-badge" style="margin-top: 36px;">elektra-motors-demo-04da06bf66e0.herokuapp.com</div>
+  </div>
+
+</div>
+
+<!-- ─── Navigation Bar ──────────────────────────────────────────────────── -->
+<div class="nav-bar">
+  <div class="nav-progress" id="nav-dots"></div>
+  <div class="nav-arrows">
+    <button class="nav-btn" id="btn-prev" aria-label="Previous">&#8592;</button>
+    <span class="slide-counter" id="slide-counter"></span>
+    <button class="nav-btn" id="btn-next" aria-label="Next">&#8594;</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+
+  const dotsContainer = document.getElementById('nav-dots');
+  const counter = document.getElementById('slide-counter');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot';
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(n) {
+    if (n < 0 || n >= total || n === current) return;
+    const leaving = current;
+    const entering = n;
+    const forward = n > current;
+
+    // Outgoing slide exits in the opposite direction of travel
+    slides[leaving].classList.remove('active');
+    slides[leaving].style.transform = forward ? 'translateX(-60px)' : 'translateX(60px)';
+    slides[leaving].style.opacity = '0';
+
+    // Incoming slide starts off-screen on the correct side, then animates in
+    slides[entering].style.transition = 'none';
+    slides[entering].style.transform = forward ? 'translateX(60px)' : 'translateX(-60px)';
+    slides[entering].style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        slides[entering].style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+        slides[entering].style.transform = 'translateX(0)';
+        slides[entering].style.opacity = '1';
+        slides[entering].classList.add('active');
+      });
+    });
+
+    current = entering;
+    updateNav();
+  }
+
+  // Clean up inline styles after transition so CSS classes take over again
+  slides.forEach(s => {
+    s.addEventListener('transitionend', () => {
+      if (!s.classList.contains('active')) {
+        s.style.transform = '';
+        s.style.opacity = '';
+        s.style.transition = '';
+      }
+    });
+  });
+
+  function updateNav() {
+    counter.textContent = `${current + 1} / ${total}`;
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+    dotsContainer.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  btnPrev.addEventListener('click', () => goTo(current - 1));
+  btnNext.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+  });
+
+  updateNav();
+})();
+</script>
+
+</body>
+</html>

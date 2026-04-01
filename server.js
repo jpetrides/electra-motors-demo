@@ -75,6 +75,11 @@ function sfGet(urlPath, token) {
 
 app.use(express.json());
 
+// Presentation — served before the SDK injection middleware
+app.get('/preso', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'preso', 'index.html'));
+});
+
 // Inject SDK meta tags into every HTML response
 app.use((req, res, next) => {
   if (!req.path.endsWith('.html') && !req.path.endsWith('/') && req.path !== '/') {

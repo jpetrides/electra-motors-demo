@@ -200,9 +200,14 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
       } else {
         const p = data.profile;
-        statusText.textContent = data.leads.length
-          ? `Unified with ${data.leads.length} lead${data.leads.length > 1 ? 's' : ''}`
-          : 'Identity resolved';
+        // Compute session leads here for status text (full filter runs below with lead cards)
+        const _sessionCutoff = Date.now() - 3 * 60 * 60 * 1000;
+        const _sessionLeadCount = data.leads.filter(l =>
+          new Date(l.timestamp || 0).getTime() >= _sessionCutoff
+        ).length;
+        statusText.textContent = _sessionLeadCount
+          ? `Unified with ${_sessionLeadCount} lead${_sessionLeadCount > 1 ? 's' : ''} this session`
+          : (data.leads.length ? 'Unified — no leads this session' : 'Identity resolved');
 
         let html = '';
 
@@ -241,8 +246,21 @@ document.addEventListener('DOMContentLoaded', function () {
           `;
         }
 
-        // Lead cards
-        for (const lead of data.leads) {
+        // Lead cards — scoped to the current session (last 3 hours).
+        // All leads within the window are shown so the follow-up scenario
+        // (2nd vehicle submission enriching the same SF Lead) is demonstrable.
+        // Leads from prior demo runs are hidden with a subtle count badge.
+        const SESSION_HOURS = 3;
+        const sessionCutoff = Date.now() - SESSION_HOURS * 60 * 60 * 1000;
+        const sortedLeads = [...data.leads].sort((a, b) =>
+          new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+        );
+        const sessionLeads = sortedLeads.filter(l =>
+          new Date(l.timestamp || 0).getTime() >= sessionCutoff
+        );
+        const priorCount = sortedLeads.length - sessionLeads.length;
+
+        for (const lead of sessionLeads) {
           const time = lead.timestamp ? new Date(lead.timestamp).toLocaleString() : '';
           html += `
             <div class="dci-card dci-card--lead">
@@ -260,6 +278,11 @@ document.addEventListener('DOMContentLoaded', function () {
               </div>
             </div>
           `;
+        }
+        if (priorCount > 0) {
+          html += `<div class="dci-meta" style="padding:0.5rem 1rem;opacity:0.5">
+            + ${priorCount} lead${priorCount > 1 ? 's' : ''} from prior sessions not shown
+          </div>`;
         }
 
         content.innerHTML = html;
