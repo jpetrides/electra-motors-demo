@@ -408,7 +408,7 @@ h2 em { font-style: normal; color: #00b4d8; }
     </div>
     <h1>Real-Time <em>Identity Resolution</em></h1>
     <p class="subtitle">
-      Turning anonymous digital interactions into unified customer profiles — in sub-seconds.
+      Turning anonymous digital interactions into unified customer profiles — eliminating duplicate leads, enriching sales context, and powering a seamless experience across the entire Salesforce platform.
     </p>
     <div class="sf-badge">Live Interactive Demo</div>
   </div>
@@ -434,8 +434,8 @@ h2 em { font-style: normal; color: #00b4d8; }
       </div>
       <div class="card">
         <div class="card-icon purple">~</div>
-        <h3>Delayed Response</h3>
-        <p>Batch processing means leads arrive hours or days after a customer showed intent. By then, they've moved on.</p>
+        <h3>Duplicate &amp; Thin Leads</h3>
+        <p>Multiple leads arrive for the same customer — different devices, same person. And they're missing the context a rep needs to have a real conversation.</p>
       </div>
     </div>
   </div>
@@ -540,9 +540,6 @@ h2 em { font-style: normal; color: #00b4d8; }
         <p>Anonymous device resolves to CRM contact. Full profile + leads in one view.</p>
       </div>
     </div>
-    <div class="highlight-box">
-      <strong>Key moment:</strong> The Data360 Inspector panel on the site lets us watch this happen live — from "No profile found" to a fully resolved Unified Individual with CRM enrichment.
-    </div>
   </div>
 
   <!-- ═══ SLIDE 6: Behind the Scenes ═════════════════════════════════════ -->
@@ -550,75 +547,40 @@ h2 em { font-style: normal; color: #00b4d8; }
     <div class="bg-glow blue"></div>
     <p class="eyebrow">Under the Hood</p>
     <h2>How <em>identity resolution</em> works</h2>
-    <div class="two-col">
-      <div>
-        <ul class="bullets bullets--two-line">
-          <li>
-            <div>
-              <div>Web SDK assigns a <strong>device ID</strong> to every visitor</div>
-              <div class="dim">A unique anonymous identifier per browser</div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <div>Behavioral events <strong>stream in real time</strong></div>
-              <div class="dim">Page views, product views, configurations</div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <div>Lead submission sends <strong>identity signals</strong></div>
-              <div class="dim">Email, phone, name matched against CRM contacts</div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <div>Data Cloud <strong>reconciliation rules</strong> match and merge</div>
-              <div class="dim">Anonymous device + CRM record = one Unified Individual</div>
-            </div>
-          </li>
-          <li>
-            <div>
-              <div>Unified profile includes <strong>full CRM enrichment</strong></div>
-              <div class="dim">Address, MDM ID, dealer history, and every lead</div>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <div class="card" style="margin-bottom: 16px;">
-          <h3 style="color: #5c6478; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">Data Streams</h3>
-          <div style="display:flex; flex-direction:column; gap: 10px;">
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(0,180,216,0.06); border-radius: 8px; font-size: 14px;">
-              <span>Behavioral Events</span><span style="color:#00b4d8;">Real-time</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(46,196,182,0.06); border-radius: 8px; font-size: 14px;">
-              <span>Identity Signals</span><span style="color:#2ec4b6;">Real-time</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(139,92,246,0.06); border-radius: 8px; font-size: 14px;">
-              <span>Contact Point Email</span><span style="color:#8b5cf6;">Real-time</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(251,146,60,0.06); border-radius: 8px; font-size: 14px;">
-              <span>Contact Point Phone</span><span style="color:#fb923c;">Real-time</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 14px;">
-              <span>CRM Contacts</span><span style="color:#5c6478;">Synced</span>
-            </div>
-          </div>
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 36px;">
+      <div style="display: flex; align-items: flex-start; gap: 24px; padding: 20px 28px; background: rgba(0,180,216,0.04); border: 1px solid rgba(0,180,216,0.12); border-radius: 12px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(0,180,216,0.15); color: #00b4d8; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+        <div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">Web SDK assigns a <span style="color:#00b4d8;">device ID</span> to every visitor</div>
+          <div style="font-size: 14px; color: #5c6478;">A unique anonymous identifier per browser — no login required</div>
         </div>
-        <div class="card">
-          <h3 style="color: #5c6478; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;">Resolution Output</h3>
-          <div style="display:flex; flex-direction:column; gap: 10px;">
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(0,180,216,0.06); border-radius: 8px; font-size: 14px;">
-              <span>Unified Individual</span><span style="color:#00b4d8;">1 profile</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(46,196,182,0.06); border-radius: 8px; font-size: 14px;">
-              <span>Lead Engagements</span><span style="color:#2ec4b6;">Per vehicle</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 14px;">
-              <span>Resolved Sources</span><span style="color:#5c6478;">Device + CRM</span>
-            </div>
-          </div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 24px; padding: 20px 28px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); color: #9aa3b8; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+        <div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">Behavioral events <span style="color:#00b4d8;">stream in real time</span></div>
+          <div style="font-size: 14px; color: #5c6478;">Page views, product views, vehicle configurations — all captured as they happen</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 24px; padding: 20px 28px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); color: #9aa3b8; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+        <div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">Lead submission fires <span style="color:#00b4d8;">identity signals</span></div>
+          <div style="font-size: 14px; color: #5c6478;">Email, phone, and name are sent to Data Cloud alongside the vehicle interest</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 24px; padding: 20px 28px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); color: #9aa3b8; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">4</div>
+        <div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">Data Cloud <span style="color:#00b4d8;">reconciliation rules</span> match and merge</div>
+          <div style="font-size: 14px; color: #5c6478;">Anonymous device ID is linked to the matching CRM contact — creating one Unified Individual</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 24px; padding: 20px 28px; background: rgba(0,180,216,0.06); border: 1px solid rgba(0,180,216,0.2); border-radius: 12px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(0,180,216,0.2); color: #00b4d8; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">5</div>
+        <div>
+          <div style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">Unified profile surfaces <span style="color:#00b4d8;">full CRM enrichment</span></div>
+          <div style="font-size: 14px; color: #5c6478;">Address, dealer history, MDM ID, and every vehicle lead — all in one view, available to every Salesforce app</div>
         </div>
       </div>
     </div>
@@ -635,32 +597,32 @@ h2 em { font-style: normal; color: #00b4d8; }
     <div class="three-col">
       <div class="card">
         <div class="card-icon blue">&#9201;</div>
-        <h3>Speed to Lead</h3>
-        <p>Leads created in real time — not hours or days later. Dealers receive enriched, qualified leads the moment a customer shows intent.</p>
+        <h3>Faster Response Times</h3>
+        <p>Leads are created in real time with full vehicle and customer context. Reps engage while intent is high — not hours later from a bare-bones form submission.</p>
       </div>
       <div class="card">
         <div class="card-icon green">&#9673;</div>
-        <h3>Complete Customer View</h3>
-        <p>Every interaction — anonymous and known — stitched into a single profile. No more fragmented views across CRM, web, and dealer systems.</p>
+        <h3>Fewer Duplicate Leads</h3>
+        <p>Data Cloud resolves multiple touches from the same customer into a single unified record — so dealers get one clean lead, not three confusing duplicates.</p>
       </div>
       <div class="card">
-        <div class="card-icon purple">&#9883;</div>
-        <h3>Intelligent Segmentation</h3>
-        <p>Build real-time segments based on live behavior. Target customers who configured a truck in the last 10 minutes, not last quarter.</p>
+        <div class="card-icon purple">&#9650;</div>
+        <h3>Higher Conversion Rates</h3>
+        <p>Reps receive enriched leads with full context — vehicle interest, browsing history, CRM data — enabling faster, more relevant outreach that turns interest into sales.</p>
       </div>
     </div>
     <div class="stats">
       <div>
-        <div class="stat-value">&lt;1s</div>
-        <div class="stat-label">Identity resolution latency</div>
+        <div class="stat-value">&#8593;</div>
+        <div class="stat-label">Lead-to-sale conversion</div>
       </div>
       <div>
-        <div class="stat-value">100%</div>
-        <div class="stat-label">Digital journey captured</div>
+        <div class="stat-value">&#8593;</div>
+        <div class="stat-label">Dealer satisfaction scores</div>
       </div>
       <div>
-        <div class="stat-value">1</div>
-        <div class="stat-label">Unified profile per customer</div>
+        <div class="stat-value">&#8593;</div>
+        <div class="stat-label">Customer satisfaction (NPS)</div>
       </div>
     </div>
   </div>
