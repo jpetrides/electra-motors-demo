@@ -14,9 +14,6 @@ const SF_CLIENT_ID = process.env.SF_CLIENT_ID;
 const SF_CLIENT_SECRET = process.env.SF_CLIENT_SECRET;
 const SF_LOGIN_URL = process.env.SF_LOGIN_URL; // e.g. https://storm-xxx.my.salesforce.com
 
-// Agentforce
-const AGENTFORCE_AGENT_ID = process.env.AGENTFORCE_AGENT_ID;
-
 let tokenCache = { accessToken: null, instanceUrl: null, expiresAt: 0 };
 
 function getSfToken() {
@@ -150,9 +147,24 @@ app.use((req, res, next) => {
   const sitemapScript = `<script src="/js/sitemap.js"></script>`;
   const inspectorCss = `<link rel="stylesheet" href="/css/inspector.css">`;
   const inspectorScript = `<script src="/js/dc-inspector.js"></script>`;
-  const chatWidget = `<script src="/js/chat-widget.js" defer></script>`;
+  const embeddedChat = `<script type="text/javascript">
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US';
+        embeddedservice_bootstrap.init(
+          '00DHo00000d5PwC',
+          'ASA_Vehicle_Questions_Agent',
+          'https://storm-ca6e20bd4496e0.my.site.com/ESWASAVehicleQuestions1776269359768',
+          { scrt2URL: 'https://storm-ca6e20bd4496e0.my.salesforce-scrt.com' }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    }
+  </script>
+  <script type="text/javascript" src="https://storm-ca6e20bd4496e0.my.site.com/ESWASAVehicleQuestions1776269359768/assets/js/bootstrap.min.js" onload="initEmbeddedMessaging()"></script>`;
   html = html.replace('</head>', `${inspectorCss}\n${sdkScript}\n${sitemapScript}\n${inspectorScript}\n</head>`);
-  html = html.replace('</body>', `${chatWidget}\n</body>`);
+  html = html.replace('</body>', `${embeddedChat}\n</body>`);
 
   res.setHeader('Content-Type', 'text/html');
   res.send(html);
@@ -416,108 +428,6 @@ app.post('/api/tools/reset', async (req, res) => {
     });
   } catch (err) {
     console.error('[Tools/reset]', err.message);
-    res.status(502).json({ error: err.message });
-  }
-});
-
-// ── Agentforce Agent API Proxy ────────────────────────────────────────────────
-
-// Pipe an SSE stream from Salesforce to the client response.
-function sfAgentStream(urlPath, token, payload, clientRes) {
-  return new Promise((resolve, reject) => {
-    const url = new URL(urlPath, tokenCache.instanceUrl);
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      Accept: 'text/event-stream',
-      'Content-Length': Buffer.byteLength(payload),
-    };
-    const req = https.request(
-      { hostname: url.hostname, path: url.pathname + url.search, method: 'POST', headers },
-      (sfRes) => {
-        if (sfRes.statusCode >= 400) {
-          let body = '';
-          sfRes.on('data', (d) => (body += d));
-          sfRes.on('end', () => reject(new Error(`Agent API ${sfRes.statusCode}: ${body.slice(0, 300)}`)));
-          return;
-        }
-        sfRes.on('data', (chunk) => clientRes.write(chunk));
-        sfRes.on('end', () => { clientRes.end(); resolve(); });
-        sfRes.on('error', reject);
-      }
-    );
-    req.on('error', reject);
-    req.write(payload);
-    req.end();
-  });
-}
-
-// POST /api/agent/session — create a new Agentforce session
-app.post('/api/agent/session', async (req, res) => {
-  if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
-  if (!AGENTFORCE_AGENT_ID) return res.status(500).json({ error: 'AGENTFORCE_AGENT_ID not configured' });
-  try {
-    const { accessToken } = await getSfToken();
-    const result = await sfRequest('POST', '/services/agentforce/agent-api/v1/sessions', accessToken, {
-      agentId: AGENTFORCE_AGENT_ID,
-      bypassUser: false,
-    });
-    res.json({ sessionId: result.sessionId });
-  } catch (err) {
-    console.error('[Agent/session]', err.message);
-    res.status(502).json({ error: err.message });
-  }
-});
-
-// POST /api/agent/message — send a message; streams SSE back to caller by default
-app.post('/api/agent/message', async (req, res) => {
-  if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
-  const { sessionId, message, noStream } = req.body;
-  if (!sessionId) return res.status(400).json({ error: 'sessionId required' });
-  if (!message) return res.status(400).json({ error: 'message required' });
-  try {
-    const { accessToken } = await getSfToken();
-    const payload = JSON.stringify({ message: { text: message, type: 'TEXT' }, variables: [] });
-
-    if (noStream) {
-      const result = await sfRequest(
-        'POST',
-        `/services/agentforce/agent-api/v1/sessions/${sessionId}/messages`,
-        accessToken,
-        { message: { text: message, type: 'TEXT' }, variables: [] }
-      );
-      return res.json(result);
-    }
-
-    // SSE streaming
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('X-Accel-Buffering', 'no'); // disable Nginx buffering on Heroku
-    res.flushHeaders();
-
-    await sfAgentStream(
-      `/services/agentforce/agent-api/v1/sessions/${sessionId}/messages/stream`,
-      accessToken,
-      payload,
-      res
-    );
-  } catch (err) {
-    console.error('[Agent/message]', err.message);
-    if (!res.headersSent) res.status(502).json({ error: err.message });
-    else res.end();
-  }
-});
-
-// DELETE /api/agent/session/:sessionId — end a session
-app.delete('/api/agent/session/:sessionId', async (req, res) => {
-  if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
-  try {
-    const { accessToken } = await getSfToken();
-    await sfRequest('DELETE', `/services/agentforce/agent-api/v1/sessions/${req.params.sessionId}`, accessToken);
-    res.json({ success: true });
-  } catch (err) {
-    console.error('[Agent/session/delete]', err.message);
     res.status(502).json({ error: err.message });
   }
 });
