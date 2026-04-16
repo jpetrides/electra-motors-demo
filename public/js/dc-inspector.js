@@ -44,21 +44,16 @@ document.addEventListener('DOMContentLoaded', function () {
   `;
   document.body.appendChild(panel);
 
-  // Nav bar toggle button
+  // Floating toggle button (above Agentforce chat)
   const fab = document.createElement('button');
   fab.id = 'dc-inspector-fab';
   fab.innerHTML = `
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>
     </svg>
     <span>D360 Inspector</span>
   `;
-  const navCta = document.querySelector('.nav__cta');
-  if (navCta) {
-    navCta.appendChild(fab);
-  } else {
-    document.body.appendChild(fab);
-  }
+  document.body.appendChild(fab);
 
   // ─── Toggle (persists across page navigations) ──────────────────────────
   function open() {

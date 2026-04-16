@@ -1,25 +1,29 @@
-/* ─── D360 Inspector — Nav Bar Button ─────────────────────────────────── */
+/* ─── D360 Inspector — Floating Button (above Agentforce chat) ───────── */
 #dc-inspector-fab {
-  display: inline-flex;
+  position: fixed;
+  bottom: 92px;
+  left: 24px;
+  z-index: 9000;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: rgba(0, 180, 216, 0.12);
-  color: #00b4d8;
-  border: 1px solid rgba(0, 180, 216, 0.3);
-  border-radius: 8px;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #0090ae, #00b4d8);
+  color: #fff;
+  border: none;
+  border-radius: 100px;
   font-family: var(--font, 'Inter', sans-serif);
-  font-size: 0.8rem;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0, 180, 216, 0.35);
+  transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
 }
 #dc-inspector-fab:hover {
-  background: rgba(0, 180, 216, 0.2);
-  border-color: rgba(0, 180, 216, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(0, 180, 216, 0.5);
 }
-#dc-inspector-fab.hidden { display: none; }
+#dc-inspector-fab.hidden { opacity: 0; pointer-events: none; transform: translateY(8px); }
 
 /* ─── D360 Inspector — Slide-Out Panel ───────────────────────────────────── */
 #dc-inspector {
