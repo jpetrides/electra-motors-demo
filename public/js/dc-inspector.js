@@ -44,14 +44,15 @@ document.addEventListener('DOMContentLoaded', function () {
   `;
   document.body.appendChild(panel);
 
-  // Floating toggle button (above Agentforce chat)
+  // Icon-only toggle button (top-right corner)
   const fab = document.createElement('button');
   fab.id = 'dc-inspector-fab';
+  fab.title = 'D360 Inspector';
+  fab.setAttribute('aria-label', 'D360 Inspector');
   fab.innerHTML = `
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>
     </svg>
-    <span>D360 Inspector</span>
   `;
   document.body.appendChild(fab);
 

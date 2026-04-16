@@ -1,29 +1,27 @@
-/* ─── D360 Inspector — Floating Button (above Agentforce chat) ───────── */
+/* ─── D360 Inspector — Icon Button (top-right, fixed) ────────────────── */
 #dc-inspector-fab {
   position: fixed;
-  bottom: 92px;
-  left: 24px;
-  z-index: 9000;
+  top: 20px;
+  right: 20px;
+  z-index: 9998;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  background: linear-gradient(135deg, #0090ae, #00b4d8);
-  color: #fff;
-  border: none;
-  border-radius: 100px;
-  font-family: var(--font, 'Inter', sans-serif);
-  font-size: 13px;
-  font-weight: 600;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: rgba(0, 180, 216, 0.15);
+  color: #00b4d8;
+  border: 1px solid rgba(0, 180, 216, 0.3);
+  border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 180, 216, 0.35);
-  transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, border-color 0.2s, opacity 0.2s;
 }
 #dc-inspector-fab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(0, 180, 216, 0.5);
+  background: rgba(0, 180, 216, 0.25);
+  border-color: rgba(0, 180, 216, 0.5);
 }
-#dc-inspector-fab.hidden { opacity: 0; pointer-events: none; transform: translateY(8px); }
+#dc-inspector-fab.hidden { opacity: 0; pointer-events: none; }
 
 /* ─── D360 Inspector — Slide-Out Panel ───────────────────────────────────── */
 #dc-inspector {
