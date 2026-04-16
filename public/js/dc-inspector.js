@@ -1,10 +1,10 @@
 /**
- * Electra Motors — Data Cloud Inspector Panel
+ * Electra Motors — D360 Inspector Panel
  *
  * Slide-out panel that queries the Data Graph API via the server proxy
  * to show real-time identity resolution status for a given device ID.
  *
- * Activated by the floating DC button (always visible) or ?inspector=true.
+ * Activated by the floating D360 button (top-right) or ?inspector=true.
  */
 document.addEventListener('DOMContentLoaded', function () {
   let expanded = sessionStorage.getItem('dci-open') === '1';
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <svg class="dci-logo" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>
         </svg>
-        <span class="dci-title">Data Cloud Inspector</span>
+        <span class="dci-title">D360 Inspector</span>
       </div>
       <button class="dci-close" aria-label="Close">&times;</button>
     </div>
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>
     </svg>
-    <span>DC Inspector</span>
+    <span>D360 Inspector</span>
   `;
   document.body.appendChild(fab);
 

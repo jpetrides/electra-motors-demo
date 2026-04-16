@@ -1,7 +1,7 @@
-/* ─── DC Inspector — Floating Action Button ─────────────────────────────── */
+/* ─── D360 Inspector — Floating Action Button ────────────────────────────── */
 #dc-inspector-fab {
   position: fixed;
-  bottom: 24px;
+  top: 84px;
   right: 24px;
   z-index: 9998;
   display: flex;
@@ -23,9 +23,9 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 28px rgba(0, 180, 216, 0.5);
 }
-#dc-inspector-fab.hidden { opacity: 0; pointer-events: none; transform: translateY(8px); }
+#dc-inspector-fab.hidden { opacity: 0; pointer-events: none; transform: translateY(-8px); }
 
-/* ─── DC Inspector — Slide-Out Panel ────────────────────────────────────── */
+/* ─── D360 Inspector — Slide-Out Panel ───────────────────────────────────── */
 #dc-inspector {
   position: fixed;
   top: 0;

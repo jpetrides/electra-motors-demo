@@ -188,7 +188,7 @@ app.post('/api/test-drive', (req, res) => {
   res.json({ success: true, message: 'Test drive request received.' });
 });
 
-// Data Cloud Inspector — lookup device ID via Data Graph API
+// D360 Inspector — lookup device ID via Data Graph API
 app.get('/api/dc-lookup/:deviceId', async (req, res) => {
   if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
   try {
