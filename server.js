@@ -127,6 +127,22 @@ app.get('/tools', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tools', 'index.html'));
 });
 
+// Custom MIAW chat app (React SPA built from chat-app/ → chat-app/dist)
+// Served at /chat — bypasses the HTML-injection middleware below so the
+// React app gets its pristine index.html with no native ESW widget injected.
+// The React app talks directly to the Salesforce Messaging REST API.
+const chatAppDist = path.join(__dirname, 'chat-app', 'dist');
+if (fs.existsSync(chatAppDist)) {
+  app.use('/chat', express.static(chatAppDist));
+  app.get(/^\/chat(\/.*)?$/, (_req, res) => {
+    res.sendFile(path.join(chatAppDist, 'index.html'));
+  });
+} else {
+  app.get('/chat', (_req, res) => {
+    res.status(503).send('Chat app not built. Run: cd chat-app && npm install && npm run build');
+  });
+}
+
 // Inject SDK meta tags into every HTML response
 app.use((req, res, next) => {
   if (!req.path.endsWith('.html') && !req.path.endsWith('/') && req.path !== '/') {
