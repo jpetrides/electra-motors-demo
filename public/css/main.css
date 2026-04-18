@@ -360,3 +360,20 @@ hr.divider {
   :root { --section-pad: 48px; }
   .grid-4 { grid-template-columns: 1fr; }
 }
+
+/* ─── Hide native Embedded Messaging widget ──────────────────────────────────
+ * The native ESW bootstrap still loads (keeps DC tracking + session cookies
+ * warm, and leaves a rollback path if the custom /chat experience breaks),
+ * but its visible UI is hidden so only the custom MIAW chat at /chat is
+ * user-facing. To re-enable: delete this block or add `.show-native-esw`
+ * to <html>.
+ */
+html:not(.show-native-esw) embedded-messaging,
+html:not(.show-native-esw) [class^="embeddedMessaging"],
+html:not(.show-native-esw) [class*=" embeddedMessaging"],
+html:not(.show-native-esw) [id^="embeddedMessaging"],
+html:not(.show-native-esw) [id*=" embeddedMessaging"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

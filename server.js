@@ -128,14 +128,30 @@ app.get('/tools', (_req, res) => {
 });
 
 // Custom MIAW chat app (React SPA built from chat-app/ → chat-app/dist)
-// Served at /chat — bypasses the HTML-injection middleware below so the
-// React app gets its pristine index.html with no native ESW widget injected.
-// The React app talks directly to the Salesforce Messaging REST API.
+// Served at /chat — bypasses the generic HTML-injection middleware below
+// (which targets files under public/) and instead injects the DC Web SDK
+// tags directly into the chat SPA's index.html. That way the React app
+// can call window.EM.identify() / EM.track() to fire the exact same
+// Data Cloud events that the manual /get-a-quote and /test-drive forms
+// fire — triggering the same Real_Time_Lead_Capture Flow → Apex → Lead
+// pipeline with zero new server-side code.
 const chatAppDist = path.join(__dirname, 'chat-app', 'dist');
 if (fs.existsSync(chatAppDist)) {
-  app.use('/chat', express.static(chatAppDist));
+  // Serve static assets (JS, CSS, images) from chat-app/dist directly
+  app.use('/chat/assets', express.static(path.join(chatAppDist, 'assets'), { immutable: true, maxAge: '1y' }));
+  app.use('/chat/favicon.svg', express.static(path.join(chatAppDist, 'favicon.svg')));
+
+  // All other /chat requests: serve index.html with the SDK injected.
+  // We deliberately DO NOT inject the native ESW bootstrap here — the SPA
+  // has its own custom MIAW client and hides the native widget via CSS.
   app.get(/^\/chat(\/.*)?$/, (_req, res) => {
-    res.sendFile(path.join(chatAppDist, 'index.html'));
+    let html = fs.readFileSync(path.join(chatAppDist, 'index.html'), 'utf8');
+    const sdkScript = `<script src="https://cdn.c360a.salesforce.com/beacon/c360a/${BUNDLE_ID}/scripts/c360a.min.js"></script>`;
+    const sitemapScript = `<script src="/js/sitemap.js"></script>`;
+    const emHelperScript = `<script src="/js/sdk.js"></script>`;
+    html = html.replace('</head>', `${sdkScript}\n${sitemapScript}\n${emHelperScript}\n</head>`);
+    res.setHeader('Content-Type', 'text/html');
+    res.send(html);
   });
 } else {
   app.get('/chat', (_req, res) => {

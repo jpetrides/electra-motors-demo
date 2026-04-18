@@ -6,6 +6,7 @@ import TestDriveForm, { type TestDrivePayload } from './components/TestDriveForm
 import { miawConfig } from './config'
 import { useConversation } from './hooks/useConversation'
 import { buildRoutingAttributes, getPageContext } from './utils/browserContext'
+import { emitTestDriveEvents } from './utils/dcEvents'
 
 export default function ChatApp() {
   const conv = useConversation(miawConfig)
@@ -32,23 +33,45 @@ export default function ChatApp() {
   }, [])
 
   const handleBook = async (payload: TestDrivePayload) => {
-    // Deterministic path: create the Lead server-side, then tell the agent
-    // so it can acknowledge + pivot to follow-ups in-conversation.
-    const res = await fetch('/api/test-drive', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: payload.email,
-        vehicleModel: payload.vehicleModel,
-        preferredDate: payload.preferredDate,
-      }),
+    // Primary path: fire the same two Data Cloud Web SDK events that the
+    // manual /get-a-quote and /test-drive HTML forms fire. The existing
+    // Real_Time_Lead_Capture Flow (triggered on DataGraphDataChange of
+    // the RealTimeLeads data graph) picks these up via IDR and calls
+    // RealTimeLeadCaptureAction Apex to create/enrich the Lead. The
+    // DeviceId is stamped automatically by the SDK from the _sfdc_*
+    // cookie — the same deviceId we already pass to the bot via
+    // routingAttributes, so the Lead and conversation correlate.
+    const emitted = emitTestDriveEvents({
+      email: payload.email,
+      vehicleModel: payload.vehicleModel,
+      vehicleSku: pageContext.current.vehicleSku,
+      preferredDate: payload.preferredDate,
     })
-    if (!res.ok) {
-      const text = await res.text().catch(() => res.statusText)
-      throw new Error(`Booking failed: ${text}`)
+
+    // Best-effort server log (mirrors what the manual /test-drive form does;
+    // this endpoint does not itself create the Lead — DC + Flow does).
+    try {
+      await fetch('/api/test-drive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: payload.email,
+          vehicleModel: payload.vehicleModel,
+          preferredDate: payload.preferredDate,
+          source: 'chat',
+          sdkEmitted: emitted,
+        }),
+      })
+    } catch (err) {
+      console.warn('[ChatApp] /api/test-drive log failed (non-fatal):', err)
     }
+
     setShowForm(false)
-    setBookingResult(`Booked ${payload.vehicleModel} for ${payload.preferredDate}`)
+    setBookingResult(
+      emitted
+        ? `Booked ${payload.vehicleModel} for ${payload.preferredDate}`
+        : `Request received for ${payload.vehicleModel} on ${payload.preferredDate} (tracking offline)`,
+    )
     // Let the agent know, so the conversation can continue naturally.
     const msg = `I just submitted a test drive request for the ${payload.vehicleModel} on ${payload.preferredDate} (email ${payload.email}). Please confirm and let me know next steps.`
     void conv.sendMessage(msg)
