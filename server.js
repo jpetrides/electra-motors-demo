@@ -127,23 +127,25 @@ app.get('/tools', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tools', 'index.html'));
 });
 
-// Custom MIAW chat app (React SPA built from chat-app/ → chat-app/dist)
-// Served at /chat — bypasses the generic HTML-injection middleware below
-// (which targets files under public/) and instead injects the DC Web SDK
-// tags directly into the chat SPA's index.html. That way the React app
-// can call window.EM.identify() / EM.track() to fire the exact same
-// Data Cloud events that the manual /get-a-quote and /test-drive forms
-// fire — triggering the same Real_Time_Lead_Capture Flow → Apex → Lead
-// pipeline with zero new server-side code.
+// Custom MIAW chat app — two deliverables from the same chat-app/ React code:
+//
+//   1. SPA at /chat (chat-app/dist/)    — legacy full-page route, kept as a
+//      deep-link/deploy-verify target.
+//   2. Embeddable widget (chat-app/dist-widget/) — single IIFE bundle served
+//      at /js/elektra-chat.js and CSS at /css/elektra-chat.css. Every HTML
+//      page gets /js/chat-widget-loader.js injected (see middleware below),
+//      which lazy-loads this bundle on first FAB click.
+//
+// Both paths inject the DC Web SDK (c360a.min.js, sitemap.js, sdk.js) so
+// the chat emits the same leadSubmit / testDriveRequest engagement events
+// the static forms do, feeding the existing Real_Time_Lead_Capture Flow.
 const chatAppDist = path.join(__dirname, 'chat-app', 'dist');
+const chatAppWidget = path.join(__dirname, 'chat-app', 'dist-widget');
+
 if (fs.existsSync(chatAppDist)) {
-  // Serve static assets (JS, CSS, images) from chat-app/dist directly
+  // /chat full-page route
   app.use('/chat/assets', express.static(path.join(chatAppDist, 'assets'), { immutable: true, maxAge: '1y' }));
   app.use('/chat/favicon.svg', express.static(path.join(chatAppDist, 'favicon.svg')));
-
-  // All other /chat requests: serve index.html with the SDK injected.
-  // We deliberately DO NOT inject the native ESW bootstrap here — the SPA
-  // has its own custom MIAW client and hides the native widget via CSS.
   app.get(/^\/chat(\/.*)?$/, (_req, res) => {
     let html = fs.readFileSync(path.join(chatAppDist, 'index.html'), 'utf8');
     const sdkScript = `<script src="https://cdn.c360a.salesforce.com/beacon/c360a/${BUNDLE_ID}/scripts/c360a.min.js"></script>`;
@@ -156,6 +158,18 @@ if (fs.existsSync(chatAppDist)) {
 } else {
   app.get('/chat', (_req, res) => {
     res.status(503).send('Chat app not built. Run: cd chat-app && npm install && npm run build');
+  });
+}
+
+// Widget bundle assets — served at stable URLs so the loader can fetch them.
+if (fs.existsSync(chatAppWidget)) {
+  app.get('/js/elektra-chat.js', (_req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(chatAppWidget, 'elektra-chat.js'));
+  });
+  app.get('/css/elektra-chat.css', (_req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(chatAppWidget, 'elektra-chat.css'));
   });
 }
 
@@ -177,6 +191,10 @@ app.use((req, res, next) => {
 
   const sdkScript = `<script src="https://cdn.c360a.salesforce.com/beacon/c360a/${BUNDLE_ID}/scripts/c360a.min.js"></script>`;
   const sitemapScript = `<script src="/js/sitemap.js"></script>`;
+  // Elektra Chat widget loader — adds a floating chat FAB + slide-in drawer
+  // to every page, lazy-loads the React widget bundle on first click. The
+  // loader skips itself on /chat (where the SPA is the whole page).
+  const chatWidgetLoader = `<script src="/js/chat-widget-loader.js" defer></script>`;
   const inspectorCss = `<link rel="stylesheet" href="/css/inspector.css">`;
   const inspectorScript = `<script src="/js/dc-inspector.js"></script>`;
   const embeddedChat = `<script type="text/javascript">
@@ -195,7 +213,7 @@ app.use((req, res, next) => {
     }
   </script>
   <script type="text/javascript" src="https://storm-ca6e20bd4496e0.my.site.com/ESWASAVehicleQuestions1776269359768/assets/js/bootstrap.min.js" onload="initEmbeddedMessaging()"></script>`;
-  html = html.replace('</head>', `${inspectorCss}\n${sdkScript}\n${sitemapScript}\n${inspectorScript}\n</head>`);
+  html = html.replace('</head>', `${inspectorCss}\n${sdkScript}\n${sitemapScript}\n${inspectorScript}\n${chatWidgetLoader}\n</head>`);
   html = html.replace('</body>', `${embeddedChat}\n</body>`);
 
   res.setHeader('Content-Type', 'text/html');

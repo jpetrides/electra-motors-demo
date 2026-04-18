@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "heroku-postbuild": "cd chat-app && npm install --include=dev && npm run build"
+    "heroku-postbuild": "cd chat-app && npm install --include=dev && npm run build:all"
   },
   "engines": {
     "node": ">=18.0.0"

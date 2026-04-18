@@ -51,7 +51,28 @@
   }
 
   // ─── Inject the "Chat" link into nav__links + nav__cta ─────────────
+  //
+  // The href is still the full /chat deep-link URL so the link is
+  // semantically a real navigation — useful for right-click "open in new
+  // tab", middle-click, users without JS, and search engines. The click
+  // handler hijacks the normal left-click case and opens the floating
+  // chat widget drawer instead (via window.ElektraChatLoader.open),
+  // keeping the user on the current page.
   const chatHref = buildChatUrl();
+
+  function openDrawerOrFollow(e) {
+    // Respect modifier clicks and middle-click → let the browser handle it
+    // as a real navigation to /chat.
+    if (e.defaultPrevented) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (window.ElektraChatLoader && typeof window.ElektraChatLoader.open === 'function') {
+      e.preventDefault();
+      window.ElektraChatLoader.open();
+    }
+    // If the loader isn't available for some reason (failed to load), fall
+    // through and let the browser navigate to /chat as the safe fallback.
+  }
 
   const navLinks = nav.querySelector('.nav__links');
   if (navLinks) {
@@ -59,6 +80,7 @@
     const a = document.createElement('a');
     a.href = chatHref;
     a.textContent = 'Chat';
+    a.addEventListener('click', openDrawerOrFollow);
     li.appendChild(a);
     navLinks.appendChild(li);
   }
@@ -71,6 +93,7 @@
     chatBtn.href = chatHref;
     chatBtn.className = 'btn btn-primary nav__cta-chat';
     chatBtn.textContent = 'Chat with Advisor';
+    chatBtn.addEventListener('click', openDrawerOrFollow);
     // Insert as first child so it lands to the left of existing CTAs
     navCta.insertBefore(chatBtn, navCta.firstChild);
   }

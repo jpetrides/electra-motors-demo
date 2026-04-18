@@ -10,5 +10,6 @@ _reference/
 
 # Vite/React build artifacts
 chat-app/dist/
+chat-app/dist-widget/
 chat-app/.vite/
 chat-app/**/*.tsbuildinfo

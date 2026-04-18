@@ -8,7 +8,20 @@ import { useConversation } from './hooks/useConversation'
 import { buildRoutingAttributes, getPageContext, waitForDeviceId } from './utils/browserContext'
 import { emitTestDriveEvents, logDcEventDiagnostics } from './utils/dcEvents'
 
-export default function ChatApp() {
+interface ChatAppProps {
+  /**
+   * When true, render at 100% of the parent container (for drawer/modal hosts).
+   * When false (default), render full-screen via h-screen (legacy /chat route).
+   */
+  embedded?: boolean
+  /**
+   * Called when the user dismisses the chat via the header close button.
+   * Only invoked when rendered in embedded mode.
+   */
+  onClose?: () => void
+}
+
+export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}) {
   const conv = useConversation(miawConfig)
   const [showForm, setShowForm] = useState(false)
   const [bookingResult, setBookingResult] = useState<string | null>(null)
@@ -87,10 +100,11 @@ export default function ChatApp() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-elektra-bg">
+    <div className={`${embedded ? 'h-full' : 'h-screen'} flex flex-col bg-elektra-bg`}>
       <ChatHeader
         status={conv.status}
         onEnd={conv.status === 'active' ? conv.endConversation : undefined}
+        onClose={embedded ? onClose : undefined}
         title={conv.agentDisplayName ?? 'Elektra Advisor'}
         subtitle="Elektra Motors"
       />

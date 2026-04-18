@@ -3,6 +3,12 @@ import type { ConversationStatus } from '../hooks/useConversation'
 interface Props {
   status: ConversationStatus
   onEnd?: () => void
+  /**
+   * When provided, a close "×" button is rendered in the header. Used by
+   * the embedded widget to let the user dismiss the drawer without
+   * ending the conversation on the backend.
+   */
+  onClose?: () => void
   title?: string
   subtitle?: string
 }
@@ -28,6 +34,7 @@ const statusColor: Record<ConversationStatus, string> = {
 export default function ChatHeader({
   status,
   onEnd,
+  onClose,
   title = 'Elektra Advisor',
   subtitle = 'Elektra Motors',
 }: Props) {
@@ -54,6 +61,18 @@ export default function ChatHeader({
           className="px-3 py-1.5 rounded-lg text-white/40 hover:text-elektra-red hover:bg-elektra-red/10 transition-colors text-xs font-medium"
         >
           End
+        </button>
+      )}
+      {onClose && (
+        <button
+          onClick={onClose}
+          title="Close chat"
+          aria-label="Close chat"
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+            <path fillRule="evenodd" d="M4.28 3.22a.75.75 0 00-1.06 1.06L8.94 10l-5.72 5.72a.75.75 0 101.06 1.06L10 11.06l5.72 5.72a.75.75 0 101.06-1.06L11.06 10l5.72-5.72a.75.75 0 00-1.06-1.06L10 8.94 4.28 3.22z" clipRule="evenodd" />
+          </svg>
         </button>
       )}
     </div>
