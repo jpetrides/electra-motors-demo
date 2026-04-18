@@ -5,7 +5,7 @@ import MessageList from './components/MessageList'
 import TestDriveForm, { type TestDrivePayload } from './components/TestDriveForm'
 import { miawConfig } from './config'
 import { useConversation } from './hooks/useConversation'
-import { buildRoutingAttributes, getPageContext } from './utils/browserContext'
+import { buildRoutingAttributes, getPageContext, waitForDeviceId } from './utils/browserContext'
 import { emitTestDriveEvents, logDcEventDiagnostics } from './utils/dcEvents'
 
 export default function ChatApp() {
@@ -27,12 +27,16 @@ export default function ChatApp() {
     // window.EM / window.SalesforceInteractions before we diagnose.
     setTimeout(logDcEventDiagnostics, 1500)
 
-    const attrs = buildRoutingAttributes()
-    console.log('[ChatApp] starting conversation | routingAttributes:', attrs)
-    // Small defer so the hook's state is settled before we fire off startConversation
-    setTimeout(() => {
+    // Wait for the DC SDK to be ready so routingAttributes.deviceId matches
+    // the deviceId stamped on every subsequent EM.track/identify event.
+    // If the SDK never loads (consent withheld, etc) we still start the
+    // conversation — just without a deviceId attribute.
+    void (async () => {
+      await waitForDeviceId(2000)
+      const attrs = buildRoutingAttributes()
+      console.log('[ChatApp] starting conversation | routingAttributes:', attrs)
       void conv.startConversation(Object.keys(attrs).length ? attrs : undefined)
-    }, 0)
+    })()
     // intentionally only run this once
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
