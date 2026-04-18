@@ -90,6 +90,14 @@ export function emitTestDriveEvents(payload: TestDriveEvent): boolean {
     return false
   }
 
+  if (!payload.firstName || !payload.lastName) {
+    console.warn(
+      '[ChatApp] firstName/lastName missing — identity event will be skipped by sdk.js, ' +
+        'which prevents IDR from creating a named Individual for this deviceId.',
+      { firstName: payload.firstName, lastName: payload.lastName },
+    )
+  }
+
   console.log('[ChatApp] firing DC events:', { identify: 'formSubmit', track: 'testDriveRequest', payload })
 
   EM.identify(

@@ -16,6 +16,8 @@ import { useState } from 'react'
  */
 
 export interface TestDrivePayload {
+  firstName: string
+  lastName: string
   email: string
   vehicleModel: string
   preferredDate: string
@@ -30,13 +32,20 @@ interface Props {
 const VEHICLES = ['Reaktive', 'Megavolt', 'Regulator', 'Harmonic', 'Beam', 'Ignite']
 
 export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Props) {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [vehicleModel, setVehicleModel] = useState(defaultVehicle ?? '')
   const [preferredDate, setPreferredDate] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const valid = email.includes('@') && vehicleModel && preferredDate
+  const valid =
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    email.includes('@') &&
+    vehicleModel &&
+    preferredDate
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,7 +53,13 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
     setSubmitting(true)
     setError(null)
     try {
-      await onSubmit({ email: email.trim(), vehicleModel, preferredDate })
+      await onSubmit({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim(),
+        vehicleModel,
+        preferredDate,
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Submission failed')
       setSubmitting(false)
@@ -70,6 +85,37 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
+              First Name <span className="text-elektra-accent">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              autoComplete="given-name"
+              value={firstName}
+              onChange={e => setFirstName(e.target.value)}
+              placeholder="Jane"
+              className="w-full glass rounded-lg px-3 py-2 text-white text-sm placeholder-white/25 outline-none focus:border-elektra-accent/50 transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
+              Last Name <span className="text-elektra-accent">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              autoComplete="family-name"
+              value={lastName}
+              onChange={e => setLastName(e.target.value)}
+              placeholder="Doe"
+              className="w-full glass rounded-lg px-3 py-2 text-white text-sm placeholder-white/25 outline-none focus:border-elektra-accent/50 transition-colors"
+            />
+          </div>
+        </div>
+
         <div>
           <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
             Email <span className="text-elektra-accent">*</span>
@@ -77,6 +123,7 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
           <input
             type="email"
             required
+            autoComplete="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="you@example.com"

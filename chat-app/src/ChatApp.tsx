@@ -64,6 +64,8 @@ export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}
     // cookie — the same deviceId we already pass to the bot via
     // routingAttributes, so the Lead and conversation correlate.
     const emitted = emitTestDriveEvents({
+      firstName: payload.firstName,
+      lastName: payload.lastName,
       email: payload.email,
       vehicleModel: payload.vehicleModel,
       vehicleSku: pageContext.current.vehicleSku,
@@ -77,6 +79,8 @@ export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          firstName: payload.firstName,
+          lastName: payload.lastName,
           email: payload.email,
           vehicleModel: payload.vehicleModel,
           preferredDate: payload.preferredDate,
@@ -95,7 +99,7 @@ export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}
         : `Request received for ${payload.vehicleModel} on ${payload.preferredDate} (tracking offline)`,
     )
     // Let the agent know, so the conversation can continue naturally.
-    const msg = `I just submitted a test drive request for the ${payload.vehicleModel} on ${payload.preferredDate} (email ${payload.email}). Please confirm and let me know next steps.`
+    const msg = `I just submitted a test drive request for the ${payload.vehicleModel} on ${payload.preferredDate} under ${payload.firstName} ${payload.lastName} (email ${payload.email}). Please confirm and let me know next steps.`
     void conv.sendMessage(msg)
   }
 
