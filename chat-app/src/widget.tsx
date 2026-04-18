@@ -75,8 +75,14 @@ function unmount(rootEl: Element): void {
   }
 }
 
-// Publish the public API. Using Object.defineProperty keeps it read-only,
-// which defends against accidental (or host-site) stomping.
+// The public widget API.
+//
+// Vite's IIFE/lib build wraps this module in `var ElektraChat = (IIFE)()`,
+// so the default export is auto-published to window.ElektraChat at
+// script-load time. Do NOT redefine window.ElektraChat manually from
+// here: an earlier version used Object.defineProperty with
+// writable:false, which fought Vite's own assignment at the end of
+// the IIFE and left window.ElektraChat permanently undefined.
 declare global {
   interface Window {
     ElektraChat?: {
@@ -92,13 +98,5 @@ const api = {
   unmount,
   version: '1.0.0',
 } as const
-
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window, 'ElektraChat', {
-    value: api,
-    writable: false,
-    configurable: false,
-  })
-}
 
 export default api
