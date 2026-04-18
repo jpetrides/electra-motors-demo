@@ -1,4 +1,14 @@
 node_modules/
 .env
+.env.local
+.env.*.local
 .DS_Store
 *.log
+
+# Local-only reference code (do not ship to Heroku/GitHub)
+_reference/
+
+# Vite/React build artifacts
+chat-app/dist/
+chat-app/.vite/
+chat-app/**/*.tsbuildinfo

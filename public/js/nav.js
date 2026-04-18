@@ -1,5 +1,12 @@
 /**
- * Navigation — scroll state + mobile hamburger
+ * Navigation — scroll state, mobile hamburger, active-link highlighting,
+ * and runtime injection of a "Chat with Advisor" entry point that deep-links
+ * into the custom MIAW chat at /chat.
+ *
+ * On model VDP pages (/models/electra-<slug>/), the link carries the
+ * vehicleModel + vehicleSku as query params so the TestDriveForm inside
+ * the chat pre-fills and the MIAW routingAttributes attach the context
+ * to the conversation for the Agentforce bot.
  */
 (function () {
   const nav = document.querySelector('.nav');
@@ -18,7 +25,58 @@
     });
   }
 
-  // Active link
+  // ─── Build the /chat URL with optional VDP context ─────────────────
+  // Maps the VDP slug → canonical model name + SKU, sourced from the
+  // existing EM.track('productView', ...) values on each model page.
+  const VDP_CONTEXT = {
+    'electra-beam':      { model: 'Electra Beam Plus',            sku: 'ELK-HATCH-PLUS' },
+    'electra-harmonic':  { model: 'Electra Harmonic SE',          sku: 'ELK-SEDAN-AWD'  },
+    'electra-ignite':    { model: 'Electra Ignite Platinum',      sku: 'ELK-TRUCK-PLAT' },
+    'electra-megavolt':  { model: 'Electra Megavolt GT',          sku: 'ELK-COUPE-GT'   },
+    'electra-reaktive':  { model: 'Electra Reaktive Touring',     sku: 'ELK-SUV-7'      },
+    'electra-regulator': { model: 'Electra Regulator Performance',sku: 'ELK-EV-PERF'    },
+  };
+
+  function buildChatUrl() {
+    const m = window.location.pathname.match(/^\/models\/(electra-[a-z]+)\//);
+    if (!m) return '/chat';
+    const ctx = VDP_CONTEXT[m[1]];
+    if (!ctx) return '/chat';
+    const qs = new URLSearchParams({
+      vehicleModel: ctx.model,
+      vehicleSku:   ctx.sku,
+      currentPage:  window.location.pathname,
+    });
+    return '/chat?' + qs.toString();
+  }
+
+  // ─── Inject the "Chat" link into nav__links + nav__cta ─────────────
+  const chatHref = buildChatUrl();
+
+  const navLinks = nav.querySelector('.nav__links');
+  if (navLinks) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = chatHref;
+    a.textContent = 'Chat';
+    li.appendChild(a);
+    navLinks.appendChild(li);
+  }
+
+  // Add a prominent cyan pill in the CTA area — becomes the primary path
+  // while the native ESW widget is hidden.
+  const navCta = nav.querySelector('.nav__cta');
+  if (navCta) {
+    const chatBtn = document.createElement('a');
+    chatBtn.href = chatHref;
+    chatBtn.className = 'btn btn-primary nav__cta-chat';
+    chatBtn.textContent = 'Chat with Advisor';
+    // Insert as first child so it lands to the left of existing CTAs
+    navCta.insertBefore(chatBtn, navCta.firstChild);
+  }
+
+  // Active-link highlighting (runs after the Chat link is added so it
+  // can be the active one when we're at /chat).
   const links = nav.querySelectorAll('.nav__links a');
   const path = window.location.pathname;
   links.forEach(link => {

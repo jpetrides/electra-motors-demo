@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  /* Elektra palette (mirrors heroku-site/public/css/main.css) */
+  --color-elektra-bg: #0a0c12;
+  --color-elektra-bg-2: #111318;
+  --color-elektra-bg-3: #1a1d26;
+  --color-elektra-card: #14161f;
+  --color-elektra-card-hover: #1c1f2b;
+  --color-elektra-accent: #00b4d8;
+  --color-elektra-accent-bright: #00cff5;
+  --color-elektra-accent-dim: #0090ae;
+  --color-elektra-text: #e8eaf0;
+  --color-elektra-text-2: #9aa3b8;
+  --color-elektra-text-3: #5c6478;
+  --color-elektra-red: #e63946;
+  --color-elektra-green: #2ec4b6;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font-sans);
+  background: var(--color-elektra-bg);
+  color: var(--color-elektra-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glow-accent {
+  box-shadow: 0 0 24px rgba(0, 180, 216, 0.35), 0 0 64px rgba(0, 180, 216, 0.12);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fade-in 0.25s ease forwards;
+}
