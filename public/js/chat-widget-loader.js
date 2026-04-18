@@ -39,26 +39,37 @@
 
   function injectStyles() {
     if (document.getElementById('elektra-chat-loader-styles')) return;
+    // NOTE on pointer-events: the host <div> is position:fixed inset:0
+    // (full viewport) but must NOT block clicks on the page behind it.
+    // Each interactive child opts back in explicitly. Previous version
+    // used a blanket `#elektra-chat-host *{pointer-events:auto}` which
+    // leaked onto the closed backdrop and swallowed every click on the
+    // page, including on the FAB itself (because the backdrop sits on
+    // top of the FAB in stacking order).
     var css = [
       '#elektra-chat-host{position:fixed;inset:0;pointer-events:none;z-index:2147483000}',
-      '#elektra-chat-host *{pointer-events:auto}',
       '.elektra-chat-fab{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;',
       '  background:linear-gradient(135deg,#00d1ff 0%,#0ea5e9 100%);border:none;cursor:pointer;',
       '  box-shadow:0 10px 30px -5px rgba(0,209,255,.45),0 6px 12px rgba(0,0,0,.25);',
       '  display:flex;align-items:center;justify-content:center;color:#0a0e13;',
-      '  transition:transform .2s ease,box-shadow .2s ease;z-index:2147483001}',
+      '  transition:transform .2s ease,box-shadow .2s ease;',
+      '  z-index:2147483001;pointer-events:auto}',
       '.elektra-chat-fab:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 36px -4px rgba(0,209,255,.6),0 8px 16px rgba(0,0,0,.3)}',
       '.elektra-chat-fab:active{transform:translateY(0) scale(1)}',
       '.elektra-chat-fab svg{width:26px;height:26px}',
       '.elektra-chat-fab[data-hidden="true"]{display:none}',
+      // Backdrop: stays pointer-events:none unless explicitly opened.
       '.elektra-chat-backdrop{position:fixed;inset:0;background:rgba(5,8,12,.55);',
       '  opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:2147483002}',
       '.elektra-chat-backdrop[data-open="true"]{opacity:1;pointer-events:auto}',
       '@media (min-width:768px){.elektra-chat-backdrop{background:transparent}}',
+      // Drawer always accepts pointer events when visible; translateX(100%)
+      // hides it off-screen so it is not a hit target until opened.
       '.elektra-chat-drawer{position:fixed;top:0;right:0;bottom:0;width:100%;max-width:420px;',
       '  background:#0a0e13;box-shadow:-20px 0 60px rgba(0,0,0,.5);',
       '  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);',
-      '  z-index:2147483003;display:flex;flex-direction:column;overflow:hidden}',
+      '  z-index:2147483003;display:flex;flex-direction:column;overflow:hidden;',
+      '  pointer-events:auto}',
       '.elektra-chat-drawer[data-open="true"]{transform:translateX(0)}',
       '.elektra-chat-mount{flex:1;min-height:0;display:flex;flex-direction:column}',
       '@media (max-width:767px){.elektra-chat-drawer{max-width:100%}}',
