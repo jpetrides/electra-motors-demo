@@ -22,6 +22,16 @@ const isWidget = process.env.BUILD_TARGET === 'widget'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: isWidget ? '/' : '/chat/',
+  // Vite's lib mode does NOT define process.env.NODE_ENV (unlike the SPA
+  // build), since lib output is normally consumed by another bundler.
+  // Our widget ships straight to the browser, so we have to inline the
+  // replacement ourselves or React's CJS wrapper blows up at runtime
+  // with "process is not defined".
+  define: isWidget
+    ? {
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      }
+    : undefined,
   build: isWidget
     ? {
         outDir: 'dist-widget',
