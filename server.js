@@ -313,6 +313,17 @@ app.get('/api/dc-lookup/:deviceId', async (req, res) => {
         // Test drive engagement events — same graph path as LeadEngagement,
         // just a different DMO. Fold them into the same leads array so the
         // inspector panel shows quote + test drive activity together.
+        //
+        // The Test_Drive_Electra__dlm schema is sparse (only track-event
+        // attributes), so enrich each row with identity info pulled from
+        // sibling nodes under the same Individual: name comes directly
+        // from ssot__Individual__dlm, email/phone from the nested CPE/CPP
+        // lists. This mirrors the richer display of ssot__LeadEngagement__dlm
+        // without requiring a DMO schema change.
+        const indFirstName = ind.ssot__FirstName__c || null;
+        const indLastName = ind.ssot__LastName__c || null;
+        const indEmail = (ind.ssot__ContactPointEmail__dlm || [])[0]?.ssot__EmailAddress__c || null;
+        const indPhone = (ind.ssot__ContactPointPhone__dlm || [])[0]?.ssot__TelephoneNumber__c || null;
         for (const td of ind.Test_Drive_Electra__dlm || []) {
           leads.push({
             kind: 'testDrive',
@@ -321,6 +332,10 @@ app.get('/api/dc-lookup/:deviceId', async (req, res) => {
             preferredDate: td.testDriveRequest_attributePreferredDate__c,
             preferredDealer: td.testDriveRequest_attributePreferredDealer__c,
             timestamp: td.dateTime__c,
+            firstName: indFirstName,
+            lastName: indLastName,
+            email: indEmail,
+            phone: indPhone,
           });
         }
       }
