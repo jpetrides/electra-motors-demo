@@ -162,13 +162,18 @@ if (fs.existsSync(chatAppDist)) {
 }
 
 // Widget bundle assets — served at stable URLs so the loader can fetch them.
+// Cache-Control is short (5 min) + must-revalidate with ETag. The widget
+// bundle is ~75KB gzipped and is only fetched when the user actually opens
+// the chat, so the bandwidth hit is minor; keeping the TTL short means
+// bug fixes propagate quickly without users needing to clear cache.
 if (fs.existsSync(chatAppWidget)) {
+  const widgetCache = 'public, max-age=300, must-revalidate';
   app.get('/js/elektra-chat.js', (_req, res) => {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Cache-Control', widgetCache);
     res.sendFile(path.join(chatAppWidget, 'elektra-chat.js'));
   });
   app.get('/css/elektra-chat.css', (_req, res) => {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Cache-Control', widgetCache);
     res.sendFile(path.join(chatAppWidget, 'elektra-chat.css'));
   });
 }
@@ -292,6 +297,7 @@ app.get('/api/dc-lookup/:deviceId', async (req, res) => {
         }
         for (const le of ind.ssot__LeadEngagement__dlm || []) {
           leads.push({
+            kind: 'quote',
             model: le.Electra_Model__c,
             sku: le.Electra_SKU__c,
             trim: le.Electra_Trim__c,
@@ -302,6 +308,19 @@ app.get('/api/dc-lookup/:deviceId', async (req, res) => {
             firstName: le.First_Name__c,
             lastName: le.Last_Name__c,
             timestamp: le.ssot__EngagementDateTime__c,
+          });
+        }
+        // Test drive engagement events — same graph path as LeadEngagement,
+        // just a different DMO. Fold them into the same leads array so the
+        // inspector panel shows quote + test drive activity together.
+        for (const td of ind.Test_Drive_Electra__dlm || []) {
+          leads.push({
+            kind: 'testDrive',
+            model: td.testDriveRequest_attributeVehicleModel__c,
+            sku: td.testDriveRequest_attributeSkuCode__c,
+            preferredDate: td.testDriveRequest_attributePreferredDate__c,
+            preferredDealer: td.testDriveRequest_attributePreferredDealer__c,
+            timestamp: td.dateTime__c,
           });
         }
       }

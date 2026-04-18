@@ -207,8 +207,8 @@ document.addEventListener('DOMContentLoaded', function () {
           new Date(l.timestamp || 0).getTime() >= _sessionCutoff
         ).length;
         statusText.textContent = _sessionLeadCount
-          ? `Unified with ${_sessionLeadCount} lead${_sessionLeadCount > 1 ? 's' : ''} this session`
-          : (data.leads.length ? 'Unified — no leads this session' : 'Identity resolved');
+          ? `Unified with ${_sessionLeadCount} engagement${_sessionLeadCount > 1 ? 's' : ''} this session`
+          : (data.leads.length ? 'Unified — no engagements this session' : 'Identity resolved');
 
         let html = '';
 
@@ -263,10 +263,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         for (const lead of sessionLeads) {
           const time = lead.timestamp ? new Date(lead.timestamp).toLocaleString() : '';
+          const isTestDrive = lead.kind === 'testDrive';
+          const headerLabel = isTestDrive ? 'Test Drive' : 'Lead';
           html += `
             <div class="dci-card dci-card--lead">
               <div class="dci-card-header">
-                Lead — ${esc(lead.model || 'Unknown')}
+                ${esc(headerLabel)} — ${esc(lead.model || 'Unknown')}
                 <span class="dci-meta">${esc(time)}</span>
               </div>
               <div class="dci-fields">
@@ -274,6 +276,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 ${lead.trim ? `<div class="dci-field"><span class="dci-field-label">Trim</span><span>${esc(lead.trim)}</span></div>` : ''}
                 ${lead.color ? `<div class="dci-field"><span class="dci-field-label">Color</span><span>${esc(lead.color)}</span></div>` : ''}
                 ${lead.location ? `<div class="dci-field"><span class="dci-field-label">Location</span><span>${esc(lead.location)}</span></div>` : ''}
+                ${lead.preferredDate ? `<div class="dci-field"><span class="dci-field-label">Preferred</span><span>${esc(lead.preferredDate)}</span></div>` : ''}
+                ${lead.preferredDealer ? `<div class="dci-field"><span class="dci-field-label">Dealer</span><span>${esc(lead.preferredDealer)}</span></div>` : ''}
                 ${lead.email ? `<div class="dci-field"><span class="dci-field-label">Email</span><span>${esc(lead.email)}</span></div>` : ''}
                 ${lead.phone ? `<div class="dci-field"><span class="dci-field-label">Phone</span><span>${esc(lead.phone)}</span></div>` : ''}
               </div>
