@@ -59,3 +59,10 @@ const EM = (() => {
 
   return { track, identify };
 })();
+
+// Expose to window so ES module scripts (e.g. the React chat SPA at /chat)
+// can reach it. Classic <script> tags already see EM via global lexical
+// scope, so this is additive and backwards-compatible.
+if (typeof window !== 'undefined') {
+  window.EM = EM;
+}

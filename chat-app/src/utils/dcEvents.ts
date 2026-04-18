@@ -38,6 +38,28 @@ function getEM(): EMNamespace | null {
   return window.EM ?? null
 }
 
+/**
+ * Runs a one-time diagnostic on mount so we can tell at a glance whether
+ * the DC Web SDK wiring is healthy inside /chat. Logs three things:
+ *   - is window.EM attached (our helper)?
+ *   - is window.SalesforceInteractions attached (the real SDK)?
+ *   - is the _sfdc_* cookie present (→ deviceId available)?
+ * If any of these are false when the form is submitted, events won't
+ * fire and we know where the floor is.
+ */
+export function logDcEventDiagnostics(): void {
+  if (typeof window === 'undefined') return
+  const hasEM = typeof window.EM === 'object' && !!window.EM
+  const SI = (window as unknown as { SalesforceInteractions?: unknown }).SalesforceInteractions
+  const hasSI = typeof SI === 'object' && !!SI
+  const hasCookie = document.cookie.split(';').some(c => c.trim().startsWith('_sfdc_'))
+  console.log('[ChatApp] DC event diagnostics:', {
+    'window.EM': hasEM,
+    'window.SalesforceInteractions': hasSI,
+    '_sfdc_ cookie present': hasCookie,
+  })
+}
+
 export interface TestDriveEvent {
   email: string
   firstName?: string
@@ -60,9 +82,15 @@ export interface TestDriveEvent {
 export function emitTestDriveEvents(payload: TestDriveEvent): boolean {
   const EM = getEM()
   if (!EM) {
-    console.warn('[ChatApp] window.EM not loaded — skipping DC events')
+    const SI = (window as unknown as { SalesforceInteractions?: unknown }).SalesforceInteractions
+    console.warn('[ChatApp] window.EM not loaded — skipping DC events.', {
+      'window.SalesforceInteractions present': !!SI,
+      hint: 'Check that /js/sdk.js loaded and that it attached window.EM.',
+    })
     return false
   }
+
+  console.log('[ChatApp] firing DC events:', { identify: 'formSubmit', track: 'testDriveRequest', payload })
 
   EM.identify(
     {

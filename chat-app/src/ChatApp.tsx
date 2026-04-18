@@ -6,7 +6,7 @@ import TestDriveForm, { type TestDrivePayload } from './components/TestDriveForm
 import { miawConfig } from './config'
 import { useConversation } from './hooks/useConversation'
 import { buildRoutingAttributes, getPageContext } from './utils/browserContext'
-import { emitTestDriveEvents } from './utils/dcEvents'
+import { emitTestDriveEvents, logDcEventDiagnostics } from './utils/dcEvents'
 
 export default function ChatApp() {
   const conv = useConversation(miawConfig)
@@ -22,6 +22,11 @@ export default function ChatApp() {
     if (didStart.current) return
     if (conv.status !== 'idle') return
     didStart.current = true
+
+    // Wait a tick so scripts injected into index.html have time to attach
+    // window.EM / window.SalesforceInteractions before we diagnose.
+    setTimeout(logDcEventDiagnostics, 1500)
+
     const attrs = buildRoutingAttributes()
     console.log('[ChatApp] starting conversation | routingAttributes:', attrs)
     // Small defer so the hook's state is settled before we fire off startConversation
