@@ -68,7 +68,7 @@ export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}
       lastName: payload.lastName,
       email: payload.email,
       vehicleModel: payload.vehicleModel,
-      vehicleSku: pageContext.current.vehicleSku,
+      vehicleSku: payload.vehicleSku || pageContext.current.vehicleSku,
       preferredDate: payload.preferredDate,
     })
 
@@ -83,6 +83,7 @@ export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}
           lastName: payload.lastName,
           email: payload.email,
           vehicleModel: payload.vehicleModel,
+          vehicleSKU: payload.vehicleSku || pageContext.current.vehicleSku,
           preferredDate: payload.preferredDate,
           source: 'chat',
           sdkEmitted: emitted,

@@ -20,6 +20,7 @@ export interface TestDrivePayload {
   lastName: string
   email: string
   vehicleModel: string
+  vehicleSku?: string
   preferredDate: string
 }
 
@@ -29,7 +30,14 @@ interface Props {
   onCancel: () => void
 }
 
-const VEHICLES = ['Reaktive', 'Megavolt', 'Regulator', 'Harmonic', 'Beam', 'Ignite']
+const VEHICLE_OPTIONS: Array<{ model: string; sku: string }> = [
+  { model: 'Reaktive', sku: 'ELK-SUV-7' },
+  { model: 'Megavolt', sku: 'ELK-COUPE-GT' },
+  { model: 'Regulator', sku: 'ELK-EV-PERF' },
+  { model: 'Harmonic', sku: 'ELK-SEDAN-AWD' },
+  { model: 'Beam', sku: 'ELK-HATCH-PLUS' },
+  { model: 'Ignite', sku: 'ELK-TRUCK-PLAT' },
+]
 
 export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Props) {
   const [firstName, setFirstName] = useState('')
@@ -58,6 +66,7 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
         lastName: lastName.trim(),
         email: email.trim(),
         vehicleModel,
+        vehicleSku: VEHICLE_OPTIONS.find(v => v.model === vehicleModel)?.sku,
         preferredDate,
       })
     } catch (err) {
@@ -142,9 +151,9 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
             className="w-full glass rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-elektra-accent/50 transition-colors appearance-none"
           >
             <option value="" className="bg-elektra-bg">Select a model</option>
-            {VEHICLES.map(v => (
-              <option key={v} value={v} className="bg-elektra-bg">
-                {v}
+            {VEHICLE_OPTIONS.map(v => (
+              <option key={v.model} value={v.model} className="bg-elektra-bg">
+                {v.model}
               </option>
             ))}
           </select>
