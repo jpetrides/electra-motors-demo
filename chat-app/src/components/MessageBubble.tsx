@@ -30,7 +30,7 @@ export default function MessageBubble({ message }: Props) {
     return (
       <div className="flex justify-end mb-3 fade-in">
         <div className="max-w-[78%]">
-          <div className="bg-elektra-accent text-elektra-bg rounded-2xl rounded-br-sm px-4 py-3 text-sm leading-relaxed shadow-lg font-medium">
+          <div className="bg-elektra-accent text-elektra-bg rounded-2xl rounded-br-sm px-5 py-3 text-sm leading-relaxed shadow-lg font-medium">
             {message.text}
           </div>
           <div className="flex items-center justify-end gap-1 mt-1 px-1">
@@ -51,7 +51,7 @@ export default function MessageBubble({ message }: Props) {
       </div>
       <div className="max-w-[78%]">
         <div className="text-[10px] text-white/35 mb-1 px-1">{message.senderName}</div>
-        <div className="glass-dark rounded-2xl rounded-bl-sm px-4 py-3 text-white/90 text-sm leading-relaxed whitespace-pre-wrap">
+        <div className="glass-dark rounded-2xl rounded-bl-sm px-5 py-3 text-white/90 text-sm leading-relaxed whitespace-pre-wrap">
           {message.text}
         </div>
         <div className="text-white/25 text-[10px] mt-1 px-1">{formatTime(message.timestamp)}</div>

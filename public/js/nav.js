@@ -85,20 +85,7 @@
     navLinks.appendChild(li);
   }
 
-  // Add a prominent cyan pill in the CTA area — becomes the primary path
-  // while the native ESW widget is hidden.
-  const navCta = nav.querySelector('.nav__cta');
-  if (navCta) {
-    const chatBtn = document.createElement('a');
-    chatBtn.href = chatHref;
-    chatBtn.className = 'btn btn-primary nav__cta-chat';
-    chatBtn.textContent = 'Chat with Advisor';
-    chatBtn.addEventListener('click', openDrawerOrFollow);
-    // Insert as first child so it lands to the left of existing CTAs
-    navCta.insertBefore(chatBtn, navCta.firstChild);
-  }
-
-  // Active-link highlighting (runs after the Chat link is added so it
+// Active-link highlighting (runs after the Chat link is added so it
   // can be the active one when we're at /chat).
   const links = nav.querySelectorAll('.nav__links a');
   const path = window.location.pathname;
