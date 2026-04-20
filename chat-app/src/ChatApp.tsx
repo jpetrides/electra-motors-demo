@@ -115,9 +115,12 @@ export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}
         ? `Booked ${payload.vehicleModel} for ${payload.preferredDate}`
         : `Request received for ${payload.vehicleModel} on ${payload.preferredDate} (tracking offline)`,
     )
-    // Let the agent know, so the conversation can continue naturally.
-    const msg = `I just submitted a test drive request for the ${payload.vehicleModel} on ${payload.preferredDate} under ${payload.firstName} ${payload.lastName} (email ${payload.email}). Please confirm and let me know next steps.`
-    void conv.sendMessage(msg)
+    // Intentionally do NOT echo a "please confirm" message back to the
+    // agent. The form is the record-of-truth for the booking (DC events
+    // + backend Flow handle persistence), and the agent no longer has
+    // a BookTestDrive action to call, so echoing the submission only
+    // confuses the LLM. The bookingResult toast above gives the user
+    // the in-chat acknowledgement they need.
   }
 
   return (
