@@ -75,8 +75,11 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
     }
   }
 
+  const inputClass =
+    'w-full glass rounded-lg px-3.5 py-2.5 text-white text-sm leading-5 placeholder-white/25 outline-none focus:border-elektra-accent/50 transition-colors'
+
   return (
-    <div className="fade-in mb-3 glass-dark rounded-2xl p-4 border border-elektra-accent/30">
+    <div className="fade-in mb-3 mx-1 glass-dark rounded-2xl px-5 py-4 border border-elektra-accent/30">
       <div className="flex items-center gap-2 mb-3">
         <div className="w-6 h-6 rounded-full bg-elektra-accent/20 flex items-center justify-center">
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-elektra-accent">
@@ -96,7 +99,7 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
+            <label className="block text-white/60 text-xs mb-1.5 tracking-wide">
               First Name <span className="text-elektra-accent">*</span>
             </label>
             <input
@@ -106,11 +109,11 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
               value={firstName}
               onChange={e => setFirstName(e.target.value)}
               placeholder="Jane"
-              className="w-full glass rounded-lg px-3 py-2 text-white text-sm placeholder-white/25 outline-none focus:border-elektra-accent/50 transition-colors"
+              className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
+            <label className="block text-white/60 text-xs mb-1.5 tracking-wide">
               Last Name <span className="text-elektra-accent">*</span>
             </label>
             <input
@@ -120,13 +123,13 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
               value={lastName}
               onChange={e => setLastName(e.target.value)}
               placeholder="Doe"
-              className="w-full glass rounded-lg px-3 py-2 text-white text-sm placeholder-white/25 outline-none focus:border-elektra-accent/50 transition-colors"
+              className={inputClass}
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
+          <label className="block text-white/60 text-xs mb-1.5 tracking-wide">
             Email <span className="text-elektra-accent">*</span>
           </label>
           <input
@@ -136,19 +139,19 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full glass rounded-lg px-3 py-2 text-white text-sm placeholder-white/25 outline-none focus:border-elektra-accent/50 transition-colors"
+            className={inputClass}
           />
         </div>
 
         <div>
-          <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
+          <label className="block text-white/60 text-xs mb-1.5 tracking-wide">
             Vehicle <span className="text-elektra-accent">*</span>
           </label>
           <select
             required
             value={vehicleModel}
             onChange={e => setVehicleModel(e.target.value)}
-            className="w-full glass rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-elektra-accent/50 transition-colors appearance-none"
+            className={`${inputClass} appearance-none`}
           >
             <option value="" className="bg-elektra-bg">Select a model</option>
             {VEHICLE_OPTIONS.map(v => (
@@ -160,7 +163,7 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
         </div>
 
         <div>
-          <label className="block text-white/60 text-[11px] mb-1 tracking-wide">
+          <label className="block text-white/60 text-xs mb-1.5 tracking-wide">
             Preferred Date <span className="text-elektra-accent">*</span>
           </label>
           <input
@@ -169,7 +172,7 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
             value={preferredDate}
             onChange={e => setPreferredDate(e.target.value)}
             min={new Date().toISOString().split('T')[0]}
-            className="w-full glass rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-elektra-accent/50 transition-colors"
+            className={inputClass}
           />
         </div>
 
