@@ -1,19 +1,30 @@
 import type { ConversationEntry, ParsedMessage } from '../types/miaw'
 
+// Agent-emitted side-channel marker. The Test_Drive_Redirect topic's final
+// instruction tells the LLM to append this verbatim when the customer asks
+// about test drives; we detect it here, strip it from rendered text, and
+// surface a flag ChatApp watches to pop the TestDriveForm.
+const OPEN_TEST_DRIVE_FORM_MARKER = /\[open:testDriveForm\]/gi
+
 export function parseConversationMessage(entry: ConversationEntry): ParsedMessage | null {
   try {
     const conversationEntry = entry.conversationEntry
     const payload = JSON.parse(conversationEntry.entryPayload)
-    const text =
+    const rawText =
       payload?.abstractMessage?.staticContent?.text ??
       payload?.abstractMessage?.text ??
       payload?.staticContent?.text ??
       payload?.text ??
       ''
 
-    if (!text || typeof text !== 'string') {
+    if (!rawText || typeof rawText !== 'string') {
       return null
     }
+
+    const openTestDriveForm = OPEN_TEST_DRIVE_FORM_MARKER.test(rawText)
+    const text = openTestDriveForm
+      ? rawText.replace(OPEN_TEST_DRIVE_FORM_MARKER, '').replace(/\s+$/, '').trim()
+      : rawText
 
     return {
       id: conversationEntry.identifier,
@@ -25,6 +36,7 @@ export function parseConversationMessage(entry: ConversationEntry): ParsedMessag
       isSent: conversationEntry.sender.role === 'EndUser',
       isDelivered: false,
       isRead: false,
+      openTestDriveForm: openTestDriveForm || undefined,
     }
   } catch {
     return null

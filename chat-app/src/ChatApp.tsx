@@ -27,6 +27,22 @@ export default function ChatApp({ embedded = false, onClose }: ChatAppProps = {}
   const [bookingResult, setBookingResult] = useState<string | null>(null)
   const didStart = useRef(false)
   const pageContext = useRef(getPageContext())
+  // Tracks which agent messages we've already acted on for the
+  // [open:testDriveForm] marker, so re-parsing the same message
+  // (e.g. history sync after SSE) never re-opens the form.
+  const handledFormOpenIds = useRef<Set<string>>(new Set())
+
+  // Watch for the [open:testDriveForm] marker on incoming agent messages
+  // and pop the TestDriveForm. parseConversationMessage already stripped
+  // the marker from `text`, so the user only sees the natural prose.
+  useEffect(() => {
+    for (const msg of conv.messages) {
+      if (!msg.openTestDriveForm) continue
+      if (handledFormOpenIds.current.has(msg.id)) continue
+      handledFormOpenIds.current.add(msg.id)
+      setShowForm(true)
+    }
+  }, [conv.messages])
 
   // Auto-start the conversation once on mount. routingAttributes carry
   // deviceId + vehicle context into the Bot's External conversation variables,

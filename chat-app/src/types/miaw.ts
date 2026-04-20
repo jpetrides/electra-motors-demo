@@ -71,6 +71,8 @@ export interface ParsedMessage {
   isSent: boolean
   isDelivered: boolean
   isRead: boolean
+  /** Agent emitted `[open:testDriveForm]` — ChatApp should show the form. */
+  openTestDriveForm?: boolean
 }
 
 export interface SessionStatusChange {
