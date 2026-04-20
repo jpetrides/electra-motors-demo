@@ -69,3 +69,55 @@ html, body, #root {
 .fade-in {
   animation: fade-in 0.25s ease forwards;
 }
+
+/* ────────────────────────────────────────────────────────────────────
+   Host-page CSS isolation
+   The embeddable widget loads INTO pages that ship their own unlayered
+   main.css (h1-h6 clamp sizes, body font-size:16px, element typography
+   resets, etc). Tailwind v4 emits utilities inside `@layer utilities`,
+   and per the cascade, unlayered host rules beat every layered rule —
+   so host `h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem) }` overrides
+   our Tailwind `.text-sm` on the form heading, host `body { font-size:
+   16px }` inherits into our inputs, etc.
+
+   These rules live outside any @layer, scoped to the widget mount
+   container (loader uses `.elektra-chat-mount`, /chat route uses
+   `#root`), so they win back control of typography inside the widget
+   without touching anything outside it.
+   ──────────────────────────────────────────────────────────────────── */
+.elektra-chat-mount,
+#root {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.elektra-chat-mount h1,
+.elektra-chat-mount h2,
+.elektra-chat-mount h3,
+.elektra-chat-mount h4,
+.elektra-chat-mount h5,
+.elektra-chat-mount h6,
+#root h1,
+#root h2,
+#root h3,
+#root h4,
+#root h5,
+#root h6 {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: normal;
+  margin: 0;
+}
+
+.elektra-chat-mount input,
+.elektra-chat-mount select,
+.elektra-chat-mount textarea,
+.elektra-chat-mount button,
+#root input,
+#root select,
+#root textarea,
+#root button {
+  font-size: inherit;
+  line-height: inherit;
+}
