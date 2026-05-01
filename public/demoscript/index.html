@@ -109,7 +109,7 @@
       flex: 1;
       padding: 2.5rem 2.5rem 4rem 2rem;
       min-width: 0;
-      max-width: 820px;
+      max-width: 1100px;
     }
 
     /* ── Page title ── */
@@ -172,13 +172,21 @@
       scroll-margin-top: 80px;
     }
     .subsection-title {
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #999;
+      letter-spacing: 0.04em;
+      color: #fff;
       margin-bottom: 0.75rem;
     }
+
+    /* ── 3-column act layout ── */
+    .act-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .act-cols .subsection { margin-bottom: 0; }
 
     /* ── Click path ── */
     .click-path {
@@ -589,41 +597,43 @@
         <h2 class="section-title">The Anonymous Visitor</h2>
       </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Click Path</div>
-        <div class="click-path">
-          <ol>
-            <li>In the <strong>incognito</strong> browser, navigate to the Elektra Motors homepage</li>
-            <li>Open <strong>browser Developer Tools</strong> (F12 / Cmd+Opt+I) → Console tab. Find the device ID in the SDK initialization output — look for <code>anonymousId</code>, a 16-character hex string like <code>6da275aa6822a483</code>. <strong>Copy it.</strong></li>
-            <li>Open the <strong>D360 Inspector</strong> — click the globe icon (top-right of the site). Paste the device ID into the field and click <strong>Lookup</strong>. It should show <code>ANONYMOUS</code>.</li>
-            <li>Click on a vehicle (e.g. <strong>Harmonic Sedan</strong>)</li>
-            <li>Click <strong>"Configure Yours"</strong> — select a trim, color, and options</li>
-            <li>Browse back, view a second vehicle (e.g. <strong>Regulator Truck</strong>), configure it too</li>
-            <li>Do <strong>not</strong> submit a lead yet — the visitor is still anonymous</li>
-          </ol>
+      <div class="act-cols">
+        <div class="subsection">
+          <div class="subsection-title">Click Path</div>
+          <div class="click-path">
+            <ol>
+              <li>In the <strong>incognito</strong> browser, navigate to the Elektra Motors homepage</li>
+              <li>Open <strong>browser Developer Tools</strong> (F12 / Cmd+Opt+I) → Console tab. Find the device ID in the SDK initialization output — look for <code>anonymousId</code>, a 16-character hex string like <code>6da275aa6822a483</code>. <strong>Copy it.</strong></li>
+              <li>Open the <strong>D360 Inspector</strong> — click the globe icon (top-right of the site). Paste the device ID into the field and click <strong>Lookup</strong>. It should show <code>ANONYMOUS</code>.</li>
+              <li>Click on a vehicle (e.g. <strong>Harmonic Sedan</strong>)</li>
+              <li>Click <strong>"Configure Yours"</strong> — select a trim, color, and options</li>
+              <li>Browse back, view a second vehicle (e.g. <strong>Regulator Truck</strong>), configure it too</li>
+              <li>Do <strong>not</strong> submit a lead yet — the visitor is still anonymous</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">Talking Points</div>
+          <div class="talking-points">
+            <div class="quote-block">"Right now this visitor is completely anonymous. They're browsing vehicles, configuring options — but we have no idea who they are. However, every interaction is being captured by Salesforce Data Cloud's Web SDK and streamed into Data Cloud as behavioral events. Page views, product views, vehicle configurations — all flowing in as they happen."</div>
+            <div class="quote-block">"Each event is tagged with an anonymous device ID. Data Cloud is already building a behavioral profile for this device — we just don't know whose device it is yet."</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">Value Point</div>
+          <div class="value-point"><strong>Real-time behavioral data capture.</strong> Every digital interaction is captured the moment it happens — not in a nightly batch, not through a third-party CDP. This is native Salesforce Data Cloud, streaming directly from the website.</div>
         </div>
       </div>
 
-      <div class="subsection">
+      <div class="subsection" style="margin-top:1.25rem">
         <div class="subsection-title">D360 Inspector — Expected State</div>
         <div class="inspector-preview">
           <span class="ip-badge anonymous">Anonymous</span>
           <div class="ip-row"><span class="ip-label">Status</span><span class="ip-val">Device not yet seen in Data Cloud</span></div>
-          <div class="ip-row"><span class="ip-label">Profile</span><span class="ip-val" style="color:#444">No profile found for this device ID</span></div>
+          <div class="ip-row"><span class="ip-label">Profile</span><span class="ip-val" style="color:#888">No profile found for this device ID</span></div>
         </div>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Talking Points</div>
-        <div class="talking-points">
-          <div class="quote-block">"Right now this visitor is completely anonymous. They're browsing vehicles, configuring options — but we have no idea who they are. However, every interaction is being captured by Salesforce Data Cloud's Web SDK and streamed into Data Cloud as behavioral events. Page views, product views, vehicle configurations — all flowing in as they happen."</div>
-          <div class="quote-block">"Each event is tagged with an anonymous device ID. Data Cloud is already building a behavioral profile for this device — we just don't know whose device it is yet."</div>
-        </div>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Value Point</div>
-        <div class="value-point"><strong>Real-time behavioral data capture.</strong> Every digital interaction is captured the moment it happens — not in a nightly batch, not through a third-party CDP. This is native Salesforce Data Cloud, streaming directly from the website.</div>
       </div>
     </section>
 
@@ -634,36 +644,38 @@
         <h2 class="section-title">The Identity Reveal</h2>
       </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Click Path</div>
-        <div class="click-path">
-          <ol>
-            <li>Click the <strong>blue chat bubble</strong> (bottom-left) to open the Elektra Advisor — powered by Agentforce</li>
-            <li>Start a conversation — ask about a vehicle, express interest, or say you'd like to submit a lead</li>
-            <li>When the agent asks for contact details, provide the demo persona:
-              <ul>
-                <li><strong>First Name:</strong> Yvette</li>
-                <li><strong>Last Name:</strong> Acme</li>
-                <li><strong>Email:</strong> yvette.acme@example.com</li>
-                <li><strong>Phone:</strong> (any number)</li>
-              </ul>
-            </li>
-            <li>Complete the interaction — the agent confirms and submits the lead</li>
-          </ol>
+      <div class="act-cols">
+        <div class="subsection">
+          <div class="subsection-title">Click Path</div>
+          <div class="click-path">
+            <ol>
+              <li>Click the <strong>blue chat bubble</strong> (bottom-left) to open the Elektra Advisor — powered by Agentforce</li>
+              <li>Start a conversation — ask about a vehicle, express interest, or say you'd like to submit a lead</li>
+              <li>When the agent asks for contact details, provide the demo persona:
+                <ul>
+                  <li><strong>First Name:</strong> Yvette</li>
+                  <li><strong>Last Name:</strong> Acme</li>
+                  <li><strong>Email:</strong> yvette.acme@example.com</li>
+                  <li><strong>Phone:</strong> (any number)</li>
+                </ul>
+              </li>
+              <li>Complete the interaction — the agent confirms and submits the lead</li>
+            </ol>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Talking Points</div>
-        <div class="talking-points">
-          <div class="quote-block">"Now the visitor tells us who they are — not through a static form, but through a natural conversation with the Elektra Advisor, powered by Agentforce. The moment the customer shares their email, several things happen simultaneously. The Web SDK fires identity events — name, email, phone — alongside the lead submission event. All of these stream into Data Cloud in real time."</div>
-          <div class="quote-block">"But here's the key moment: Data Cloud's identity resolution engine takes over. It sees the email — yvette.acme@example.com — and instantly matches it to an existing CRM contact. This anonymous device ID that's been browsing our site for the last few minutes? Data Cloud just resolved it to Yvette Acme, an existing customer in our Salesforce org."</div>
+        <div class="subsection">
+          <div class="subsection-title">Talking Points</div>
+          <div class="talking-points">
+            <div class="quote-block">"Now the visitor tells us who they are — not through a static form, but through a natural conversation with the Elektra Advisor, powered by Agentforce. The moment the customer shares their email, several things happen simultaneously. The Web SDK fires identity events — name, email, phone — alongside the lead submission event. All of these stream into Data Cloud in real time."</div>
+            <div class="quote-block">"But here's the key moment: Data Cloud's identity resolution engine takes over. It sees the email — yvette.acme@example.com — and instantly matches it to an existing CRM contact. This anonymous device ID that's been browsing our site for the last few minutes? Data Cloud just resolved it to Yvette Acme, an existing customer in our Salesforce org."</div>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Value Point</div>
-        <div class="value-point"><strong>Real-time identity resolution.</strong> The moment someone identifies themselves — through a natural Agentforce conversation — Data Cloud collapses the anonymous browsing session into their unified profile. No batch processing, no waiting overnight. The resolution happens in real-time.</div>
+        <div class="subsection">
+          <div class="subsection-title">Value Point</div>
+          <div class="value-point"><strong>Real-time identity resolution.</strong> The moment someone identifies themselves — through a natural Agentforce conversation — Data Cloud collapses the anonymous browsing session into their unified profile. No batch processing, no waiting overnight. The resolution happens in real-time.</div>
+        </div>
       </div>
     </section>
 
@@ -678,52 +690,48 @@
         <strong>For technical audiences.</strong> For executive demos, skip to Act 4.
       </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Click Path — D360 Inspector</div>
-        <div class="click-path">
-          <ol>
-            <li>The D360 Inspector is already open from Act 1 with the device ID in the field</li>
-            <li>Enable <strong>Auto-refresh every 5s</strong> — watch the status change live</li>
-            <li>Within ~30 seconds the status flips from <code>ANONYMOUS</code> to <code>UNIFIED</code></li>
-          </ol>
+      <div class="act-cols">
+        <div class="subsection">
+          <div class="subsection-title">Click Path — D360 Inspector</div>
+          <div class="click-path">
+            <ol>
+              <li>The D360 Inspector is already open from Act 1 with the device ID in the field</li>
+              <li>Enable <strong>Auto-refresh every 5s</strong> — watch the status change live</li>
+              <li>Within ~30 seconds the status flips from <code>ANONYMOUS</code> to <code>UNIFIED</code></li>
+            </ol>
+          </div>
+          <div class="subsection-title" style="margin-top:1rem">What to Point Out</div>
+          <div class="what-to-show">
+            <ol>
+              <li><strong>Unified Individual</strong> — Yvette Acme with her Data Cloud Individual ID</li>
+              <li><strong>Two resolved sources</strong> — her CRM Contact (<em>Salesforce_Home</em>) plus the anonymous web device (<em>Electra_Heroku_identity</em>), now linked under one profile</li>
+              <li><strong>MDM ID</strong> — <code>Contact.102</code> — the key that connects to Databricks vehicle + service data</li>
+              <li><strong>Lead Engagement</strong> — the <code>leadSubmit</code> event with full vehicle details, captured in real-time</li>
+            </ol>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">D360 Inspector — Expected State After Resolution</div>
-        <div class="inspector-preview">
-          <span class="ip-badge unified">Unified</span>
-          <div class="ip-row"><span class="ip-label">Unified Individual</span><span class="ip-val green">Yvette Acme</span></div>
-          <div class="ip-row"><span class="ip-label">DC Individual ID</span><span class="ip-val purple">0031x000…</span></div>
-          <div class="ip-row"><span class="ip-label">Resolved Sources</span><span class="ip-val">2 — CRM Contact + web device</span></div>
-          <div class="ip-row"><span class="ip-label">MDM ID</span><span class="ip-val">Contact.102</span></div>
-          <div class="ip-row"><span class="ip-label">Lead Engagement</span><span class="ip-val">leadSubmit — vehicle model, SKU, trim, color</span></div>
+        <div class="subsection">
+          <div class="subsection-title">Talking Points</div>
+          <div class="talking-points">
+            <div class="quote-block">"Here's the proof. This is the D360 Inspector — a live view into Data Cloud's real-time data graph for this device. You can see two source records linked to one unified individual: her CRM contact that's been in Salesforce since day one, and the anonymous web device that was just browsing our site. Data Cloud matched them on email in real time."</div>
+            <div class="quote-block">"And notice the MDM ID — Contact.102. This is the key that connects Yvette to her vehicle ownership history, service records, and telemetry data in Databricks. That connection is what makes the next part powerful."</div>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">What to Point Out</div>
-        <div class="what-to-show">
-          <ol>
-            <li><strong>Unified Individual</strong> — Yvette Acme with her Data Cloud Individual ID</li>
-            <li><strong>Two resolved sources</strong> — her CRM Contact (<em>Salesforce_Home</em>) plus the anonymous web device (<em>Electra_Heroku_identity</em>), now linked under one profile</li>
-            <li><strong>MDM ID</strong> — <code>Contact.102</code> — the key that connects to Databricks vehicle + service data</li>
-            <li><strong>Lead Engagement</strong> — the <code>leadSubmit</code> event with full vehicle details, captured in real-time</li>
-          </ol>
+        <div class="subsection">
+          <div class="subsection-title">Value Point</div>
+          <div class="value-point"><strong>Cross-source identity resolution.</strong> Data Cloud doesn't just match within Salesforce — it resolves identities across any connected data source. CRM contacts, website visitors, third-party data — all unified under one profile.</div>
+          <div class="subsection-title" style="margin-top:1rem">D360 Inspector — After Resolution</div>
+          <div class="inspector-preview">
+            <span class="ip-badge unified">Unified</span>
+            <div class="ip-row"><span class="ip-label">Unified Individual</span><span class="ip-val green">Yvette Acme</span></div>
+            <div class="ip-row"><span class="ip-label">DC Individual ID</span><span class="ip-val purple">0031x000…</span></div>
+            <div class="ip-row"><span class="ip-label">Resolved Sources</span><span class="ip-val">2 — CRM Contact + web device</span></div>
+            <div class="ip-row"><span class="ip-label">MDM ID</span><span class="ip-val">Contact.102</span></div>
+            <div class="ip-row"><span class="ip-label">Lead Engagement</span><span class="ip-val">leadSubmit — vehicle, SKU, trim, color</span></div>
+          </div>
         </div>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Talking Points</div>
-        <div class="talking-points">
-          <div class="quote-block">"Here's the proof. This is the D360 Inspector — a live view into Data Cloud's real-time data graph for this device. You can see two source records linked to one unified individual: her CRM contact that's been in Salesforce since day one, and the anonymous web device that was just browsing our site. Data Cloud matched them on email in real time."</div>
-          <div class="quote-block">"And notice the MDM ID — Contact.102. This is the key that connects Yvette to her vehicle ownership history, service records, and telemetry data in Databricks. That connection is what makes the next part powerful."</div>
-        </div>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Value Point</div>
-        <div class="value-point"><strong>Cross-source identity resolution.</strong> Data Cloud doesn't just match within Salesforce — it resolves identities across any connected data source. CRM contacts, website visitors, third-party data — all unified under one profile.</div>
       </div>
     </section>
 
@@ -734,41 +742,40 @@
         <h2 class="section-title">The Automation Event-Triggered Flow</h2>
       </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Click Path</div>
-        <div class="click-path">
-          <ol>
-            <li>In Salesforce Setup, navigate to <strong>Flows</strong></li>
-            <li>Open <strong>Real_Time_Lead_Capture</strong></li>
-            <li>Walk through the flow canvas</li>
-          </ol>
+      <div class="act-cols">
+        <div class="subsection">
+          <div class="subsection-title">Click Path</div>
+          <div class="click-path">
+            <ol>
+              <li>In Salesforce Setup, navigate to <strong>Flows</strong></li>
+              <li>Open <strong>Real_Time_Lead_Capture</strong></li>
+              <li>Walk through the flow canvas</li>
+            </ol>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">What to Explain</div>
-        <div class="what-to-show">
-          <ol>
-            <li><strong>Flow type:</strong> Automation Event-Triggered — fires on Data Cloud events (data graph changes), not CRM record changes</li>
-            <li><strong>Trigger:</strong> A <code>leadSubmit</code> engagement event appears in the RealTimeLeads Data Graph</li>
-            <li><strong>Person Account resolution:</strong> Checks for an existing account by DC Individual ID → email → creates new if neither matches</li>
-            <li><strong>Lead de-duplication:</strong> Active lead within 60 days? Enrich it. Older or missing? Create a new lead.</li>
-            <li><strong>Vehicle enrichment:</strong> Lead is stamped with model, trim, color, and SKU from the web session</li>
-          </ol>
+        <div class="subsection">
+          <div class="subsection-title">What to Explain</div>
+          <div class="what-to-show">
+            <ol>
+              <li><strong>Flow type:</strong> Automation Event-Triggered — fires on Data Cloud events (data graph changes), not CRM record changes</li>
+              <li><strong>Trigger:</strong> A <code>leadSubmit</code> engagement event appears in the RealTimeLeads Data Graph</li>
+              <li><strong>Person Account resolution:</strong> Checks for an existing account by DC Individual ID → email → creates new if neither matches</li>
+              <li><strong>Lead de-duplication:</strong> Active lead within 60 days? Enrich it. Older or missing? Create a new lead.</li>
+              <li><strong>Vehicle enrichment:</strong> Lead is stamped with model, trim, color, and SKU from the web session</li>
+            </ol>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Talking Points</div>
-        <div class="talking-points">
-          <div class="quote-block">"This flow fires the moment the data graph changes — in this case, when a leadSubmit event hits the resolved identity. It's not polling, it's not scheduled — it's event-driven and real-time."</div>
-          <div class="quote-block">"The business logic here is just an example. We implemented person account resolution, lead de-duplication with a 60-day window, and vehicle enrichment. But this is fully customizable — your rules would be completely different. Maybe you want to route high-value leads to a specific queue, trigger a follow-up if the customer has an open service case, or notify the nearest dealer. The point is: you have the full power of Salesforce Flow to act on real-time Data Cloud events."</div>
+        <div class="subsection">
+          <div class="subsection-title">Talking Points</div>
+          <div class="talking-points">
+            <div class="quote-block">"This flow fires the moment the data graph changes — in this case, when a leadSubmit event hits the resolved identity. It's not polling, it's not scheduled — it's event-driven and real-time."</div>
+            <div class="quote-block">"The business logic here is just an example. We implemented person account resolution, lead de-duplication with a 60-day window, and vehicle enrichment. But this is fully customizable — your rules would be completely different. Maybe you want to route high-value leads to a specific queue, trigger a follow-up if the customer has an open service case, or notify the nearest dealer. The point is: you have the full power of Salesforce Flow to act on real-time Data Cloud events."</div>
+          </div>
+          <div class="subsection-title" style="margin-top:1rem">Value Point</div>
+          <div class="value-point"><strong>Real-time automation at scale.</strong> Automation Event-Triggered Flows bring Data Cloud's real-time intelligence directly into Salesforce's automation engine — native, not custom-built. Because it runs on Data Cloud's event architecture, it scales to high volumes without traditional governor limit constraints.</div>
         </div>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Value Point</div>
-        <div class="value-point"><strong>Real-time automation at scale.</strong> Automation Event-Triggered Flows bring Data Cloud's real-time intelligence directly into Salesforce's automation engine — native, not custom-built. Because it runs on Data Cloud's event architecture, it scales to high volumes without traditional governor limit constraints.</div>
       </div>
     </section>
 
@@ -779,39 +786,38 @@
         <h2 class="section-title">The Lead in Salesforce</h2>
       </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Click Path</div>
-        <div class="click-path">
-          <ol>
-            <li>Navigate to the <strong>Leads</strong> tab</li>
-            <li>Find <strong>Yvette Acme</strong> at the top of the recent leads list</li>
-            <li>Open the lead record</li>
-          </ol>
+      <div class="act-cols">
+        <div class="subsection">
+          <div class="subsection-title">Click Path</div>
+          <div class="click-path">
+            <ol>
+              <li>Navigate to the <strong>Leads</strong> tab</li>
+              <li>Find <strong>Yvette Acme</strong> at the top of the recent leads list</li>
+              <li>Open the lead record</li>
+            </ol>
+          </div>
+          <div class="subsection-title" style="margin-top:1rem">What to Show</div>
+          <div class="what-to-show">
+            <ol>
+              <li><strong>Name, Email</strong> — populated from the Agentforce conversation</li>
+              <li><strong>Vehicle Model, Trim, Color, SKU</strong> — custom fields enriched from the web session</li>
+              <li><strong>Person Account</strong> — linked to Yvette's existing Person Account</li>
+            </ol>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">What to Show</div>
-        <div class="what-to-show">
-          <ol>
-            <li><strong>Name, Email</strong> — populated from the Agentforce conversation</li>
-            <li><strong>Vehicle Model, Trim, Color, SKU</strong> — custom fields enriched from the web session</li>
-            <li><strong>Person Account</strong> — linked to Yvette's existing Person Account</li>
-          </ol>
+        <div class="subsection">
+          <div class="subsection-title">Talking Points</div>
+          <div class="talking-points">
+            <div class="quote-block">"The lead was created almost instantly — within seconds of the Agentforce conversation. That means all of Salesforce's native lead management capabilities kick in immediately: assignment rules, routing, Agentforce lead scoring, SLA tracking."</div>
+            <div class="quote-block">"Notice the lead is already enriched with vehicle details from the web session. And it's linked to Yvette's Person Account, which means the sales rep can see her full customer history before they even pick up the phone."</div>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Talking Points</div>
-        <div class="talking-points">
-          <div class="quote-block">"The lead was created almost instantly — within seconds of the Agentforce conversation. That means all of Salesforce's native lead management capabilities kick in immediately: assignment rules, routing, Agentforce lead scoring, SLA tracking."</div>
-          <div class="quote-block">"Notice the lead is already enriched with vehicle details from the web session. And it's linked to Yvette's Person Account, which means the sales rep can see her full customer history before they even pick up the phone."</div>
+        <div class="subsection">
+          <div class="subsection-title">Value Point</div>
+          <div class="value-point"><strong>Speed to lead.</strong> Responding to a lead within 5 minutes is 21× more effective than waiting 30 minutes. With this pipeline, the lead exists in Salesforce before the customer has left the website.</div>
         </div>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Value Point</div>
-        <div class="value-point"><strong>Speed to lead.</strong> Responding to a lead within 5 minutes is 21× more effective than waiting 30 minutes. With this pipeline, the lead exists in Salesforce before the customer has left the website.</div>
       </div>
     </section>
 
@@ -820,16 +826,6 @@
       <div class="section-header">
         <span class="act-badge act6">Act 6</span>
         <h2 class="section-title">The Lead360 Unified Profile</h2>
-      </div>
-
-      <div class="subsection">
-        <div class="subsection-title">Click Path</div>
-        <div class="click-path">
-          <ol>
-            <li>On the Lead record, scroll to the <strong>Lead360</strong> component (or find it in a tab)</li>
-            <li>Walk through each panel</li>
-          </ol>
-        </div>
       </div>
 
       <div class="subsection">
@@ -848,18 +844,30 @@
         </table>
       </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Talking Points</div>
-        <div class="talking-points">
-          <div class="quote-block">"Look at what the sales rep is seeing on this single Lead record page. They have the web browsing session from Heroku, the CRM contact history from Salesforce, and the vehicle ownership, service history, telemetry, and marketing data from Databricks — all unified under one customer profile."</div>
-          <div class="quote-block">"None of this data was copied or moved. The Salesforce data lives in Salesforce. The Databricks data lives in Databricks. The website data streams through Data Cloud. Identity resolution ties it all together in real time."</div>
-          <div class="quote-block">"This is what a deeply unified platform looks like. Salesforce, Data Cloud, Heroku, Databricks — they're not separate systems stitched together with integrations. They're extensions of a single platform."</div>
+      <div class="act-cols">
+        <div class="subsection">
+          <div class="subsection-title">Click Path</div>
+          <div class="click-path">
+            <ol>
+              <li>On the Lead record, scroll to the <strong>Lead360</strong> component (or find it in a tab)</li>
+              <li>Walk through each panel section by section</li>
+            </ol>
+          </div>
         </div>
-      </div>
 
-      <div class="subsection">
-        <div class="subsection-title">Value Point</div>
-        <div class="value-point"><strong>Platform unification.</strong> From anonymous web tracking → real-time identity resolution → automated lead creation → 360° customer profile across three data stores — built on a single platform. No middleware, no custom ETL, no third-party CDP.</div>
+        <div class="subsection">
+          <div class="subsection-title">Talking Points</div>
+          <div class="talking-points">
+            <div class="quote-block">"Look at what the sales rep is seeing on this single Lead record page. They have the web browsing session from Heroku, the CRM contact history from Salesforce, and the vehicle ownership, service history, telemetry, and marketing data from Databricks — all unified under one customer profile."</div>
+            <div class="quote-block">"None of this data was copied or moved. The Salesforce data lives in Salesforce. The Databricks data lives in Databricks. The website data streams through Data Cloud. Identity resolution ties it all together in real time."</div>
+            <div class="quote-block">"This is what a deeply unified platform looks like. Salesforce, Data Cloud, Heroku, Databricks — they're not separate systems stitched together with integrations. They're extensions of a single platform."</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <div class="subsection-title">Value Point</div>
+          <div class="value-point"><strong>Platform unification.</strong> From anonymous web tracking → real-time identity resolution → automated lead creation → 360° customer profile across three data stores — built on a single platform. No middleware, no custom ETL, no third-party CDP.</div>
+        </div>
       </div>
     </section>
 
