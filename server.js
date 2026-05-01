@@ -127,6 +127,11 @@ app.get('/tools', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'tools', 'index.html'));
 });
 
+// Demo Script — served before SDK injection middleware (no tracking needed)
+app.get('/demoscript', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'demoscript', 'index.html'));
+});
+
 // Custom MIAW chat app — two deliverables from the same chat-app/ React code:
 //
 //   1. SPA at /chat (chat-app/dist/)    — legacy full-page route, kept as a

@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Script — Elektra Motors</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0f;
+      color: #d8d8e8;
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: #111118;
+      border-bottom: 1px solid #1e1e2e;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-logo {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .header-logo span { color: #7c6af7; }
+    .header-badge {
+      background: #1e1e2e;
+      border: 1px solid #2e2e4e;
+      color: #888;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+    .header-links {
+      margin-left: auto;
+      display: flex;
+      gap: 1rem;
+    }
+    .header-links a {
+      font-size: 0.8rem;
+      color: #666;
+      text-decoration: none;
+      padding: 0.3rem 0.7rem;
+      border-radius: 5px;
+      border: 1px solid #1e1e2e;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .header-links a:hover { color: #ccc; border-color: #3e3e5e; }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 0;
+    }
+
+    /* ── Sidebar TOC ── */
+    .toc {
+      width: 220px;
+      flex-shrink: 0;
+      padding: 2rem 1rem 2rem 1.5rem;
+      position: sticky;
+      top: 57px;
+      max-height: calc(100vh - 57px);
+      overflow-y: auto;
+    }
+    .toc-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #444;
+      margin-bottom: 1rem;
+    }
+    .toc-list { list-style: none; }
+    .toc-list li + li { margin-top: 0.1rem; }
+    .toc-list a {
+      display: block;
+      font-size: 0.8rem;
+      color: #666;
+      text-decoration: none;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .toc-list a:hover { color: #bbb; background: #111118; }
+    .toc-list a.active { color: #a89ff7; background: #111118; }
+    .toc-list .toc-sub { padding-left: 1rem; font-size: 0.75rem; color: #555; }
+    .toc-list .toc-sub.active { color: #9090cc; }
+
+    /* ── Content ── */
+    .content {
+      flex: 1;
+      padding: 2.5rem 2.5rem 4rem 2rem;
+      min-width: 0;
+      max-width: 820px;
+    }
+
+    /* ── Page title ── */
+    .page-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+    .page-meta {
+      font-size: 0.8rem;
+      color: #444;
+      margin-bottom: 2.5rem;
+    }
+    .page-meta a { color: #6060aa; text-decoration: none; }
+    .page-meta a:hover { color: #9090dd; }
+
+    /* ── Section cards ── */
+    .section {
+      margin-bottom: 2.5rem;
+      scroll-margin-top: 80px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #1a1a2a;
+    }
+    .act-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .act-badge.setup    { background: #1e2e1e; color: #5c9a5c; }
+    .act-badge.act1     { background: #1a1a2e; color: #7c6af7; }
+    .act-badge.act2     { background: #1e2830; color: #00b4d8; }
+    .act-badge.act3     { background: #1e1e2e; color: #a0a0cc; }
+    .act-badge.act4     { background: #2a1e1e; color: #e07a4f; }
+    .act-badge.act5     { background: #1e2a1a; color: #4ea06a; }
+    .act-badge.act6     { background: #28182e; color: #b47af7; }
+    .act-badge.ref      { background: #1e1e2e; color: #666; }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #e8e8f8;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Subsection ── */
+    .subsection {
+      margin-bottom: 1.5rem;
+      scroll-margin-top: 80px;
+    }
+    .subsection-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Click path ── */
+    .click-path {
+      background: #0d0d18;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .click-path ol {
+      padding-left: 1.4rem;
+    }
+    .click-path li {
+      font-size: 0.9rem;
+      color: #ccc;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #141420;
+    }
+    .click-path li:last-child { border-bottom: none; }
+    .click-path li strong { color: #fff; }
+    .click-path li code {
+      background: #1a1a2e;
+      border: 1px solid #2e2e4e;
+      border-radius: 3px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.82rem;
+      color: #a89ff7;
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+    }
+    .click-path ul {
+      padding-left: 1.4rem;
+      margin-top: 0.3rem;
+    }
+    .click-path ul li {
+      border-bottom: none;
+      padding: 0.15rem 0;
+      font-size: 0.85rem;
+    }
+
+    /* ── Talking points ── */
+    .talking-points {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .quote-block {
+      background: #0e1420;
+      border-left: 3px solid #00b4d8;
+      border-radius: 0 8px 8px 0;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.88rem;
+      color: #9ab8d8;
+      font-style: italic;
+      line-height: 1.65;
+    }
+    .quote-block em { font-style: normal; color: #c8e0f0; }
+
+    /* ── Value point ── */
+    .value-point {
+      background: #0d180d;
+      border: 1px solid #1a2e1a;
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.88rem;
+      color: #88b888;
+      line-height: 1.6;
+    }
+    .value-point strong { color: #aaddaa; }
+
+    /* ── Note block ── */
+    .note-block {
+      background: #151520;
+      border: 1px solid #2e2e3e;
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.85rem;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .note-block strong { color: #aaa; }
+
+    /* ── What to show ── */
+    .what-to-show {
+      background: #0d0d18;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .what-to-show ol {
+      padding-left: 1.4rem;
+    }
+    .what-to-show li {
+      font-size: 0.88rem;
+      color: #bbb;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #141420;
+    }
+    .what-to-show li:last-child { border-bottom: none; }
+    .what-to-show li strong { color: #e0e0f0; }
+    .what-to-show li em { color: #a89ff7; font-style: normal; }
+    .what-to-show li code {
+      background: #1a1a2e;
+      border: 1px solid #2e2e4e;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.8rem;
+      color: #a89ff7;
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+    }
+
+    /* ── Inspector result preview ── */
+    .inspector-preview {
+      background: #0d0d18;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .ip-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .ip-badge.anonymous { background: #1e1e2e; color: #666; }
+    .ip-badge.unified   { background: #0e3d2a; color: #3ecf8e; }
+    .ip-row {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #141420;
+      font-size: 0.78rem;
+    }
+    .ip-row:last-child { border-bottom: none; }
+    .ip-label { color: #444; min-width: 130px; }
+    .ip-val { color: #ccc; }
+    .ip-val.green { color: #3ecf8e; }
+    .ip-val.purple { color: #a89ff7; }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #555;
+      border-bottom: 1px solid #1e1e2e;
+    }
+    td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid #141420;
+      color: #bbb;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #0d0d16; }
+    td a { color: #7c9cf7; text-decoration: none; }
+    td a:hover { color: #aabcff; text-decoration: underline; }
+    td code {
+      background: #1a1a2e;
+      border: 1px solid #2e2e4e;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.78rem;
+      color: #a89ff7;
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+    }
+    td strong { color: #e0e0f0; }
+
+    /* ── Url card ── */
+    .url-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #0d0d18;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+    }
+    .url-card:hover { border-color: #3e3e5e; }
+    .url-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #555;
+      min-width: 130px;
+    }
+    .url-href {
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+      font-size: 0.8rem;
+      color: #7c9cf7;
+    }
+
+    /* ── Key messages ── */
+    .message-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .message-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      background: #0d0d18;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+    .message-num {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #444;
+      min-width: 18px;
+      text-align: center;
+      padding-top: 0.1rem;
+    }
+    .message-text {
+      font-size: 0.88rem;
+      color: #bbb;
+      line-height: 1.55;
+    }
+    .message-text strong { color: #e0e0f0; }
+
+    /* ── Troubleshooting ── */
+    .trouble-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .trouble-item {
+      background: #0d0d18;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+    .trouble-issue {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: #cc8855;
+      margin-bottom: 0.4rem;
+    }
+    .trouble-solution {
+      font-size: 0.85rem;
+      color: #aaa;
+      line-height: 1.55;
+    }
+    .trouble-solution code {
+      background: #1a1a2e;
+      border: 1px solid #2e2e4e;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.78rem;
+      color: #a89ff7;
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+    }
+
+    /* ── Section divider ── */
+    hr { border: none; border-top: 1px solid #141420; margin: 2rem 0; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #2e2e4e; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="site-header">
+  <div class="header-logo">Elektra<span>Motors</span></div>
+  <div class="header-badge">Demo Script</div>
+  <nav class="header-links">
+    <a href="/preso" target="_blank">Presentation</a>
+    <a href="/tools" target="_blank">Tools</a>
+    <a href="/" target="_blank">Website</a>
+    <a href="https://storm-ca6e20bd4496e0.my.salesforce.com" target="_blank">Salesforce</a>
+  </nav>
+</header>
+
+<!-- ── Layout ── -->
+<div class="layout">
+
+  <!-- ── Sidebar TOC ── -->
+  <nav class="toc" id="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#setup">Pre-Demo Setup</a></li>
+      <li class="toc-sub"><a href="#setup-preso" class="toc-sub">1. Run the deck</a></li>
+      <li class="toc-sub"><a href="#setup-tools" class="toc-sub">2. Check /tools</a></li>
+      <li class="toc-sub"><a href="#setup-incognito" class="toc-sub">3. Incognito window</a></li>
+      <li class="toc-sub"><a href="#setup-tabs" class="toc-sub">4. Open tabs</a></li>
+      <li><a href="#act1">Act 1 — Anonymous Visitor</a></li>
+      <li><a href="#act2">Act 2 — Identity Reveal</a></li>
+      <li><a href="#act3">Act 3 — Validate Resolution</a></li>
+      <li><a href="#act4">Act 4 — Automated Flow</a></li>
+      <li><a href="#act5">Act 5 — Lead in Salesforce</a></li>
+      <li><a href="#act6">Act 6 — Lead360 Profile</a></li>
+      <li><a href="#messages">Key Messages</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#personas">Validated Personas</a></li>
+      <li><a href="#urls">URL Quick Reference</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <main class="content">
+
+    <h1 class="page-title">Elektra Motors Demo Script</h1>
+    <p class="page-meta">
+      Org: <a href="https://storm-ca6e20bd4496e0.my.salesforce.com" target="_blank">storm-ca6e20bd4496e0.my.salesforce.com</a>
+      &nbsp;·&nbsp; alias <code style="background:#111118;border:1px solid #1e1e2e;border-radius:3px;padding:0.1rem 0.4rem;font-size:0.78rem;color:#a89ff7">auto</code>
+      &nbsp;·&nbsp; Updated 2026-05-01
+    </p>
+
+    <!-- ── Overview ── -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="act-badge ref">Overview</span>
+        <h2 class="section-title">What this demo shows</h2>
+      </div>
+      <p style="font-size:0.9rem;color:#aaa;line-height:1.7;margin-bottom:1rem;">
+        An anonymous website visitor browses vehicles and chats with the Agentforce vehicle advisor. The moment they share their email, Salesforce Data Cloud resolves their identity in real time — triggering an automated flow that creates an enriched lead and populates a unified 360° profile.
+      </p>
+      <div class="what-to-show">
+        <ol>
+          <li>Data Cloud resolves the anonymous visitor to an <strong>existing CRM contact</strong></li>
+          <li>An <strong>Automation Event-Triggered Flow</strong> fires on the resolved data graph</li>
+          <li>A <strong>Lead</strong> is created in Salesforce with enriched vehicle and customer data</li>
+          <li>A <strong>Lead360</strong> component surfaces a unified profile — website, CRM, and Databricks — in one view</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ── Pre-Demo Setup ── -->
+    <section class="section" id="setup">
+      <div class="section-header">
+        <span class="act-badge setup">Setup</span>
+        <h2 class="section-title">Pre-Demo Setup</h2>
+      </div>
+
+      <div class="subsection" id="setup-preso">
+        <div class="subsection-title">1. Run the presentation first (optional)</div>
+        <p style="font-size:0.88rem;color:#999;margin-bottom:0.75rem;">Open the slide deck to set context before the live demo. Navigate with arrow keys — 8 slides, ~5 minutes. End on slide 8 and transition directly into the live demo.</p>
+        <a class="url-card" href="/preso" target="_blank">
+          <span class="url-label">Presentation</span>
+          <span class="url-href">/preso</span>
+        </a>
+      </div>
+
+      <div class="subsection" id="setup-tools">
+        <div class="subsection-title">2. Check demo readiness with /tools</div>
+        <p style="font-size:0.88rem;color:#999;margin-bottom:0.75rem;">Verify the persona is clean before every run.</p>
+        <a class="url-card" href="/tools" target="_blank">
+          <span class="url-label">Demo Tools</span>
+          <span class="url-href">/tools</span>
+        </a>
+        <div class="click-path" style="margin-top:0.75rem">
+          <ol>
+            <li>Click <strong>Find Demo-Ready Accounts</strong> — confirms Yvette Acme shows <strong>READY ✓</strong></li>
+            <li>Enter <code>yvette.acme@example.com</code> in Account Status → Inspect. You want: Active Leads = <strong>None</strong>, DC Individual ID = <strong>— not stamped</strong></li>
+            <li>If the account shows <strong>NEEDS RESET</strong>, use Reset Account → Preview → Confirm Reset</li>
+          </ol>
+        </div>
+        <div class="note-block" style="margin-top:0.75rem">
+          Data Cloud DLO records (behavioral events, identity) cannot be deleted — they persist from prior runs. The D360 Inspector and Lead360 are date-scoped to the current session, so prior run data won't surface.
+        </div>
+      </div>
+
+      <div class="subsection" id="setup-incognito">
+        <div class="subsection-title">3. Open a fresh incognito / private window</div>
+        <p style="font-size:0.88rem;color:#999;">This ensures a brand-new device ID. The anonymous→known transition is the core story — don't reuse a window from a prior run.</p>
+      </div>
+
+      <div class="subsection" id="setup-tabs">
+        <div class="subsection-title">4. Have these tabs ready</div>
+        <table>
+          <thead><tr><th>Tab</th><th>Where</th></tr></thead>
+          <tbody>
+            <tr><td>Presentation deck</td><td><a href="/preso" target="_blank">/preso</a></td></tr>
+            <tr><td>Demo Tools</td><td><a href="/tools" target="_blank">/tools</a></td></tr>
+            <tr><td>Elektra Motors (incognito)</td><td><a href="/" target="_blank">electra-motors-demo-04da06bf66e0.herokuapp.com</a></td></tr>
+            <tr><td>Salesforce — Flows</td><td>Setup › Flows › Real_Time_Lead_Capture</td></tr>
+            <tr><td>Salesforce — Leads</td><td>Leads tab (App Launcher)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Act 1 ── -->
+    <section class="section" id="act1">
+      <div class="section-header">
+        <span class="act-badge act1">Act 1</span>
+        <h2 class="section-title">The Anonymous Visitor</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Click Path</div>
+        <div class="click-path">
+          <ol>
+            <li>In the <strong>incognito</strong> browser, navigate to the Elektra Motors homepage</li>
+            <li>Open <strong>browser Developer Tools</strong> (F12 / Cmd+Opt+I) → Console tab. Find the device ID in the SDK initialization output — look for <code>anonymousId</code>, a 16-character hex string like <code>6da275aa6822a483</code>. <strong>Copy it.</strong></li>
+            <li>Open the <strong>D360 Inspector</strong> — click the globe icon (top-right of the site). Paste the device ID into the field and click <strong>Lookup</strong>. It should show <code>ANONYMOUS</code>.</li>
+            <li>Click on a vehicle (e.g. <strong>Harmonic Sedan</strong>)</li>
+            <li>Click <strong>"Configure Yours"</strong> — select a trim, color, and options</li>
+            <li>Browse back, view a second vehicle (e.g. <strong>Regulator Truck</strong>), configure it too</li>
+            <li>Do <strong>not</strong> submit a lead yet — the visitor is still anonymous</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">D360 Inspector — Expected State</div>
+        <div class="inspector-preview">
+          <span class="ip-badge anonymous">Anonymous</span>
+          <div class="ip-row"><span class="ip-label">Status</span><span class="ip-val">Device not yet seen in Data Cloud</span></div>
+          <div class="ip-row"><span class="ip-label">Profile</span><span class="ip-val" style="color:#444">No profile found for this device ID</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Talking Points</div>
+        <div class="talking-points">
+          <div class="quote-block">"Right now this visitor is completely anonymous. They're browsing vehicles, configuring options — but we have no idea who they are. However, every interaction is being captured by Salesforce Data Cloud's Web SDK and streamed into Data Cloud as behavioral events. Page views, product views, vehicle configurations — all flowing in as they happen."</div>
+          <div class="quote-block">"Each event is tagged with an anonymous device ID. Data Cloud is already building a behavioral profile for this device — we just don't know whose device it is yet."</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Value Point</div>
+        <div class="value-point"><strong>Real-time behavioral data capture.</strong> Every digital interaction is captured the moment it happens — not in a nightly batch, not through a third-party CDP. This is native Salesforce Data Cloud, streaming directly from the website.</div>
+      </div>
+    </section>
+
+    <!-- ── Act 2 ── -->
+    <section class="section" id="act2">
+      <div class="section-header">
+        <span class="act-badge act2">Act 2</span>
+        <h2 class="section-title">The Identity Reveal</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Click Path</div>
+        <div class="click-path">
+          <ol>
+            <li>Click the <strong>blue chat bubble</strong> (bottom-left) to open the Elektra Advisor — powered by Agentforce</li>
+            <li>Start a conversation — ask about a vehicle, express interest, or say you'd like to submit a lead</li>
+            <li>When the agent asks for contact details, provide the demo persona:
+              <ul>
+                <li><strong>First Name:</strong> Yvette</li>
+                <li><strong>Last Name:</strong> Acme</li>
+                <li><strong>Email:</strong> yvette.acme@example.com</li>
+                <li><strong>Phone:</strong> (any number)</li>
+              </ul>
+            </li>
+            <li>Complete the interaction — the agent confirms and submits the lead</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Talking Points</div>
+        <div class="talking-points">
+          <div class="quote-block">"Now the visitor tells us who they are — not through a static form, but through a natural conversation with the Elektra Advisor, powered by Agentforce. The moment the customer shares their email, several things happen simultaneously. The Web SDK fires identity events — name, email, phone — alongside the lead submission event. All of these stream into Data Cloud in real time."</div>
+          <div class="quote-block">"But here's the key moment: Data Cloud's identity resolution engine takes over. It sees the email — yvette.acme@example.com — and instantly matches it to an existing CRM contact. This anonymous device ID that's been browsing our site for the last few minutes? Data Cloud just resolved it to Yvette Acme, an existing customer in our Salesforce org."</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Value Point</div>
+        <div class="value-point"><strong>Real-time identity resolution.</strong> The moment someone identifies themselves — through a natural Agentforce conversation — Data Cloud collapses the anonymous browsing session into their unified profile. No batch processing, no waiting overnight. The resolution happens in real-time.</div>
+      </div>
+    </section>
+
+    <!-- ── Act 3 ── -->
+    <section class="section" id="act3">
+      <div class="section-header">
+        <span class="act-badge act3">Act 3</span>
+        <h2 class="section-title">Validate Identity Resolution</h2>
+      </div>
+
+      <div class="note-block">
+        <strong>For technical audiences.</strong> For executive demos, skip to Act 4.
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Click Path — D360 Inspector</div>
+        <div class="click-path">
+          <ol>
+            <li>The D360 Inspector is already open from Act 1 with the device ID in the field</li>
+            <li>Enable <strong>Auto-refresh every 5s</strong> — watch the status change live</li>
+            <li>Within ~30 seconds the status flips from <code>ANONYMOUS</code> to <code>UNIFIED</code></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">D360 Inspector — Expected State After Resolution</div>
+        <div class="inspector-preview">
+          <span class="ip-badge unified">Unified</span>
+          <div class="ip-row"><span class="ip-label">Unified Individual</span><span class="ip-val green">Yvette Acme</span></div>
+          <div class="ip-row"><span class="ip-label">DC Individual ID</span><span class="ip-val purple">0031x000…</span></div>
+          <div class="ip-row"><span class="ip-label">Resolved Sources</span><span class="ip-val">2 — CRM Contact + web device</span></div>
+          <div class="ip-row"><span class="ip-label">MDM ID</span><span class="ip-val">Contact.102</span></div>
+          <div class="ip-row"><span class="ip-label">Lead Engagement</span><span class="ip-val">leadSubmit — vehicle model, SKU, trim, color</span></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">What to Point Out</div>
+        <div class="what-to-show">
+          <ol>
+            <li><strong>Unified Individual</strong> — Yvette Acme with her Data Cloud Individual ID</li>
+            <li><strong>Two resolved sources</strong> — her CRM Contact (<em>Salesforce_Home</em>) plus the anonymous web device (<em>Electra_Heroku_identity</em>), now linked under one profile</li>
+            <li><strong>MDM ID</strong> — <code>Contact.102</code> — the key that connects to Databricks vehicle + service data</li>
+            <li><strong>Lead Engagement</strong> — the <code>leadSubmit</code> event with full vehicle details, captured in real-time</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Talking Points</div>
+        <div class="talking-points">
+          <div class="quote-block">"Here's the proof. This is the D360 Inspector — a live view into Data Cloud's real-time data graph for this device. You can see two source records linked to one unified individual: her CRM contact that's been in Salesforce since day one, and the anonymous web device that was just browsing our site. Data Cloud matched them on email in real time."</div>
+          <div class="quote-block">"And notice the MDM ID — Contact.102. This is the key that connects Yvette to her vehicle ownership history, service records, and telemetry data in Databricks. That connection is what makes the next part powerful."</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Value Point</div>
+        <div class="value-point"><strong>Cross-source identity resolution.</strong> Data Cloud doesn't just match within Salesforce — it resolves identities across any connected data source. CRM contacts, website visitors, third-party data — all unified under one profile.</div>
+      </div>
+    </section>
+
+    <!-- ── Act 4 ── -->
+    <section class="section" id="act4">
+      <div class="section-header">
+        <span class="act-badge act4">Act 4</span>
+        <h2 class="section-title">The Automation Event-Triggered Flow</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Click Path</div>
+        <div class="click-path">
+          <ol>
+            <li>In Salesforce Setup, navigate to <strong>Flows</strong></li>
+            <li>Open <strong>Real_Time_Lead_Capture</strong></li>
+            <li>Walk through the flow canvas</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">What to Explain</div>
+        <div class="what-to-show">
+          <ol>
+            <li><strong>Flow type:</strong> Automation Event-Triggered — fires on Data Cloud events (data graph changes), not CRM record changes</li>
+            <li><strong>Trigger:</strong> A <code>leadSubmit</code> engagement event appears in the RealTimeLeads Data Graph</li>
+            <li><strong>Person Account resolution:</strong> Checks for an existing account by DC Individual ID → email → creates new if neither matches</li>
+            <li><strong>Lead de-duplication:</strong> Active lead within 60 days? Enrich it. Older or missing? Create a new lead.</li>
+            <li><strong>Vehicle enrichment:</strong> Lead is stamped with model, trim, color, and SKU from the web session</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Talking Points</div>
+        <div class="talking-points">
+          <div class="quote-block">"This flow fires the moment the data graph changes — in this case, when a leadSubmit event hits the resolved identity. It's not polling, it's not scheduled — it's event-driven and real-time."</div>
+          <div class="quote-block">"The business logic here is just an example. We implemented person account resolution, lead de-duplication with a 60-day window, and vehicle enrichment. But this is fully customizable — your rules would be completely different. Maybe you want to route high-value leads to a specific queue, trigger a follow-up if the customer has an open service case, or notify the nearest dealer. The point is: you have the full power of Salesforce Flow to act on real-time Data Cloud events."</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Value Point</div>
+        <div class="value-point"><strong>Real-time automation at scale.</strong> Automation Event-Triggered Flows bring Data Cloud's real-time intelligence directly into Salesforce's automation engine — native, not custom-built. Because it runs on Data Cloud's event architecture, it scales to high volumes without traditional governor limit constraints.</div>
+      </div>
+    </section>
+
+    <!-- ── Act 5 ── -->
+    <section class="section" id="act5">
+      <div class="section-header">
+        <span class="act-badge act5">Act 5</span>
+        <h2 class="section-title">The Lead in Salesforce</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Click Path</div>
+        <div class="click-path">
+          <ol>
+            <li>Navigate to the <strong>Leads</strong> tab</li>
+            <li>Find <strong>Yvette Acme</strong> at the top of the recent leads list</li>
+            <li>Open the lead record</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">What to Show</div>
+        <div class="what-to-show">
+          <ol>
+            <li><strong>Name, Email</strong> — populated from the Agentforce conversation</li>
+            <li><strong>Vehicle Model, Trim, Color, SKU</strong> — custom fields enriched from the web session</li>
+            <li><strong>Person Account</strong> — linked to Yvette's existing Person Account</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Talking Points</div>
+        <div class="talking-points">
+          <div class="quote-block">"The lead was created almost instantly — within seconds of the Agentforce conversation. That means all of Salesforce's native lead management capabilities kick in immediately: assignment rules, routing, Agentforce lead scoring, SLA tracking."</div>
+          <div class="quote-block">"Notice the lead is already enriched with vehicle details from the web session. And it's linked to Yvette's Person Account, which means the sales rep can see her full customer history before they even pick up the phone."</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Value Point</div>
+        <div class="value-point"><strong>Speed to lead.</strong> Responding to a lead within 5 minutes is 21× more effective than waiting 30 minutes. With this pipeline, the lead exists in Salesforce before the customer has left the website.</div>
+      </div>
+    </section>
+
+    <!-- ── Act 6 ── -->
+    <section class="section" id="act6">
+      <div class="section-header">
+        <span class="act-badge act6">Act 6</span>
+        <h2 class="section-title">The Lead360 Unified Profile</h2>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Click Path</div>
+        <div class="click-path">
+          <ol>
+            <li>On the Lead record, scroll to the <strong>Lead360</strong> component (or find it in a tab)</li>
+            <li>Walk through each panel</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Panels to Highlight</div>
+        <table>
+          <thead><tr><th>Panel</th><th>Source</th><th>What to say</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Profile Header</strong></td><td>Data Cloud</td><td>Email, phone, DC Unified ID, MDM ID — "the resolved identity"</td></tr>
+            <tr><td><strong>Web Activity</strong></td><td>Data Cloud – Live</td><td>Browsing session now attributed to Yvette — every vehicle she viewed, every configuration she made</td></tr>
+            <tr><td><strong>Lead Submissions</strong></td><td>Data Cloud – Live</td><td>The leadSubmit DMO record — source of truth that triggered the flow</td></tr>
+            <tr><td><strong>Owned Vehicles</strong></td><td>Databricks – Zero Copy</td><td>Vehicle ownership queried live from Databricks via MDM ID — no data movement</td></tr>
+            <tr><td><strong>Service History</strong></td><td>Databricks – Zero Copy</td><td>Dates, types, CSAT scores — context that changes how reps open the conversation</td></tr>
+            <tr><td><strong>Vehicle Telemetry</strong></td><td>Databricks – Zero Copy</td><td>Charging sessions, battery levels, DTC alerts — rep knows before the customer mentions it</td></tr>
+            <tr><td><strong>Marketing Touchpoints</strong></td><td>Databricks – Zero Copy</td><td>Direct mail, referral events, outcomes — the full picture</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Talking Points</div>
+        <div class="talking-points">
+          <div class="quote-block">"Look at what the sales rep is seeing on this single Lead record page. They have the web browsing session from Heroku, the CRM contact history from Salesforce, and the vehicle ownership, service history, telemetry, and marketing data from Databricks — all unified under one customer profile."</div>
+          <div class="quote-block">"None of this data was copied or moved. The Salesforce data lives in Salesforce. The Databricks data lives in Databricks. The website data streams through Data Cloud. Identity resolution ties it all together in real time."</div>
+          <div class="quote-block">"This is what a deeply unified platform looks like. Salesforce, Data Cloud, Heroku, Databricks — they're not separate systems stitched together with integrations. They're extensions of a single platform."</div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Value Point</div>
+        <div class="value-point"><strong>Platform unification.</strong> From anonymous web tracking → real-time identity resolution → automated lead creation → 360° customer profile across three data stores — built on a single platform. No middleware, no custom ETL, no third-party CDP.</div>
+      </div>
+    </section>
+
+    <!-- ── Key Messages ── -->
+    <section class="section" id="messages">
+      <div class="section-header">
+        <span class="act-badge ref">Messages</span>
+        <h2 class="section-title">Key Messages to Land</h2>
+      </div>
+      <div class="message-grid">
+        <div class="message-item"><span class="message-num">1</span><span class="message-text"><strong>Real-time, not batch.</strong> Everything in this demo happens in seconds — data ingestion, identity resolution, flow execution, lead creation. This is a fundamentally different operating model than nightly syncs.</span></div>
+        <div class="message-item"><span class="message-num">2</span><span class="message-text"><strong>The lead is the beginning, not the end.</strong> Most lead capture demos stop at "we created a lead." The real value is what surrounds the lead — the unified profile that makes it actionable.</span></div>
+        <div class="message-item"><span class="message-num">3</span><span class="message-text"><strong>Zero copy is real.</strong> The Databricks data never moves. Data Cloud federates queries at runtime. No duplication, no ETL, data is always current.</span></div>
+        <div class="message-item"><span class="message-num">4</span><span class="message-text"><strong>One platform.</strong> Salesforce + Data Cloud + Heroku + Databricks. No integration tax, no middleware, native capabilities working together.</span></div>
+        <div class="message-item"><span class="message-num">5</span><span class="message-text"><strong>Your rules, your logic.</strong> The automation flow is fully customizable. What we showed is one example. The power is in the pattern: real-time Data Cloud events triggering native Salesforce automation.</span></div>
+      </div>
+    </section>
+
+    <!-- ── Troubleshooting ── -->
+    <section class="section" id="troubleshooting">
+      <div class="section-header">
+        <span class="act-badge ref">Help</span>
+        <h2 class="section-title">Troubleshooting</h2>
+      </div>
+      <div class="trouble-list">
+        <div class="trouble-item">
+          <div class="trouble-issue">Persona not clean before the demo</div>
+          <div class="trouble-solution">Open <a href="/tools" target="_blank">/tools</a> → Account Status → enter the email → Inspect. If NEEDS RESET, use Reset Account → Preview → Confirm Reset.</div>
+        </div>
+        <div class="trouble-item">
+          <div class="trouble-issue">Device ID not visible in console</div>
+          <div class="trouble-solution">Open DevTools (F12 / Cmd+Opt+I) → Console tab. The SDK logs on initialization — look for <code>anonymousId</code>. If the console is clear, reload the page and watch for the first log line.</div>
+        </div>
+        <div class="trouble-item">
+          <div class="trouble-issue">D360 Inspector shows ANONYMOUS after lead submission</div>
+          <div class="trouble-solution">Enable Auto-refresh and wait up to 30 seconds. If still anonymous, check browser console for SDK errors — the identity events may not have fired. Ensure the Agentforce agent captured the email correctly.</div>
+        </div>
+        <div class="trouble-item">
+          <div class="trouble-issue">Lead wasn't created in Salesforce</div>
+          <div class="trouble-solution">Check if the flow is active: Setup › Flows › Real_Time_Lead_Capture. Flow activation can take up to 1 hour after toggling.</div>
+        </div>
+        <div class="trouble-item">
+          <div class="trouble-issue">Lead360 shows "No Person Account"</div>
+          <div class="trouble-solution">The flow creates one — wait a few seconds and refresh. If still missing, check Setup › Automation › Flow Execution Log for errors.</div>
+        </div>
+        <div class="trouble-item">
+          <div class="trouble-issue">Databricks panels show "No data found"</div>
+          <div class="trouble-solution">The MDM ID must resolve. Check the Lead360 header — if MDM ID shows "—", this contact may not have a Party Identification record. Use a persona from the validated list below.</div>
+        </div>
+        <div class="trouble-item">
+          <div class="trouble-issue">Web Activity panel is empty</div>
+          <div class="trouble-solution">Uses email-based device resolution. If contact point email events haven't landed yet, wait 2–3 minutes and refresh.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Personas ── -->
+    <section class="section" id="personas">
+      <div class="section-header">
+        <span class="act-badge ref">Personas</span>
+        <h2 class="section-title">Validated Demo Personas</h2>
+      </div>
+      <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">These contacts have CRM records, MDM IDs, and Databricks data (vehicles, service, telemetry, marketing).</p>
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>MDM ID</th><th>Vehicles</th><th>Service</th><th>Telemetry</th><th>Marketing</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Yvette Acme ★</strong></td><td><code>yvette.acme@example.com</code></td><td>Contact.102</td><td>1 (Beam)</td><td>4</td><td>12</td><td>2</td></tr>
+          <tr><td>Zach Acme</td><td><code>zach.acme@example.com</code></td><td>Contact.104</td><td>1 (Regulator)</td><td>2</td><td>8</td><td>2</td></tr>
+          <tr><td>Ron Adkins</td><td><code>radkins@example.com</code></td><td>Contact.060</td><td>1 (Megavolt)</td><td>1</td><td>6</td><td>2</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:0.78rem;color:#555;margin-top:0.75rem;">★ Recommended persona — richest data across all Lead360 panels.</p>
+    </section>
+
+    <!-- ── URLs ── -->
+    <section class="section" id="urls">
+      <div class="section-header">
+        <span class="act-badge ref">URLs</span>
+        <h2 class="section-title">URL Quick Reference</h2>
+      </div>
+      <a class="url-card" href="/preso" target="_blank">
+        <span class="url-label">Presentation</span>
+        <span class="url-href">electra-motors-demo-04da06bf66e0.herokuapp.com/preso</span>
+      </a>
+      <a class="url-card" href="/tools" target="_blank">
+        <span class="url-label">Demo Tools</span>
+        <span class="url-href">electra-motors-demo-04da06bf66e0.herokuapp.com/tools</span>
+      </a>
+      <a class="url-card" href="/" target="_blank">
+        <span class="url-label">Consumer Site</span>
+        <span class="url-href">electra-motors-demo-04da06bf66e0.herokuapp.com</span>
+      </a>
+      <a class="url-card" href="/?inspector=true" target="_blank">
+        <span class="url-label">D360 Inspector</span>
+        <span class="url-href">electra-motors-demo-04da06bf66e0.herokuapp.com/?inspector=true</span>
+      </a>
+      <a class="url-card" href="https://storm-ca6e20bd4496e0.my.salesforce.com" target="_blank">
+        <span class="url-label">Salesforce Org</span>
+        <span class="url-href">storm-ca6e20bd4496e0.my.salesforce.com</span>
+      </a>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ── Active TOC highlighting ───────────────────────────────────────────────
+(function () {
+  const tocLinks = Array.from(document.querySelectorAll('.toc-list a'));
+  const sections = tocLinks
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+
+  function onScroll() {
+    const scrollY = window.scrollY + 100;
+    let active = sections[0];
+    for (const s of sections) {
+      if (s.offsetTop <= scrollY) active = s;
+    }
+    tocLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + active.id);
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
