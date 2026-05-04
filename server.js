@@ -115,6 +115,93 @@ function dcQueryHttp(sql, token) {
     });
 }
 
+function soqlEscape(value) {
+  return String(value || '').replace(/'/g, "\\'");
+}
+
+function soqlString(value) {
+  return value == null || value === '' ? 'null' : `'${soqlEscape(value)}'`;
+}
+
+function soqlIdList(ids) {
+  return ids.map(id => `'${soqlEscape(id)}'`).join(',');
+}
+
+function accountName(account) {
+  return `${account.FirstName || ''} ${account.LastName || ''}`.trim();
+}
+
+function isLikelyDuplicateOf(duplicate, canonical) {
+  if (!duplicate || duplicate.Id === canonical.Id) return false;
+  if (duplicate.External_ID__pc) return false;
+
+  const sameEmail = canonical.PersonEmail && duplicate.PersonEmail === canonical.PersonEmail;
+  const sameName =
+    (duplicate.FirstName || '') === (canonical.FirstName || '') &&
+    (duplicate.LastName || '') === (canonical.LastName || '') &&
+    !!(canonical.FirstName || canonical.LastName);
+
+  return sameEmail || sameName;
+}
+
+function summarizeLead(lead, sourceAccountId, orphanAccountIds) {
+  return {
+    id: lead.Id,
+    model: lead.Vehicle_Model__c || '',
+    sku: lead.Vehicle_SKU__c || '',
+    status: lead.Status,
+    createdDate: (lead.CreatedDate || '').slice(0, 10),
+    accountId: lead.Person_Account__c || '',
+    isOrphan: orphanAccountIds.has(lead.Person_Account__c),
+    source: orphanAccountIds.has(lead.Person_Account__c) ? 'orphan' : 'canonical',
+  };
+}
+
+async function getToolsAccountCluster(email, accessToken) {
+  const accounts = await sfQuery(
+    `SELECT Id, FirstName, LastName, PersonEmail, DC_Individual_Id__c, External_ID__pc ` +
+      `FROM Account WHERE IsPersonAccount = true AND PersonEmail = '${soqlEscape(email)}' LIMIT 1`,
+    accessToken
+  );
+  if (!accounts.length) return null;
+
+  const canonical = accounts[0];
+  const duplicateWhere = [
+    'IsPersonAccount = true',
+    `Id != '${soqlEscape(canonical.Id)}'`,
+    'External_ID__pc = null',
+    `((FirstName = ${soqlString(canonical.FirstName)} AND LastName = ${soqlString(canonical.LastName)})` +
+      ` OR PersonEmail = '${soqlEscape(email)}')`,
+  ].join(' AND ');
+
+  const duplicateCandidates = await sfQuery(
+    `SELECT Id, FirstName, LastName, PersonEmail, DC_Individual_Id__c, External_ID__pc ` +
+      `FROM Account WHERE ${duplicateWhere} ORDER BY CreatedDate DESC`,
+    accessToken
+  );
+  const duplicates = duplicateCandidates.filter(acc => isLikelyDuplicateOf(acc, canonical));
+  const orphanAccountIds = new Set(duplicates.map(acc => acc.Id));
+  const allAccountIds = [canonical.Id, ...duplicates.map(acc => acc.Id)];
+
+  let leads = [];
+  if (allAccountIds.length) {
+    leads = await sfQuery(
+      `SELECT Id, Person_Account__c, Vehicle_Model__c, Vehicle_SKU__c, Status, CreatedDate ` +
+        `FROM Lead WHERE Person_Account__c IN (${soqlIdList(allAccountIds)}) ` +
+        `AND IsConverted = false ORDER BY CreatedDate DESC`,
+      accessToken
+    );
+  }
+
+  return {
+    canonical,
+    duplicates,
+    allAccountIds,
+    orphanAccountIds,
+    leads,
+  };
+}
+
 app.use(express.json());
 
 // Presentation — served before the SDK injection middleware
@@ -377,8 +464,23 @@ app.get('/api/tools/accounts', async (req, res) => {
 
     if (!accounts.length) return res.json({ accounts: [] });
 
-    // 2. Count active leads per account
-    const idList = accounts.map(a => `'${a.Id}'`).join(',');
+    // 2. Include likely orphan Person Accounts in the active-lead counts.
+    const orphanCandidates = await sfQuery(
+      "SELECT Id, FirstName, LastName, PersonEmail, DC_Individual_Id__c, External_ID__pc " +
+        "FROM Account WHERE IsPersonAccount = true AND External_ID__pc = null",
+      accessToken
+    );
+    const orphanIdsByCanonicalId = {};
+    for (const acc of accounts) {
+      orphanIdsByCanonicalId[acc.Id] = orphanCandidates
+        .filter(candidate => isLikelyDuplicateOf(candidate, acc))
+        .map(candidate => candidate.Id);
+    }
+    const allLeadAccountIds = Array.from(new Set([
+      ...accounts.map(a => a.Id),
+      ...Object.values(orphanIdsByCanonicalId).flat(),
+    ]));
+    const idList = soqlIdList(allLeadAccountIds);
     const leadRows = await sfQuery(
       `SELECT Person_Account__c, COUNT(Id) cnt FROM Lead WHERE Person_Account__c IN (${idList}) AND IsConverted = false GROUP BY Person_Account__c`,
       accessToken
@@ -406,11 +508,13 @@ app.get('/api/tools/accounts', async (req, res) => {
     const result = accounts.map(acc => {
       const mdm = acc.External_ID__pc;
       const dcUid = acc.DC_Individual_Id__c;
-      const leads = leadCounts[acc.Id] || 0;
+      const orphanIds = orphanIdsByCanonicalId[acc.Id] || [];
+      const orphanLeads = orphanIds.reduce((sum, id) => sum + (leadCounts[id] || 0), 0);
+      const leads = (leadCounts[acc.Id] || 0) + orphanLeads;
       const vehicles = vehicleCounts[mdm] || 0;
       let status;
-      if (vehicles === 0) status = 'NO DATA';
-      else if (dcUid || leads > 0) status = 'NEEDS RESET';
+      if (dcUid || leads > 0) status = 'NEEDS RESET';
+      else if (vehicles === 0) status = 'NO DATA';
       else status = 'READY';
       return {
         id: acc.Id,
@@ -419,6 +523,8 @@ app.get('/api/tools/accounts', async (req, res) => {
         mdmId: mdm || '',
         dcUid: dcUid || '',
         leads,
+        orphanAccounts: orphanIds.length,
+        orphanLeads,
         vehicles,
         status,
       };
@@ -438,18 +544,10 @@ app.get('/api/tools/status', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'email param required' });
   try {
     const { accessToken } = await getSfToken();
-    const esc = v => v.replace(/'/g, "\\'");
-    const accounts = await sfQuery(
-      `SELECT Id, FirstName, LastName, PersonEmail, DC_Individual_Id__c, External_ID__pc FROM Account WHERE IsPersonAccount = true AND PersonEmail = '${esc(email)}' LIMIT 1`,
-      accessToken
-    );
-    if (!accounts.length) return res.status(404).json({ error: `No Person Account found for ${email}` });
-    const acc = accounts[0];
-
-    const leads = await sfQuery(
-      `SELECT Id, Vehicle_Model__c, Vehicle_SKU__c, Status, CreatedDate FROM Lead WHERE Person_Account__c = '${acc.Id}' AND IsConverted = false ORDER BY CreatedDate DESC`,
-      accessToken
-    );
+    const cluster = await getToolsAccountCluster(email, accessToken);
+    if (!cluster) return res.status(404).json({ error: `No Person Account found for ${email}` });
+    const acc = cluster.canonical;
+    const leads = cluster.leads.map(lead => summarizeLead(lead, acc.Id, cluster.orphanAccountIds));
 
     res.json({
       id: acc.Id,
@@ -457,13 +555,17 @@ app.get('/api/tools/status', async (req, res) => {
       email: acc.PersonEmail,
       mdmId: acc.External_ID__pc || '',
       dcUid: acc.DC_Individual_Id__c || '',
-      leads: leads.map(l => ({
-        id: l.Id,
-        model: l.Vehicle_Model__c || '',
-        sku: l.Vehicle_SKU__c || '',
-        status: l.Status,
-        createdDate: (l.CreatedDate || '').slice(0, 10),
+      duplicateAccounts: cluster.duplicates.map(dup => ({
+        id: dup.Id,
+        name: accountName(dup),
+        email: dup.PersonEmail || '',
+        dcUid: dup.DC_Individual_Id__c || '',
+        mdmId: dup.External_ID__pc || '',
       })),
+      hasOrphans: leads.some(l => l.isOrphan),
+      orphanLeads: leads.filter(l => l.isOrphan),
+      canonicalLeads: leads.filter(l => !l.isOrphan),
+      leads,
     });
   } catch (err) {
     console.error('[Tools/status]', err.message);
@@ -478,27 +580,39 @@ app.post('/api/tools/reset', async (req, res) => {
   if (!email) return res.status(400).json({ error: 'email required' });
   try {
     const { accessToken } = await getSfToken();
-    const esc = v => v.replace(/'/g, "\\'");
-    const accounts = await sfQuery(
-      `SELECT Id, FirstName, LastName, DC_Individual_Id__c FROM Account WHERE IsPersonAccount = true AND PersonEmail = '${esc(email)}' LIMIT 1`,
-      accessToken
-    );
-    if (!accounts.length) return res.status(404).json({ error: `No Person Account found for ${email}` });
-    const acc = accounts[0];
-
-    const leads = await sfQuery(
-      `SELECT Id, Vehicle_Model__c FROM Lead WHERE Person_Account__c = '${acc.Id}' AND IsConverted = false`,
-      accessToken
-    );
-
+    const cluster = await getToolsAccountCluster(email, accessToken);
+    if (!cluster) return res.status(404).json({ error: `No Person Account found for ${email}` });
+    const acc = cluster.canonical;
+    const orphanAccountIds = cluster.orphanAccountIds;
     const deleted = [];
     const failed = [];
+    const deletedTasks = [];
+    const deletedAccounts = [];
+    const skippedAccounts = [];
+    const leads = cluster.leads.map(lead => summarizeLead(lead, acc.Id, orphanAccountIds));
+    const leadIds = leads.map(l => l.id);
+
+    if (leadIds.length) {
+      const tasks = await sfQuery(
+        `SELECT Id, Subject, WhoId FROM Task WHERE WhoId IN (${soqlIdList(leadIds)})`,
+        accessToken
+      );
+      for (const t of tasks) {
+        try {
+          await sfRequest('DELETE', `/services/data/v56.0/sobjects/Task/${t.Id}`, accessToken);
+          deletedTasks.push({ id: t.Id, subject: t.Subject || '', leadId: t.WhoId || '' });
+        } catch (e) {
+          failed.push({ id: t.Id, type: 'Task', error: e.message });
+        }
+      }
+    }
+
     for (const l of leads) {
       try {
-        await sfRequest('DELETE', `/services/data/v56.0/sobjects/Lead/${l.Id}`, accessToken);
-        deleted.push({ id: l.Id, model: l.Vehicle_Model__c || '' });
+        await sfRequest('DELETE', `/services/data/v56.0/sobjects/Lead/${l.id}`, accessToken);
+        deleted.push({ id: l.id, model: l.model || '', source: l.source, accountId: l.accountId });
       } catch (e) {
-        failed.push({ id: l.Id, error: e.message });
+        failed.push({ id: l.id, type: 'Lead', error: e.message });
       }
     }
 
@@ -508,10 +622,42 @@ app.post('/api/tools/reset', async (req, res) => {
       dcCleared = true;
     }
 
+    if (cluster.duplicates.length) {
+      const duplicateIds = cluster.duplicates.map(dup => dup.Id);
+      const convertedRows = await sfQuery(
+        `SELECT Person_Account__c, COUNT(Id) cnt FROM Lead WHERE Person_Account__c IN (${soqlIdList(duplicateIds)}) AND IsConverted = true GROUP BY Person_Account__c`,
+        accessToken
+      );
+      const convertedCounts = {};
+      for (const row of convertedRows) convertedCounts[row.Person_Account__c] = row.cnt || 0;
+
+      for (const dup of cluster.duplicates) {
+        if (convertedCounts[dup.Id]) {
+          skippedAccounts.push({
+            id: dup.Id,
+            name: accountName(dup),
+            reason: 'Has converted Leads',
+          });
+          continue;
+        }
+
+        try {
+          await sfRequest('DELETE', `/services/data/v56.0/sobjects/Account/${dup.Id}`, accessToken);
+          deletedAccounts.push({ id: dup.Id, name: accountName(dup), dcUid: dup.DC_Individual_Id__c || '' });
+        } catch (e) {
+          failed.push({ id: dup.Id, type: 'Account', error: e.message });
+          skippedAccounts.push({ id: dup.Id, name: accountName(dup), reason: e.message });
+        }
+      }
+    }
+
     res.json({
       name: `${acc.FirstName || ''} ${acc.LastName || ''}`.trim(),
       email,
       deleted,
+      deletedTasks,
+      deletedAccounts,
+      skippedAccounts,
       failed,
       dcCleared,
     });

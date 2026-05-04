@@ -362,6 +362,7 @@ async function loadAccounts() {
     `;
     accounts.forEach((a, i) => {
       const uid = a.dcUid ? a.dcUid.slice(0,8) + '…' : '—';
+      const leadText = a.orphanLeads ? `${a.leads} (${a.orphanLeads} orphan)` : (a.leads || '—');
       html += `
         <tr>
           <td style="color:#555">${i+1}</td>
@@ -369,7 +370,7 @@ async function loadAccounts() {
           <td class="email">${esc(a.email)}</td>
           <td style="color:#888;font-size:0.8rem">${esc(a.mdmId)}</td>
           <td style="color:#888;font-size:0.78rem;font-family:monospace">${esc(uid)}</td>
-          <td class="num">${a.leads || '—'}</td>
+          <td class="num">${esc(leadText)}</td>
           <td class="num">${a.vehicles || '—'}</td>
           <td>${badge(a.status)}</td>
           <td>
@@ -415,13 +416,14 @@ async function loadStatus() {
     const data = await res.json();
     if (data.error) { statusResult.innerHTML = `<div class="error-msg">${esc(data.error)}</div>`; return; }
 
-    const isReady = !data.dcUid && !data.leads.length;
+    const isReady = !data.dcUid && !data.leads.length && !data.duplicateAccounts?.length;
     let html = `<div class="result-card">
       <div class="result-row"><span class="result-label">Name</span><span class="result-val">${esc(data.name)}</span></div>
       <div class="result-row"><span class="result-label">Email</span><span class="result-val">${esc(data.email)}</span></div>
       <div class="result-row"><span class="result-label">MDM ID</span><span class="result-val ${data.mdmId ? '' : 'dim'}">${esc(data.mdmId || '—')}</span></div>
       <div class="result-row"><span class="result-label">DC Individual ID</span><span class="result-val ${data.dcUid ? 'warn' : 'dim'}">${data.dcUid ? esc(data.dcUid.slice(0,20)+'…') : '— not stamped'}</span></div>
       <div class="result-row"><span class="result-label">Active Leads</span><span class="result-val ${data.leads.length ? 'warn' : 'dim'}">${data.leads.length || 'None'}</span></div>
+      <div class="result-row"><span class="result-label">Orphan Accounts</span><span class="result-val ${data.duplicateAccounts?.length ? 'warn' : 'dim'}">${data.duplicateAccounts?.length || 'None'}</span></div>
       <div class="result-row"><span class="result-label">Status</span><span class="result-val ${isReady ? 'good' : 'warn'}">${isReady ? 'READY ✓' : 'NEEDS RESET'}</span></div>
     </div>`;
 
@@ -431,7 +433,7 @@ async function loadStatus() {
         html += `<div class="lead-item">
           <div>
             <div class="lead-model">${esc(l.model || 'Unknown model')}</div>
-            <div class="lead-meta">${esc(l.id)} &nbsp;·&nbsp; ${esc(l.status)}</div>
+            <div class="lead-meta">${esc(l.id)} &nbsp;·&nbsp; ${esc(l.status)}${l.isOrphan ? ' &nbsp;·&nbsp; orphan PA' : ''}</div>
           </div>
           <div class="lead-meta">${esc(l.createdDate)}</div>
         </div>`;
@@ -467,7 +469,7 @@ async function loadResetPreview() {
     const data = await res.json();
     if (data.error) { resetResult.innerHTML = `<div class="error-msg">${esc(data.error)}</div>`; return; }
 
-    if (!data.dcUid && !data.leads.length) {
+    if (!data.dcUid && !data.leads.length && !data.duplicateAccounts?.length) {
       resetResult.innerHTML = `<div class="success-msg">Account is already clean — nothing to reset.</div>`;
       return;
     }
@@ -475,7 +477,12 @@ async function loadResetPreview() {
     let actionsHtml = '';
     if (data.leads.length) {
       for (const l of data.leads) {
-        actionsHtml += `<div class="reset-action">DELETE Lead — <span>${esc(l.model || 'Unknown')} (${esc(l.id)})</span></div>`;
+        actionsHtml += `<div class="reset-action">DELETE ${l.isOrphan ? 'orphan ' : ''}Lead — <span>${esc(l.model || 'Unknown')} (${esc(l.id)})</span></div>`;
+      }
+    }
+    if (data.duplicateAccounts?.length) {
+      for (const a of data.duplicateAccounts) {
+        actionsHtml += `<div class="reset-action">DELETE safe duplicate Person Account — <span>${esc(a.name || a.id)} (${esc(a.id)})</span></div>`;
       }
     }
     if (data.dcUid) {
@@ -520,8 +527,11 @@ async function doReset(e) {
     if (data.error) { resetResult.innerHTML = `<div class="error-msg">${esc(data.error)}</div>`; return; }
 
     let html = `<div class="success-msg">Reset complete — <strong>${esc(data.name)}</strong> is ready for a fresh demo run.<br><br>`;
-    for (const d of data.deleted) html += `✓ Deleted Lead: ${esc(d.model || d.id)}<br>`;
-    for (const f of data.failed)  html += `✗ Failed: ${esc(f.id)} — ${esc(f.error)}<br>`;
+    for (const d of data.deleted) html += `✓ Deleted ${d.source === 'orphan' ? 'orphan ' : ''}Lead: ${esc(d.model || d.id)}<br>`;
+    for (const t of data.deletedTasks || []) html += `✓ Deleted Task: ${esc(t.subject || t.id)}<br>`;
+    for (const a of data.deletedAccounts || []) html += `✓ Deleted duplicate Person Account: ${esc(a.name || a.id)}<br>`;
+    for (const a of data.skippedAccounts || []) html += `• Skipped duplicate Person Account: ${esc(a.name || a.id)} — ${esc(a.reason)}<br>`;
+    for (const f of data.failed)  html += `✗ Failed ${esc(f.type || 'record')}: ${esc(f.id)} — ${esc(f.error)}<br>`;
     if (data.dcCleared) html += `✓ Cleared DC_Individual_Id__c`;
     html += `</div>`;
     resetResult.innerHTML = html;
