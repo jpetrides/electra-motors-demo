@@ -62,6 +62,7 @@ export function logDcEventDiagnostics(): void {
 
 export interface TestDriveEvent {
   email: string
+  phone?: string
   firstName?: string
   lastName?: string
   vehicleModel: string
@@ -105,6 +106,7 @@ export function emitTestDriveEvents(payload: TestDriveEvent): boolean {
       firstName: payload.firstName,
       lastName: payload.lastName,
       email: payload.email,
+      phone: payload.phone,
     },
     'formSubmit',
     {
@@ -121,6 +123,8 @@ export function emitTestDriveEvents(payload: TestDriveEvent): boolean {
     attributeSkuCode: payload.vehicleSku ?? '',
     attributePreferredDate: payload.preferredDate,
     attributePreferredDealer: payload.preferredDealer ?? '',
+    attributeEmail: payload.email,
+    attributePhone: payload.phone ?? '',
     attributePageUrl: window.location.href,
   })
 

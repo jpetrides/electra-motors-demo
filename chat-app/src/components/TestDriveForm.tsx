@@ -19,6 +19,7 @@ export interface TestDrivePayload {
   firstName: string
   lastName: string
   email: string
+  phone?: string
   vehicleModel: string
   vehicleSku?: string
   preferredDate: string
@@ -43,6 +44,7 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [vehicleModel, setVehicleModel] = useState(defaultVehicle ?? '')
   const [preferredDate, setPreferredDate] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -65,6 +67,7 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
+        phone: phone.trim() || undefined,
         vehicleModel,
         vehicleSku: VEHICLE_OPTIONS.find(v => v.model === vehicleModel)?.sku,
         preferredDate,
@@ -139,6 +142,20 @@ export default function TestDriveForm({ defaultVehicle, onSubmit, onCancel }: Pr
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="you@example.com"
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="block text-white/60 text-xs mb-1.5 tracking-wide">
+            Phone
+          </label>
+          <input
+            type="tel"
+            autoComplete="tel"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            placeholder="(555) 123-4567"
             className={inputClass}
           />
         </div>
