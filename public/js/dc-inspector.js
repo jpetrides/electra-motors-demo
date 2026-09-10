@@ -9,6 +9,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   let expanded = sessionStorage.getItem('dci-open') === '1';
   let polling = null;
+  let lastLookupData = null;
 
   // ─── Build DOM ──────────────────────────────────────────────────────────
   const panel = document.createElement('div');
@@ -32,6 +33,9 @@ document.addEventListener('DOMContentLoaded', function () {
       <div class="dci-auto-row">
         <label><input type="checkbox" id="dci-auto-poll" /> Auto-refresh every 5s</label>
         <span id="dci-last-checked" class="dci-meta"></span>
+      </div>
+      <div class="dci-options-row">
+        <label><input type="checkbox" id="dci-show-prior" /> Show prior engagements</label>
       </div>
 
       <div id="dci-status-bar" class="dci-status-bar" style="display:none">
@@ -114,11 +118,18 @@ document.addEventListener('DOMContentLoaded', function () {
   // ─── Lookup ─────────────────────────────────────────────────────────────
   const lookupBtn = document.getElementById('dci-lookup-btn');
   const autoPoll = document.getElementById('dci-auto-poll');
+  const showPrior = document.getElementById('dci-show-prior');
   const statusBar = document.getElementById('dci-status-bar');
   const statusBadge = document.getElementById('dci-status-badge');
   const statusText = document.getElementById('dci-status-text');
   const lastChecked = document.getElementById('dci-last-checked');
   const content = document.getElementById('dci-content');
+
+  showPrior.checked = sessionStorage.getItem('dci-show-prior') === '1';
+  showPrior.addEventListener('change', () => {
+    sessionStorage.setItem('dci-show-prior', showPrior.checked ? '1' : '0');
+    if (lastLookupData?.profile) renderLookup(lastLookupData);
+  });
 
   lookupBtn.addEventListener('click', () => doLookup());
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLookup(); });
@@ -184,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
       const res = await fetch(`/api/dc-lookup/${encodeURIComponent(deviceId)}`);
       const data = await res.json();
+      lastLookupData = data;
 
       if (data.error) {
         showError(data.error);
@@ -207,97 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
           </div>
         `;
       } else {
-        const p = data.profile;
-        // Compute session leads here for status text (full filter runs below with lead cards)
-        const _sessionCutoff = Date.now() - 3 * 60 * 60 * 1000;
-        const _sessionLeadCount = data.leads.filter(l =>
-          new Date(l.timestamp || 0).getTime() >= _sessionCutoff
-        ).length;
-        statusText.textContent = _sessionLeadCount
-          ? `Unified with ${_sessionLeadCount} engagement${_sessionLeadCount > 1 ? 's' : ''} this session`
-          : (data.leads.length ? 'Unified — no engagements this session' : 'Identity resolved');
-
-        let html = '';
-
-        // Profile card
-        html += `
-          <div class="dci-card">
-            <div class="dci-card-header">Unified Individual</div>
-            <div class="dci-profile">
-              <div class="dci-avatar">${esc(p.firstName?.[0] || '?')}${esc(p.lastName?.[0] || '')}</div>
-              <div class="dci-profile-info">
-                <div class="dci-name">${esc(p.firstName || '')} ${esc(p.lastName || '')}</div>
-                <div class="dci-meta">${esc(p.unifiedId)}</div>
-              </div>
-            </div>
-            <div class="dci-fields">
-              ${p.emails.length ? `<div class="dci-field"><span class="dci-field-label">Email</span><span>${esc(p.emails.join(', '))}</span></div>` : ''}
-              ${p.phones.length ? `<div class="dci-field"><span class="dci-field-label">Phone</span><span>${esc(p.phones.join(', '))}</span></div>` : ''}
-              ${p.addresses.map(a => `<div class="dci-field"><span class="dci-field-label">Address</span><span>${esc(a.street)}, ${esc(a.city)} ${esc(a.state)} ${esc(a.zip)}</span></div>`).join('')}
-              ${p.partyIds.map(id => `<div class="dci-field"><span class="dci-field-label">${esc(id.type)}</span><span>${esc(id.value)}</span></div>`).join('')}
-            </div>
-          </div>
-        `;
-
-        // Source links
-        if (data.sources && data.sources.length) {
-          html += `
-            <div class="dci-card">
-              <div class="dci-card-header">Resolved Sources (${data.sources.length})</div>
-              ${data.sources.map(s => `
-                <div class="dci-source">
-                  <span class="dci-source-id">${esc(s.sourceId)}</span>
-                  <span class="dci-meta">${esc(s.dataSource)}</span>
-                </div>
-              `).join('')}
-            </div>
-          `;
-        }
-
-        // Lead cards — scoped to the current session (last 3 hours).
-        // All leads within the window are shown so the follow-up scenario
-        // (2nd vehicle submission enriching the same SF Lead) is demonstrable.
-        // Leads from prior demo runs are hidden with a subtle count badge.
-        const SESSION_HOURS = 3;
-        const sessionCutoff = Date.now() - SESSION_HOURS * 60 * 60 * 1000;
-        const sortedLeads = [...data.leads].sort((a, b) =>
-          new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
-        );
-        const sessionLeads = sortedLeads.filter(l =>
-          new Date(l.timestamp || 0).getTime() >= sessionCutoff
-        );
-        const priorCount = sortedLeads.length - sessionLeads.length;
-
-        for (const lead of sessionLeads) {
-          const time = lead.timestamp ? new Date(lead.timestamp).toLocaleString() : '';
-          const isTestDrive = lead.kind === 'testDrive';
-          const headerLabel = isTestDrive ? 'Test Drive' : 'Lead';
-          html += `
-            <div class="dci-card dci-card--lead">
-              <div class="dci-card-header">
-                ${esc(headerLabel)} — ${esc(lead.model || 'Unknown')}
-                <span class="dci-meta">${esc(time)}</span>
-              </div>
-              <div class="dci-fields">
-                ${lead.sku ? `<div class="dci-field"><span class="dci-field-label">SKU</span><span>${esc(lead.sku)}</span></div>` : ''}
-                ${lead.trim ? `<div class="dci-field"><span class="dci-field-label">Trim</span><span>${esc(lead.trim)}</span></div>` : ''}
-                ${lead.color ? `<div class="dci-field"><span class="dci-field-label">Color</span><span>${esc(lead.color)}</span></div>` : ''}
-                ${lead.location ? `<div class="dci-field"><span class="dci-field-label">Location</span><span>${esc(lead.location)}</span></div>` : ''}
-                ${lead.preferredDate ? `<div class="dci-field"><span class="dci-field-label">Preferred</span><span>${esc(lead.preferredDate)}</span></div>` : ''}
-                ${lead.preferredDealer ? `<div class="dci-field"><span class="dci-field-label">Dealer</span><span>${esc(lead.preferredDealer)}</span></div>` : ''}
-                ${lead.email ? `<div class="dci-field"><span class="dci-field-label">Email</span><span>${esc(lead.email)}</span></div>` : ''}
-                ${lead.phone ? `<div class="dci-field"><span class="dci-field-label">Phone</span><span>${esc(lead.phone)}</span></div>` : ''}
-              </div>
-            </div>
-          `;
-        }
-        if (priorCount > 0) {
-          html += `<div class="dci-meta" style="padding:0.5rem 1rem;opacity:0.5">
-            + ${priorCount} lead${priorCount > 1 ? 's' : ''} from prior sessions not shown
-          </div>`;
-        }
-
-        content.innerHTML = html;
+        renderLookup(data);
       }
       saveResults();
     } catch (err) {
@@ -306,6 +228,90 @@ document.addEventListener('DOMContentLoaded', function () {
       lookupBtn.disabled = false;
       lookupBtn.textContent = 'Lookup';
     }
+  }
+
+  function renderLookup(data) {
+    const p = data.profile;
+    const sessionCutoff = Date.now() - 3 * 60 * 60 * 1000;
+    const sortedLeads = [...data.leads].sort((a, b) =>
+      new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+    );
+    const sessionLeads = sortedLeads.filter(l =>
+      new Date(l.timestamp || 0).getTime() >= sessionCutoff
+    );
+    const priorCount = sortedLeads.length - sessionLeads.length;
+    const visibleLeads = showPrior.checked ? sortedLeads : sessionLeads;
+    const sessionLeadCount = sessionLeads.length;
+
+    statusText.textContent = sessionLeadCount
+      ? `Unified with ${sessionLeadCount} engagement${sessionLeadCount > 1 ? 's' : ''} this session`
+      : (data.leads.length ? 'Unified — no engagements this session' : 'Identity resolved');
+
+    let html = `
+      <div class="dci-card">
+        <div class="dci-card-header">Unified Individual</div>
+        <div class="dci-profile">
+          <div class="dci-avatar">${esc(p.firstName?.[0] || '?')}${esc(p.lastName?.[0] || '')}</div>
+          <div class="dci-profile-info">
+            <div class="dci-name">${esc(p.firstName || '')} ${esc(p.lastName || '')}</div>
+            <div class="dci-meta">${esc(p.unifiedId)}</div>
+          </div>
+        </div>
+        <div class="dci-fields">
+          ${p.emails.length ? `<div class="dci-field"><span class="dci-field-label">Email</span><span>${esc(p.emails.join(', '))}</span></div>` : ''}
+          ${p.phones.length ? `<div class="dci-field"><span class="dci-field-label">Phone</span><span>${esc(p.phones.join(', '))}</span></div>` : ''}
+          ${p.addresses.map(a => `<div class="dci-field"><span class="dci-field-label">Address</span><span>${esc(a.street)}, ${esc(a.city)} ${esc(a.state)} ${esc(a.zip)}</span></div>`).join('')}
+          ${p.partyIds.map(id => `<div class="dci-field"><span class="dci-field-label">${esc(id.type)}</span><span>${esc(id.value)}</span></div>`).join('')}
+        </div>
+      </div>
+    `;
+
+    if (data.sources && data.sources.length) {
+      html += `
+        <div class="dci-card">
+          <div class="dci-card-header">Resolved Sources (${data.sources.length})</div>
+          ${data.sources.map(s => `
+            <div class="dci-source">
+              <span class="dci-source-id">${esc(s.sourceId)}</span>
+              <span class="dci-meta">${esc(s.dataSource)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    for (const lead of visibleLeads) {
+      const time = lead.timestamp ? new Date(lead.timestamp).toLocaleString() : '';
+      const isTestDrive = lead.kind === 'testDrive';
+      const headerLabel = isTestDrive ? 'Test Drive' : 'Lead';
+      const isPrior = !sessionLeads.includes(lead);
+      html += `
+        <div class="dci-card dci-card--lead${isPrior ? ' dci-card--prior' : ''}">
+          <div class="dci-card-header">
+            ${esc(headerLabel)} — ${esc(lead.model || 'Unknown')}
+            <span class="dci-meta">${esc(time)}${isPrior ? ' · Prior session' : ''}</span>
+          </div>
+          <div class="dci-fields">
+            ${lead.sku ? `<div class="dci-field"><span class="dci-field-label">SKU</span><span>${esc(lead.sku)}</span></div>` : ''}
+            ${lead.trim ? `<div class="dci-field"><span class="dci-field-label">Trim</span><span>${esc(lead.trim)}</span></div>` : ''}
+            ${lead.color ? `<div class="dci-field"><span class="dci-field-label">Color</span><span>${esc(lead.color)}</span></div>` : ''}
+            ${lead.location ? `<div class="dci-field"><span class="dci-field-label">Location</span><span>${esc(lead.location)}</span></div>` : ''}
+            ${lead.preferredDate ? `<div class="dci-field"><span class="dci-field-label">Preferred</span><span>${esc(lead.preferredDate)}</span></div>` : ''}
+            ${lead.preferredDealer ? `<div class="dci-field"><span class="dci-field-label">Dealer</span><span>${esc(lead.preferredDealer)}</span></div>` : ''}
+            ${lead.email ? `<div class="dci-field"><span class="dci-field-label">Email</span><span>${esc(lead.email)}</span></div>` : ''}
+            ${lead.phone ? `<div class="dci-field"><span class="dci-field-label">Phone</span><span>${esc(lead.phone)}</span></div>` : ''}
+          </div>
+        </div>
+      `;
+    }
+    if (priorCount > 0 && !showPrior.checked) {
+      html += `<div class="dci-meta" style="padding:0.5rem 1rem;opacity:0.5">
+        + ${priorCount} engagement${priorCount > 1 ? 's' : ''} from prior sessions not shown
+      </div>`;
+    }
+
+    content.innerHTML = html;
+    saveResults();
   }
 
   function showError(msg) {

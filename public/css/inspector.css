@@ -113,6 +113,13 @@
 }
 .dci-auto-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .dci-auto-row input[type="checkbox"] { accent-color: #00b4d8; }
+.dci-options-row {
+  margin: -6px 0 16px;
+  font-size: 12px;
+  color: #5c6478;
+}
+.dci-options-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.dci-options-row input[type="checkbox"] { accent-color: #00b4d8; }
 
 /* Status bar */
 .dci-status-bar {
@@ -175,6 +182,8 @@
   justify-content: space-between;
 }
 .dci-card--lead .dci-card-header { color: #2ec4b6; }
+.dci-card--prior { opacity: 0.78; }
+.dci-card--prior .dci-card-header { color: #8d7480; }
 
 /* Profile section */
 .dci-profile {
