@@ -79,6 +79,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ─── Try to read device ID from SDK cookie ─────────────────────────────
   function readDeviceId() {
+    // Prefer the SDK accessor. This is the same anonymous ID attached to
+    // Web SDK events and is available even when the cookie is HttpOnly.
+    try {
+      const sdkId = window.SalesforceInteractions?.getAnonymousId?.();
+      if (sdkId) return sdkId;
+    } catch (_) { /* SDK not ready or accessor unavailable */ }
+
     // The SF Web SDK stores device ID in a cookie named like _sfdc_dc_<bundleId>
     const cookies = document.cookie.split(';');
     for (const c of cookies) {
