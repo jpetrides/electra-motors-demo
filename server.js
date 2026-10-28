@@ -336,15 +336,17 @@ app.post('/api/test-drive', (req, res) => {
 });
 
 // D360 Inspector — lookup a device ID through the real-time Data Graph API.
-// The source Individual is nested under the unified link, but its primary key
-// is directly lookupable. This keeps the Inspector on the graph path so fresh
-// identity and engagement data do not wait for SQL materialization.
+// The deviceId is the SourceRecordId on the unified link (a direct child of the
+// primary DMO), which is the confirmed hot-layer lookup key (sub-second). This
+// keeps the Inspector on the graph path so fresh identity and engagement data
+// do not wait for SQL materialization (~2-3 min), which would kill the demo.
+// NOTE: depends on the RealTimeLeads real-time graph being ENABLED in the org.
 app.get('/api/dc-lookup/:deviceId', async (req, res) => {
   if (!SF_CLIENT_ID) return res.status(500).json({ error: 'SF_CLIENT_ID not configured' });
   try {
     const { accessToken } = await getSfToken();
     const deviceId = req.params.deviceId;
-    const lookup = encodeURIComponent(`[ssot__Individual__dlm.ssot__Id__c=${deviceId}]`);
+    const lookup = encodeURIComponent(`[UnifiedLinkssotIndividualElkt__dlm.SourceRecordId__c=${deviceId}]`);
     const graphUrl = `/services/data/v64.0/ssot/data-graphs/data/RealTimeLeads?lookupKeys=${lookup}`;
     const result = await sfGet(graphUrl, accessToken);
 
