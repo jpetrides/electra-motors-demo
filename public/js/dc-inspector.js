@@ -328,4 +328,4 @@ document.addEventListener('DOMContentLoaded', function () {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
   }
-})();
+});
