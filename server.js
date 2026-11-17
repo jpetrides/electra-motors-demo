@@ -309,7 +309,9 @@ app.use((req, res, next) => {
       }
     }
   </script>
-  <script type="text/javascript" src="https://storm-ca6e20bd4496e0.my.site.com/ESWASAVehicleQuestions1776269359768/assets/js/bootstrap.min.js" onload="initEmbeddedMessaging()"></script>`;
+  <!-- async: a slow Experience Cloud response must not block HTML parsing.
+       As a sync script it held DOMContentLoaded, which the D360 Inspector waits on. -->
+  <script type="text/javascript" async src="https://storm-ca6e20bd4496e0.my.site.com/ESWASAVehicleQuestions1776269359768/assets/js/bootstrap.min.js" onload="initEmbeddedMessaging()"></script>`;
   html = html.replace('</head>', `${inspectorCss}\n${sdkScript}\n${sitemapScript}\n${inspectorScript}\n${chatWidgetLoader}\n</head>`);
   html = html.replace('</body>', `${embeddedChat}\n</body>`);
 
