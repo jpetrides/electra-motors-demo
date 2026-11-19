@@ -309,9 +309,23 @@ app.use((req, res, next) => {
       }
     }
   </script>
-  <!-- async: a slow Experience Cloud response must not block HTML parsing.
-       As a sync script it held DOMContentLoaded, which the D360 Inspector waits on. -->
-  <script type="text/javascript" async src="https://storm-ca6e20bd4496e0.my.site.com/ESWASAVehicleQuestions1776269359768/assets/js/bootstrap.min.js" onload="initEmbeddedMessaging()"></script>`;
+  <!-- Load the bootstrap only after window "load". Even an async script holds
+       the load event, and the Experience Cloud origin intermittently takes 70s+
+       to serve init.min.js, which kept the tab spinner running. Scripts added
+       after "load" don't delay it. -->
+  <script type="text/javascript">
+    (function () {
+      function loadEmbeddedMessaging() {
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.src = 'https://storm-ca6e20bd4496e0.my.site.com/ESWASAVehicleQuestions1776269359768/assets/js/bootstrap.min.js';
+        s.onload = initEmbeddedMessaging;
+        document.body.appendChild(s);
+      }
+      if (document.readyState === 'complete') loadEmbeddedMessaging();
+      else window.addEventListener('load', loadEmbeddedMessaging, { once: true });
+    })();
+  </script>`;
   html = html.replace('</head>', `${inspectorCss}\n${sdkScript}\n${sitemapScript}\n${inspectorScript}\n${chatWidgetLoader}\n</head>`);
   html = html.replace('</body>', `${embeddedChat}\n</body>`);
 
